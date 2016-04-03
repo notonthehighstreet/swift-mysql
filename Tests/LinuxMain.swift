@@ -1,7 +1,7 @@
 import XCTest
 
-@testable import MySQLTTestSuite
+@testable import MySQLTestSuite
 
 XCTMain([
-  testCase(TestsTests.allTests)
+  testCase(MySQLClientTests.allTests)
 ])

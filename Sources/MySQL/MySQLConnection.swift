@@ -1,9 +1,23 @@
 import Foundation
 import CMySQLClient
 
-public class MySQL {
+public class MySQLConnection : MySQLConnectionProtocol {
+
+  private var host:String
+  //private var port:Int
+  private var user:String
+  private var password:String
+  private var database:String
 
   private var connection: UnsafeMutablePointer<MYSQL> = nil
+
+  public required init(host: String, user: String, password: String, database: String) {
+    self.host = host
+    //self.port = port
+    self.user = user
+    self.password = password
+    self.database = database
+  }
 
   public func client_info() -> String? {
     return String(cString: CMySQLClient.mysql_get_client_info())
@@ -13,16 +27,18 @@ public class MySQL {
     return CMySQLClient.mysql_get_client_version();
   }
 
-  public func connect() {
+  public func connect() throws {
     connection = CMySQLClient.mysql_init(nil);
 
     if connection == nil {
-      print("unable to create connection")
+      print("Error: Unable to create connection")
+      throw MySQLConnectionError.UnableToCreateConnection
     }
 
-    if CMySQLClient.mysql_real_connect(connection, "192.168.99.100", "root", "my-secret-pw", nil, 0, nil, 0) == nil {
-      print("unable to connect to database")
+    if CMySQLClient.mysql_real_connect(connection, host, user, password, nil, 0, nil, 0) == nil {
+      print("Error: Unable to connect to database")
       close()
+      throw MySQLConnectionError.UnableToCreateConnection
     }
   }
 
