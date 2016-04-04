@@ -10,7 +10,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   }
 
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
-    var connection = connectionProvider()
+    let connection = connectionProvider()
     try connection!.connect(host, user:user, password:password, database: database)
 
     return connection

@@ -9,6 +9,12 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
   public var clientInfo:String? = nil
   public var clientVersion:UInt = 0
 
+  public var executeReturnResult:CMySQLResult? = nil
+  public var executeReturnHeaders:[CMySQLField]? = nil
+  public var executeReturnError:MySQLConnectionError? = nil
+
+  public var nextResultReturn:CMySQLRow? = nil
+
   public init() { }
 
   public func connect(
@@ -24,7 +30,14 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public func client_version() -> UInt { return clientVersion }
 
-  public func execute(query: String) { executeCalled = true }
+  public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLConnectionError?) {
+     executeCalled = true
+     return (executeReturnResult, executeReturnHeaders, executeReturnError)
+   }
+
+   public func nextResult(result: CMySQLResult) -> CMySQLRow? {
+     return nextResultReturn
+   }
 
   public func close() { closeCalled = true }
 }

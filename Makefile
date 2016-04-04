@@ -1,4 +1,4 @@
-build:
+build: clean
 	@echo --- Building package
 	swift build -Xcc -fblocks
 

@@ -19,7 +19,7 @@ do {
 var client = MySQLClient(connection: connection)
 
 defer {
-  client.close()
+  connection.close()
 }
 
 print("MySQL Client Info: " + client.info()!)
@@ -32,4 +32,18 @@ client.execute("DROP TABLE IF EXISTS Cars")
 client.execute("CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
 client.execute("INSERT INTO Cars VALUES(1,'Audi',52642)")
 client.execute("INSERT INTO Cars VALUES(2,'Mercedes',57127)")
-client.execute("SELECT * FROM Cars")
+
+var ret = client.execute("SELECT * FROM Cars")
+if let result = ret.0 {
+  var r = result.nextResult()
+  if r != nil {
+    repeat {
+      for value in r! {
+        print(value)
+      }
+      r = result.nextResult()
+    } while(r != nil)
+  } else {
+    print("No results")
+  }
+}

@@ -20,12 +20,17 @@ extension MySQLClient {
     return connection.client_version()
   }
 
-  public func execute(query: String) -> MySQLResult? {
-    connection.execute(query)
-    return nil
+  public func execute(query: String) -> (MySQLResult?, MySQLConnectionError?) {
+    let result = connection.execute(query)
+
+    if (result.0 != nil) {
+      return (MySQLResult(result:result.0!, fields: result.1!, nextResult: connection.nextResult), result.2)
+    }
+
+    return (nil, result.2)
   }
 
-  public func close() {
-    connection.close()
+  public func nextResult() -> CMySQLRow? {
+    return nil
   }
 }

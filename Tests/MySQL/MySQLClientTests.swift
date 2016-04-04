@@ -41,6 +41,35 @@ public class MySQLClientTests: XCTestCase {
     mysql.execute("soemthing")
     XCTAssertTrue(connection.executeCalled, "Query should have been executed")
   }
+
+  public func testClientQueryReturnsMySQLResultWhenResultPresent() {
+    let connection = MockMySQLConnection()
+    connection.executeReturnResult = CMySQLResult(bitPattern: 12)
+    connection.executeReturnHeaders = [CMySQLField]()
+
+    let mysql = createClient(connection)!
+
+    let result = mysql.execute("something")
+    XCTAssertNotNil(result.0, "Query should have returned results")
+  }
+
+  public func testClientQueryDoesNotReturnMySQLResultWhenNoResult() {
+    let connection = MockMySQLConnection()
+    let mysql = createClient(connection)!
+
+    let result = mysql.execute("soemthing")
+    XCTAssertNil(result.0, "Query should have been executed")
+  }
+
+  public func testClientQueryReturnsErrorWhenError() {
+    let connection = MockMySQLConnection()
+    connection.executeReturnError = MySQLConnectionError.UnableToExecuteQuery(message: "boom")
+
+    let mysql = createClient(connection)!
+
+    let result = mysql.execute("soemthing")
+    XCTAssertNotNil(result.1, "Query should have returned an error")
+  }
 }
 
 extension MySQLClientTests {
@@ -49,7 +78,10 @@ extension MySQLClientTests {
         ("testSetsInitParameters", testSetsInitParameters),
         ("testClientInfoReturnsClientInfo", testClientInfoReturnsClientInfo),
         ("testClientVersionReturnsClientVersion", testClientVersionReturnsClientVersion),
-        ("testClientExecutesQuery", testClientExecutesQuery)
+        ("testClientExecutesQuery", testClientExecutesQuery),
+        ("testClientQueryReturnsMySQLResultWhenResultPresent", testClientQueryReturnsMySQLResultWhenResultPresent),
+        ("testClientQueryDoesNotReturnMySQLResultWhenNoResult", testClientQueryDoesNotReturnMySQLResultWhenNoResult),
+        ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError)
       ]
     }
 }
