@@ -5,8 +5,7 @@ public enum MySQLConnectionError: ErrorProtocol {
 }
 
 public protocol MySQLConnectionProtocol {
-  init(host: String, user: String, password: String, database: String)
-  func connect() throws
+  func connect(host: String, user: String, password: String, database: String) throws
   func client_info() -> String?
   func client_version() -> UInt
   func execute(query: String)

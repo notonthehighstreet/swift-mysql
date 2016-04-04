@@ -1,4 +1,4 @@
 public struct MySQLResult {
   var headers: [MySQLHeader]
-  var rows: [MySQLRow]
+  var rows: [String: Any]
 }

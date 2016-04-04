@@ -3,22 +3,11 @@ import CMySQLClient
 
 public class MySQLConnection : MySQLConnectionProtocol {
 
-  private var host:String
-  //private var port:Int
-  private var user:String
-  private var password:String
-  private var database:String
-
   private var connection: UnsafeMutablePointer<MYSQL> = nil
+  public init() {}
+}
 
-  public required init(host: String, user: String, password: String, database: String) {
-    self.host = host
-    //self.port = port
-    self.user = user
-    self.password = password
-    self.database = database
-  }
-
+extension MySQLConnection {
   public func client_info() -> String? {
     return String(cString: CMySQLClient.mysql_get_client_info())
   }
@@ -27,7 +16,7 @@ public class MySQLConnection : MySQLConnectionProtocol {
     return CMySQLClient.mysql_get_client_version();
   }
 
-  public func connect() throws {
+  public func connect(host: String, user: String, password: String, database: String) throws {
     connection = CMySQLClient.mysql_init(nil);
 
     if connection == nil {

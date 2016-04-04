@@ -4,9 +4,8 @@ public class MySQLClient: MySQLClientProtocol{
 
   internal var connection: MySQLConnectionProtocol
 
-  public required init(connection: MySQLConnectionProtocol) throws {
+  public required init(connection: MySQLConnectionProtocol) {
     self.connection = connection
-    try self.connection.connect()
   }
 
 }
@@ -21,8 +20,9 @@ extension MySQLClient {
     return connection.client_version()
   }
 
-  public func execute(query: String) {
+  public func execute(query: String) -> MySQLResult? {
     connection.execute(query)
+    return nil
   }
 
   public func close() {

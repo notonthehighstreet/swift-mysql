@@ -3,14 +3,20 @@ import MySQL
 
 print("Running test client")
 
-let connection = MySQL.MySQLConnection(host: "192.168.99.100", user: "root", password: "my-secret-pw", database: "")
-var client: MySQLClient
+MySQLConnectionPool.setConnectionProvider() {
+  return MySQL.MySQLConnection()
+}
+
+var connection: MySQLConnectionProtocol
+
 do {
-  client = try MySQLClient(connection: connection)
+  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
 } catch {
   print("Unable to create connection")
   exit(0)
 }
+
+var client = MySQLClient(connection: connection)
 
 defer {
   client.close()

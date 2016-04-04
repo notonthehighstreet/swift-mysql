@@ -1,9 +1,9 @@
 import Foundation
 
 public protocol MySQLClientProtocol {
-  init(connection: MySQLConnectionProtocol) throws
+  init(connection: MySQLConnectionProtocol)
   func info() -> String?
   func version() -> UInt
-  func execute(query: String)
+  func execute(query: String) -> MySQLResult?
   func close()
 }

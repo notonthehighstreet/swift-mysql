@@ -16,3 +16,6 @@ $ apt-get install libmysqlclient-dev
 ```
 $ make test
 ```
+
+## Run MySQL in docker
+docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
