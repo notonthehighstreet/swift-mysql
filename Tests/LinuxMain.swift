@@ -4,5 +4,6 @@ import XCTest
 
 XCTMain([
   testCase(MySQLClientTests.allTests),
-  testCase(MySQLConnectionPoolTests.allTests)
+  testCase(MySQLConnectionPoolTests.allTests),
+  testCase(MySQLHeaderParserTests.allTests)
 ])
