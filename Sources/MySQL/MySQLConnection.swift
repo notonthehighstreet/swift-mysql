@@ -27,14 +27,15 @@ extension MySQLConnection {
     if CMySQLClient.mysql_real_connect(connection, host, user, password, nil, 0, nil, 0) == nil {
       print("Error: Unable to connect to database")
       close()
-      throw MySQLConnectionError.UnableToCreateConnection
+      throw MySQLConnectionError.UnableToConnectToDatabase
     }
   }
 
-  public func execute(query: String) {
+  public func execute(query: String) throws {
     if (CMySQLClient.mysql_query(connection, query) == 1) {
       print("Error executing query: " + query)
       print(String(cString: CMySQLClient.mysql_error(connection)))
+      throw MySQLConnectionError.UnableToExecuteQuery
       return
     }
 
@@ -42,6 +43,7 @@ extension MySQLConnection {
     if (result == nil) {
       print("Error getting results for: " + query)
       print(String(cString: CMySQLClient.mysql_error(connection)))
+      throw MySQLConnectionError.UnableToReturnResults
       return
     }
 
