@@ -63,7 +63,7 @@ public class MySQLClientTests: XCTestCase {
 
   public func testClientQueryReturnsErrorWhenError() {
     let connection = MockMySQLConnection()
-    connection.executeReturnError = MySQLConnectionError.UnableToExecuteQuery(message: "boom")
+    connection.executeReturnError = MySQLError.UnableToExecuteQuery(message: "boom")
 
     let mysql = createClient(connection)!
 

@@ -8,10 +8,10 @@ public class MySQLRowParserTests: XCTestCase {
   public func testParsesRowWithStringValue() {
     let parser = MySQLRowParser()
 
-    var header1 = MySQLHeader()
+    var header1 = MySQLField()
     header1.name = "header1"
 
-    var headers = [MySQLHeader]()
+    var headers = [MySQLField]()
     headers.append(header1)
     let cRow = CMySQLRow(allocatingCapacity: 1)
     cRow[0] = UnsafeMutablePointer<Int8>(("myvalue" as NSString).UTF8String)

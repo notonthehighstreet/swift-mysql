@@ -4,10 +4,10 @@ import CMySQLClient
 
 @testable import MySQL
 
-public class MySQLHeaderParserTests: XCTestCase {
+public class MySQLFieldParserTests: XCTestCase {
   public func testParseSetsFieldName() {
     let name = "myname"
-    let parser = MySQLHeaderParser()
+    let parser = MySQLFieldParser()
 
     var field = MYSQL_FIELD()
     field.name = UnsafeMutablePointer<Int8>(("myname" as NSString).UTF8String)
@@ -18,8 +18,8 @@ public class MySQLHeaderParserTests: XCTestCase {
   }
 }
 
-extension MySQLHeaderParserTests {
-    static var allTests: [(String, MySQLHeaderParserTests -> () throws -> Void)] {
+extension MySQLFieldParserTests {
+    static var allTests: [(String, MySQLFieldParserTests -> () throws -> Void)] {
       return [
         ("testParseSetsFieldName", testParseSetsFieldName)
       ]
