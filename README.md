@@ -1,7 +1,23 @@
 # swift-mysql
 MySQL client implementation for swift
 
-# Build instructions
+# Build instructions for Mac
+## Build for Mac
+### Install Swiftenv
+https://github.com/kylef/swiftenv
+
+### Install 3.0 Alpha
+```
+$ swiftenv install DEVELOPMENT-SNAPSHOT-2016-03-24-a
+$ swiftenv rehash
+```
+
+### Install C dependencies
+```
+$ brew install mysql // for the client, needed to build the mysql module
+```
+
+# Build instructions using Docker
 ## Run the docker container for building
 ```
 $ docker run -i -t -p 8090:8090 -v $(pwd):/src --name swifty -w /src ibmcom/kitura-ubuntu:latest /bin/bash  

@@ -1,7 +1,16 @@
+ifeq "$(PLATFORM)" ""
+PLATFORM := $(shell uname)
+endif
+
+ifeq "$(PLATFORM)" "Darwin"
+BUILDCOMMAND := "swift build -Xcc -fblocks -Xswiftc -I/usr/local/include -Xlinker -L/usr/local/lib"
+else
+BUILDCOMMAND := "swift build -Xcc -fblocks"
+endif
+
 build: clean
 	@echo --- Building package
-	swift build -Xcc -fblocks
-
+	"$(BUILDCOMMAND)"
 test: clean build
 	@echo --- Running tests
 	swift test
@@ -9,3 +18,4 @@ test: clean build
 clean:
 	@echo --- Invoking swift build --clean
 	swift build --clean
+
