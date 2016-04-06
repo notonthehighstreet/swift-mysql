@@ -9,7 +9,7 @@ let package = Package(
       Target(
         name: "MySQL")
   ],
-	exclude: ["Tests"],
+	//exclude: ["Tests"],
   dependencies: [
     .Package(url: "https://github.com/notonthehighstreet/swift-libmysql", majorVersion: 0, minor: 0)
   ]
