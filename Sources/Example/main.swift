@@ -7,19 +7,19 @@ MySQLConnectionPool.setConnectionProvider() {
   return MySQL.MySQLConnection()
 }
 
-var connection: MySQLConnectionProtocol
+var connection_noDB: MySQLConnectionProtocol
 
 do {
-  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
+  connection_noDB = try MySQLConnectionPool.getConnection("192.168.64.2", user: "root", password: "my-secret-pw")!
 } catch {
   print("Unable to create connection")
   exit(0)
 }
 
-var client = MySQLClient(connection: connection)
+var client = MySQLClient(connection: connection_noDB)
 
 defer {
-  connection.close()
+  connection_noDB.close()
 }
 
 print("MySQL Client Info: " + client.info()!)
@@ -27,7 +27,21 @@ print("MySQL Client Version: " + String(client.version()))
 
 client.execute("DROP DATABASE IF EXISTS testdb")
 client.execute("CREATE DATABASE testdb")
-client.execute("USE testdb")
+
+var connection_withDB: MySQLConnectionProtocol
+
+do {
+  connection_withDB = try MySQLConnectionPool.getConnection("192.168.64.2", user: "root", password: "my-secret-pw", database: "testdb")!
+} catch {
+  print("Unable to create connection")
+  exit(0)
+}
+
+client = MySQLClient(connection: connection_withDB)
+defer {
+  connection_withDB.close()
+}
+
 client.execute("DROP TABLE IF EXISTS Cars")
 client.execute("CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
 client.execute("INSERT INTO Cars VALUES(1,'Audi',52642)")

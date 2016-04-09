@@ -18,6 +18,7 @@ public enum MySQLError: ErrorProtocol {
 
 // Represents a protocol for connections to implement.
 public protocol MySQLConnectionProtocol {
+  func connect(host: String, user: String, password: String) throws
   func connect(host: String, user: String, password: String, database: String) throws
   func close()
   func client_info() -> String?
