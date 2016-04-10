@@ -9,8 +9,8 @@ public class MySQLResultTests: XCTestCase {
   var field2 = MYSQL_FIELD()
 
   private func buildFields() -> [CMySQLField] {
-    field1.name = UnsafeMutablePointer<Int8>(("myname" as NSString).UTF8String)
-    field2.name = UnsafeMutablePointer<Int8>(("second" as NSString).UTF8String)
+    field1.name = "myname".getUnsafeMutablePointer()
+    field2.name = "second".getUnsafeMutablePointer()
 
     var fields = [CMySQLField]()
     fields.append(&field1)
@@ -46,8 +46,9 @@ public class MySQLResultTests: XCTestCase {
 
   public func testNextResultReturnsRow() {
     let cRow = CMySQLRow(allocatingCapacity: 2)
-    cRow[0] = UnsafeMutablePointer<Int8>(("myvalue" as NSString).UTF8String)
-    cRow[1] = UnsafeMutablePointer<Int8>(("myvalue2" as NSString).UTF8String)
+
+    cRow[0] = "myvalue".getUnsafeMutablePointer()
+    cRow[1] = "myvalue2".getUnsafeMutablePointer()
 
     let connection = MockMySQLConnection()
     connection.nextResultReturn = cRow
@@ -61,8 +62,9 @@ public class MySQLResultTests: XCTestCase {
 
   public func testNextResultParsesRow() {
     let cRow = CMySQLRow(allocatingCapacity: 2)
-    cRow[0] = UnsafeMutablePointer<Int8>(("myvalue" as NSString).UTF8String)
-    cRow[1] = UnsafeMutablePointer<Int8>(("myvalue2" as NSString).UTF8String)
+
+    cRow[0] = "myvalue".getUnsafeMutablePointer()
+    cRow[1] = "myvalue2".getUnsafeMutablePointer()
 
     let connection = MockMySQLConnection()
     connection.nextResultReturn = cRow

@@ -52,6 +52,7 @@ extension MySQLConnection {
     Close the connection.
   */
   public func close() {
+    clearResult()
     CMySQLClient.mysql_close(connection)
   }
 
@@ -82,6 +83,8 @@ extension MySQLConnection {
     - Returns: Tuple consiting of an optional CMySQLResult, array of CMySQLField and MySQLError.  If the query fails then an error object will be returned and CMySQLResult and [CMySQLField] will be nil.  Upon success MySQLError will be nil however it is still possible for no results to be returned as some queries do not return results.
   */
   public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
+    clearResult() // clear any memory allocated to a previous result
+
     if (CMySQLClient.mysql_query(connection, query) == 1) {
       let error = String(cString: CMySQLClient.mysql_error(connection))
       print("Error executing query: " + query)
@@ -117,8 +120,18 @@ extension MySQLConnection {
     if row != nil {
       return row
     } else {
-      CMySQLClient.mysql_free_result(result)
+      // no more results free any memory and return
+      clearResult()
       return nil
+    }
+  }
+
+  /**
+    Clears any memory  which has been allocated to a mysql result
+  */
+  private func clearResult() {
+    if result != nil {
+      CMySQLClient.mysql_free_result(result)
     }
   }
 

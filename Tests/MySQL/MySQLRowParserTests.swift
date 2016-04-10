@@ -14,7 +14,8 @@ public class MySQLRowParserTests: XCTestCase {
     var headers = [MySQLField]()
     headers.append(header1)
     let cRow = CMySQLRow(allocatingCapacity: 1)
-    cRow[0] = UnsafeMutablePointer<Int8>(("myvalue" as NSString).UTF8String)
+
+    cRow[0] = "myvalue".getUnsafeMutablePointer()
 
     let row = parser.parse(cRow, headers: headers)
 

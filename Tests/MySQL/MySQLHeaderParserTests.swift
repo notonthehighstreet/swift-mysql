@@ -10,7 +10,7 @@ public class MySQLFieldParserTests: XCTestCase {
     let parser = MySQLFieldParser()
 
     var field = MYSQL_FIELD()
-    field.name = UnsafeMutablePointer<Int8>(("myname" as NSString).UTF8String)
+    field.name = "myname".getUnsafeMutablePointer()
 
     let header = parser.parse(field)
 

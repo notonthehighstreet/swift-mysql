@@ -1,8 +1,7 @@
 # swift-mysql
-MySQL client implementation for swift
+swift-mysql is a MySQL client implementation for Swift 3, it wraps the libmysql library and provides many convenience functions such as connection pooling and result sets as native types.
 
-# Build instructions for Mac
-## Build for Mac
+## Build instructions for Mac
 ### Install Swiftenv
 https://github.com/kylef/swiftenv
 
@@ -17,19 +16,24 @@ $ swiftenv rehash
 $ brew install mysql // for the client, needed to build the mysql module
 ```
 
-# Build instructions using Docker
-## Run the docker container for building
-```
-$ docker run -i -t -p 8090:8090 -v $(pwd):/src --name swifty -w /src ibmcom/kitura-ubuntu:latest /bin/bash  
-$ apt-get install libmysqlclient-dev
-```
-
-## Build and run tests
+### Build and run tests
 ```
 $ make test
 ```
 
-## Usage
+## Build instructions using Docker
+### Run the docker container for building
+```
+$ docker run -i -t -v $(pwd):/src --name swiftmysql -w /src ibmcom/kitura-ubuntu:latest /bin/bash  
+$ apt-get install libmysqlclient-dev
+```
+
+### Build and run tests
+```
+$ make test
+```
+
+### Usage
 Set the connection provider for the connection pool, this closure should return a new instance as internally the connection pool manages the connections.
 ```swift
 MySQLConnectionPool.setConnectionProvider() {
@@ -40,7 +44,7 @@ MySQLConnectionPool.setConnectionProvider() {
 To get a connection from the pool call get connection with the parameters for your connection, at present pooling is on the todo list and this call will return a new connection and attempt to connect to the database with the given details.  When a connection fails a MySQLError will be thrown.
 ```swift
 do {
-  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
+  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "mydatabase")!
 } catch {
   print("Unable to create connection")
   exit(0)
@@ -62,9 +66,10 @@ var result = client.execute("SELECT * FROM Cars")
 
 // result.1 contains an error, when present the query has failed.
 if result.1 != nil {
-
+  print("Error executing query")
+} else {
   // if MySQLResult is nil then no rows have been returned from the query.
-  if let mysqlResult = ret.0 {
+  if let result = ret.0 {
     var r = result.nextResult() // get the first result from the set
     if r != nil {
       repeat {
@@ -73,13 +78,9 @@ if result.1 != nil {
         }
         r = result.nextResult() // get the next result in the set, returns nil when no more records are available.
       } while(r != nil)
-  }
-}
-
-if let result = ret.0 {
-
-  } else {
-    print("No results")
+    } else {
+      print("No results")
+    }
   }
 }
 ```
@@ -92,7 +93,6 @@ Please see the example program in /Sources/Example for further usage.
 docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
 
 ## Roadmap:
-- Fails to build on OSX due to error: value of type 'NSString' has no member 'UTF8String'
 - Complete implementation of the connection pool.
 - Complete implementation for the MySQLField to give parity to C library.
 - Implement type casting for MySQLRow to match field type.

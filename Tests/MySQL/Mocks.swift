@@ -26,6 +26,14 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
     connectCalled = true
   }
 
+  public func connect(
+    host: String,
+    user: String,
+    password: String
+  ) throws {
+    connectCalled = true
+  }
+
   public func client_info() -> String? { return clientInfo }
 
   public func client_version() -> UInt { return clientVersion }
@@ -52,6 +60,11 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
   public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {
     self.connectionProvider = provider
     self.setConnectionProviderCalled = true
+  }
+
+  public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
+    self.getConnectionCalled = true
+    return nil
   }
 
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
