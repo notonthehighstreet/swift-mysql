@@ -25,4 +25,6 @@ public protocol MySQLConnectionProtocol {
   func client_version() -> UInt
   func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?)
   func nextResult(result: CMySQLResult) -> CMySQLRow?
+
+  func equals(otherObject: MySQLConnectionProtocol) -> Bool
 }

@@ -2,15 +2,22 @@ import Foundation
 import CMySQLClient
 
 // Represents an active connection to a MySQL database.
-public class MySQLConnection : MySQLConnectionProtocol {
+public class MySQLConnection : MySQLConnectionProtocol  {
+  private var uuid: UInt32
 
   private var connection: UnsafeMutablePointer<MYSQL> = nil
   private var result:UnsafeMutablePointer<MYSQL_RES> = nil
 
-  public init() {}
+  public init() {
+    uuid = arc4random_uniform(UInt32.max)
+  }
 }
 
 extension MySQLConnection {
+
+  public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
+    return uuid == (otherObject as! MySQLConnection).uuid
+  }
 
   /**
     Open a connection to the database with the given parameters, in the instance of a failed connection the connect method throws MySQLError.

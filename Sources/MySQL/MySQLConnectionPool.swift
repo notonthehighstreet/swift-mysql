@@ -1,7 +1,13 @@
+import Foundation
+
 // Singleton instance which maintains a number of mysql connections
 //TODO: Check how scope works in kitura
 //TODO: Complete implementation of pool
 public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
+
+  static var activeConnections = [String: [MySQLConnectionProtocol]]()
+  static var inactiveConnections = [String: [MySQLConnectionProtocol]]()
+  static var poolSize:Int = 20
 
   static var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
     return nil
@@ -43,9 +49,66 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
+    // lock the class so that we do not run into threading problems
+    objc_sync_enter(self)
+    defer {
+        objc_sync_exit(self)
+    }
+
     let connection = connectionProvider()
     try connection!.connect(host, user:user, password:password, database: database)
 
+    let key = computeKey(host, user: user, password: password, database: database)
+
+    addActive(key, connection: connection!)
     return connection
+  }
+
+  /**
+    releaseConnection returns a connection to the pool.
+
+    - Parameters:
+      - connection: Connection to be returned to the pool
+  */
+  public static func releaseConnection(connection: MySQLConnectionProtocol) {
+    objc_sync_enter(self)
+    defer {
+        objc_sync_exit(self)
+    }
+
+    var connectionKey:String? = nil
+    var connectionIndex = -1
+
+    for (key, value)  in activeConnections {
+      if let index = value.index(where:{$0.equals(connection)}) {
+        connectionIndex = index
+        connectionKey = key
+      }
+    }
+
+    if(connectionKey != nil) {
+      activeConnections[connectionKey!]!.remove(at: connectionIndex)
+      addInactive(connectionKey!, connection: connection)
+    }
+  }
+
+  private static func addActive(key: String, connection: MySQLConnectionProtocol) {
+    if activeConnections[key] == nil {
+      activeConnections[key] = [MySQLConnectionProtocol]()
+    }
+
+    activeConnections[key]!.append(connection)
+  }
+
+  private static func addInactive(key: String, connection: MySQLConnectionProtocol) {
+    if inactiveConnections[key] == nil {
+      inactiveConnections[key] = [MySQLConnectionProtocol]()
+    }
+
+    inactiveConnections[key]!.append(connection)
+  }
+
+  private static func computeKey(host: String, user: String, password: String, database: String) -> String {
+    return String(format: "%@_%@_%@_%@", host, user, password, database)
   }
 }

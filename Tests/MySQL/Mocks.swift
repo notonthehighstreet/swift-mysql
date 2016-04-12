@@ -15,7 +15,15 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public var nextResultReturn:CMySQLRow? = nil
 
-  public init() { }
+  private var uuid: UInt32
+
+  public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
+    return uuid == (otherObject as! MockMySQLConnection).uuid
+  }
+
+  public init() {
+    uuid = arc4random_uniform(UInt32.max)
+  }
 
   public func connect(
     host: String,
@@ -50,6 +58,7 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
   public func close() { closeCalled = true }
 }
 
+
 public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
   public static var getConnectionCalled = false
   public static var setConnectionProviderCalled = false
@@ -70,5 +79,9 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
     self.getConnectionCalled = true
     return nil
+  }
+
+  public static func releaseConnection(connection: MySQLConnectionProtocol) {
+
   }
 }
