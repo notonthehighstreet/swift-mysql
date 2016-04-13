@@ -22,7 +22,7 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
   }
 
   public init() {
-    uuid = arc4random_uniform(UInt32.max)
+    uuid = NSDate().timeIntervalSince1970
   }
 
   public func connect(

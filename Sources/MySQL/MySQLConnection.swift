@@ -3,13 +3,13 @@ import CMySQLClient
 
 // Represents an active connection to a MySQL database.
 public class MySQLConnection : MySQLConnectionProtocol  {
-  private var uuid: UInt32
+  private var uuid: UInt64
 
   private var connection: UnsafeMutablePointer<MYSQL> = nil
   private var result:UnsafeMutablePointer<MYSQL_RES> = nil
 
   public init() {
-    uuid = arc4random_uniform(UInt32.max)
+    uuid = NSDate().timeIntervalSince1970
   }
 }
 

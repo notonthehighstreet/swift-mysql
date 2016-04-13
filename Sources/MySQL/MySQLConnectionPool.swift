@@ -55,13 +55,14 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
         objc_sync_exit(self)
     }
 
-    let connection = connectionProvider()
-    try connection!.connect(host, user:user, password:password, database: database)
-
+    // check if there is something available in the pool if so return it
     let key = computeKey(host, user: user, password: password, database: database)
-
-    addActive(key, connection: connection!)
-    return connection
+    if let connection = getInactive(key) {
+      addActive(key, connection: connection)
+      return connection
+    } else {
+      return try createAndAddActive(host, user: user, password: password, database: database)
+    }
   }
 
   /**
@@ -71,11 +72,31 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       - connection: Connection to be returned to the pool
   */
   public static func releaseConnection(connection: MySQLConnectionProtocol) {
+    // change self to be AnyObject
     objc_sync_enter(self)
     defer {
         objc_sync_exit(self)
     }
 
+    let (connectionKey, index) = findActiveConnection(connection)
+
+    if(connectionKey != nil) {
+      activeConnections[connectionKey!]!.remove(at: index)
+      addInactive(connectionKey!, connection: connection)
+    }
+  }
+
+  private static func createAndAddActive(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
+    let connection = connectionProvider()
+    try connection!.connect(host, user: user, password: password, database: database)
+
+    let key = computeKey(host, user: user, password: password, database: database)
+
+    addActive(key, connection: connection!)
+    return connection
+  }
+
+  private static func findActiveConnection(connection: MySQLConnectionProtocol) -> (key: String?, index: Int) {
     var connectionKey:String? = nil
     var connectionIndex = -1
 
@@ -86,10 +107,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       }
     }
 
-    if(connectionKey != nil) {
-      activeConnections[connectionKey!]!.remove(at: connectionIndex)
-      addInactive(connectionKey!, connection: connection)
-    }
+    return (connectionKey, connectionIndex)
   }
 
   private static func addActive(key: String, connection: MySQLConnectionProtocol) {
@@ -106,6 +124,17 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
 
     inactiveConnections[key]!.append(connection)
+  }
+
+  private static func getInactive(key: String) -> MySQLConnectionProtocol? {
+    if inactiveConnections[key] != nil && inactiveConnections[key]!.count > 0 {
+      // pop a connection off the stack
+      let connection = inactiveConnections[key]![0]
+      inactiveConnections[key]!.remove(at: 0)
+      return connection
+    }
+
+    return nil
   }
 
   private static func computeKey(host: String, user: String, password: String, database: String) -> String {
