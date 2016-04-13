@@ -3,7 +3,7 @@ import CMySQLClient
 
 // Represents an active connection to a MySQL database.
 public class MySQLConnection : MySQLConnectionProtocol  {
-  private var uuid: UInt64
+  private var uuid: Double
 
   private var connection: UnsafeMutablePointer<MYSQL> = nil
   private var result:UnsafeMutablePointer<MYSQL_RES> = nil

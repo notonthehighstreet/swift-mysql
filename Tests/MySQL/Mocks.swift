@@ -15,7 +15,7 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public var nextResultReturn:CMySQLRow? = nil
 
-  private var uuid: UInt64
+  private var uuid: Double
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
     return uuid == (otherObject as! MockMySQLConnection).uuid
