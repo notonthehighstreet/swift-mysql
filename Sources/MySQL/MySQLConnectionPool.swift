@@ -8,6 +8,9 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   static var activeConnections = [String: [MySQLConnectionProtocol]]()
   static var inactiveConnections = [String: [MySQLConnectionProtocol]]()
   static var poolSize:Int = 20
+  static var poolTimeout:Int = 20 // 20s
+
+  static var lock = NSLock()
 
   static var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
     return nil
@@ -49,10 +52,14 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
-    // lock the class so that we do not run into threading problems
-    objc_sync_enter(self)
+    // check pool has space
+    while(countActive()  >= poolSize) {
+      //sleep(1)
+    }
+
+    lock.lock()
     defer {
-        objc_sync_exit(self)
+      lock.unlock()
     }
 
     // check if there is something available in the pool if so return it
@@ -72,10 +79,9 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       - connection: Connection to be returned to the pool
   */
   public static func releaseConnection(connection: MySQLConnectionProtocol) {
-    // change self to be AnyObject
-    objc_sync_enter(self)
+    lock.lock()
     defer {
-        objc_sync_exit(self)
+      lock.unlock()
     }
 
     let (connectionKey, index) = findActiveConnection(connection)
@@ -137,7 +143,20 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     return nil
   }
 
+  private static func countActive() -> Int {
+    lock.lock()
+    defer {
+      lock.unlock()
+    }
+
+    var c = 0
+    for (_, value) in activeConnections {
+      c += value.count
+    }
+    return c
+  }
+
   private static func computeKey(host: String, user: String, password: String, database: String) -> String {
-    return String(format: "%@_%@_%@_%@", host, user, password, database)
+    return host + "_" + user + "_" + password + "_" + database
   }
 }

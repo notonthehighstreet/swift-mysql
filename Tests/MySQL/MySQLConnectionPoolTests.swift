@@ -81,39 +81,46 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   #if os(Linux)
-  var timer = 0
+  var timer = 0.0
 
   public func testGetConnectionBlocksWhenPoolIsExhausted() {
     setupPool()
-    let expectation = XCTestCase.expectationWithDescription("Should have blocked when no pool connections are available")
+    let expectation = expectationWithDescription("Should have blocked when no pool connections are available")
 
     do {
       MySQLConnectionPool.poolSize = 1
       let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
-      let thread = NSThread(target:self, selector: #selector(MySQLConnectionPoolTests.poolThread), object:nil)
 
+      let thread = NSThread() { () -> Void in
+        do {
+          let startTime = NSDate().timeIntervalSince1970
+          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
 
-      //delay 1s
+          let endTime = NSDate().timeIntervalSince1970
+          self.timer = endTime - startTime
+          
+          expectation.fulfill()
+        } catch {}
+      }
+
+      thread.start()
+
+      sleep(1)
+
       MySQLConnectionPool.releaseConnection(connection)
 
     } catch {
       XCTFail("Unable to create connection")
     }
 
-    waitForExpectationsWithTimeout(5) { error in
-      XCTFail("Test should have returned")
+    waitForExpectationsWithTimeout(3) { error in
+      if let error = error {
+        XCTFail("Error: \(error.localizedDescription)")
+      }
     }
 
     //test equal elapsed time + delay interval
-    XCTAssertEqual(2, timer, "Duration should have not elapsed")
-  }
-
-  @objc public func poolThread() {
-    // should block until connection is released
-
-    let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
-    expectation.fulfill()
-    timer = 1
+    XCTAssertTrue((timer >= 1), "getConnection should have blocked for 1 second")
   }
   #else
   public func testGetConnectionBlocksWhenPoolIsExhausted() {}
