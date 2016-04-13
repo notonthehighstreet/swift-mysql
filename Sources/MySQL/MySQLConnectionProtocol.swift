@@ -10,13 +10,6 @@ public typealias CMySQLRow = UnsafeMutablePointer<UnsafeMutablePointer<Int8>>
 // Pointer to a MYSQL_FIELD struct as defined in the native c library.
 public typealias CMySQLField = UnsafeMutablePointer<MYSQL_FIELD>
 
-
-public enum MySQLError: ErrorProtocol {
-  case UnableToCreateConnection
-  case UnableToExecuteQuery(message: String)
-  case ConnectionPoolTimeout
-}
-
 // Represents a protocol for connections to implement.
 public protocol MySQLConnectionProtocol {
   func connect(host: String, user: String, password: String) throws

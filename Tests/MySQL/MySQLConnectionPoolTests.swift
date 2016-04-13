@@ -7,7 +7,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   var mockConnection = MockMySQLConnection()
 
-  private func setupPool() {
+  public override func setUp() {
     mockConnection = MockMySQLConnection()
     MySQLConnectionPool.setConnectionProvider() {
       return self.mockConnection
@@ -17,8 +17,13 @@ public class MySQLConnectionPoolTests: XCTestCase {
     MySQLConnectionPool.inactiveConnections = [String: [MySQLConnectionProtocol]]()
   }
 
+  public func testSetsPoolSize() {
+    MySQLConnectionPool.setPoolSize(10)
+
+    XCTAssertEqual(10, MySQLConnectionPool.poolSize)
+  }
+
   public func testConnectionConnectCalled() {
-    setupPool()
     do {
       var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
 
@@ -29,7 +34,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionWithNoInactiveConnectionsCreatesANewConnection() {
-    setupPool()
     do {
       let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
 
@@ -40,7 +44,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem() {
-    setupPool()
     do {
       var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
 
@@ -51,7 +54,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionWithInactivePoolItemUsesExistingConnection() {
-    setupPool()
     do {
       var inactiveConnections = [MySQLConnectionProtocol]()
       let tempConnection = MockMySQLConnection()
@@ -70,7 +72,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey() {
-    setupPool()
     do {
       var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
 
@@ -81,7 +82,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testReleaseConnectionReturnsConnectionToThePool() {
-    setupPool()
     do {
       let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
       MySQLConnectionPool.releaseConnection(connection)
@@ -93,11 +93,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
     }
   }
 
+  // Async tests are not currently implemented for Swift mac 24_03 release
   #if os(Linux)
   var timer = 0.0
 
   public func testGetConnectionBlocksWhenPoolIsExhausted() {
-    setupPool()
     let expectation = expectationWithDescription("Should have blocked when no pool connections are available")
 
     do {
@@ -137,7 +137,6 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionTimesoutWhenPoolIsExhausted() {
-    setupPool()
     let expectation = expectationWithDescription("MySQLConnectionPool getConnection should have timedout")
 
     do {
@@ -173,6 +172,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 extension MySQLConnectionPoolTests {
   static var allTests: [(String, MySQLConnectionPoolTests -> () throws -> Void)] {
     return [
+      ("testSetsPoolSize", testSetsPoolSize),
       ("testConnectionConnectCalled", testConnectionConnectCalled),
       ("testGetConnectionWithNoInactiveConnectionsCreatesANewConnection", testGetConnectionWithNoInactiveConnectionsCreatesANewConnection),
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),

@@ -45,6 +45,12 @@ To get a connection from the pool call get connection with the parameters for yo
 ```swift
 do {
   connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "mydatabase")!
+
+  // always release the connection back to the pool once you have finished with it,  
+  // not releasing connections back to the pool will cause a deadlock when all connections are in use.
+  defer {
+    MySQLConnectionPool.releaseConnection(connection)
+  }
 } catch {
   print("Unable to create connection")
   exit(0)
@@ -54,10 +60,6 @@ do {
 To create a new client pass the reference to the connection obtained from the pool, at present you need to call connection.close once done with the connection, this will be managed automatically in a later releases.
 ```swift
 var client = MySQLClient(connection: connection)
-
-defer {
-  connection.close()
-}
 ```
 
 To execute a query
@@ -93,7 +95,7 @@ Please see the example program in /Sources/Example for further usage.
 docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
 
 ## Roadmap:
-- Complete implementation of the connection pool. (DONE)
+- ~~Complete implementation of the connection pool.~~
 - Complete implementation for the MySQLField to give parity to C library.
 - Implement type casting for MySQLRow to match field type.
 - Implement binary streaming for blob types.

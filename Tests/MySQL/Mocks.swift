@@ -66,6 +66,10 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
     return nil
   }
 
+  public static func setPoolSize(size: Int) {
+    
+  }
+
   public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {
     self.connectionProvider = provider
     self.setConnectionProviderCalled = true

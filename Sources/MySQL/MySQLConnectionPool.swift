@@ -17,6 +17,16 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   }
 
   /**
+    setPoolSize sets the size for the connection pool, default is 20
+
+    - Parameters:
+      - size: new size of the pool
+  */
+  public static func setPoolSize(size: Int) {
+    poolSize = size
+  }
+
+  /**
     setConnectionProvider sets a reference to a closure which returns an object implementing MySQLConnectionProtocol.  Everytime the connection pool requires a new connection this closure will be executed.
 
     - Parameters:
@@ -27,7 +37,8 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   }
 
   /**
-    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError.
+  getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
+  if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
     - Parameters:
       - host: The host name or ip address of the database.
@@ -41,7 +52,8 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   }
 
   /**
-    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError.
+    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
+    if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
     - Parameters:
       - host: The host name or ip address of the database.
