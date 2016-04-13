@@ -14,6 +14,7 @@ public typealias CMySQLField = UnsafeMutablePointer<MYSQL_FIELD>
 public enum MySQLError: ErrorProtocol {
   case UnableToCreateConnection
   case UnableToExecuteQuery(message: String)
+  case ConnectionPoolTimeout
 }
 
 // Represents a protocol for connections to implement.

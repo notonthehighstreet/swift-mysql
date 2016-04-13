@@ -80,6 +80,19 @@ public class MySQLConnectionPoolTests: XCTestCase {
     }
   }
 
+  public func testReleaseConnectionReturnsConnectionToThePool() {
+    setupPool()
+    do {
+      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      MySQLConnectionPool.releaseConnection(connection)
+
+      XCTAssertEqual(0, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
+      XCTAssertEqual(1, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
+    } catch {
+      XCTFail("Unable to create connection")
+    }
+  }
+
   #if os(Linux)
   var timer = 0.0
 
@@ -98,7 +111,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
           let endTime = NSDate().timeIntervalSince1970
           self.timer = endTime - startTime
-          
+
           expectation.fulfill()
         } catch {}
       }
@@ -122,22 +135,39 @@ public class MySQLConnectionPoolTests: XCTestCase {
     //test equal elapsed time + delay interval
     XCTAssertTrue((timer >= 1), "getConnection should have blocked for 1 second")
   }
-  #else
-  public func testGetConnectionBlocksWhenPoolIsExhausted() {}
-  #endif
 
-  public func testReleaseConnectionReturnsConnectionToThePool() {
+  public func testGetConnectionTimesoutWhenPoolIsExhausted() {
     setupPool()
-    do {
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
-      MySQLConnectionPool.releaseConnection(connection)
+    let expectation = expectationWithDescription("MySQLConnectionPool getConnection should have timedout")
 
-      XCTAssertEqual(0, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
-      XCTAssertEqual(1, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
+    do {
+      MySQLConnectionPool.poolSize = 1
+      MySQLConnectionPool.poolTimeout = 1
+      let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+
+      let thread = NSThread() { () -> Void in
+        do {
+          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+        } catch {
+          expectation.fulfill()
+        }
+      }
+
+      thread.start()
     } catch {
       XCTFail("Unable to create connection")
     }
+
+    waitForExpectationsWithTimeout(3) { error in
+      if let error = error {
+        XCTFail("Error: \(error.localizedDescription)")
+      }
+    }
   }
+  #else
+  public func testGetConnectionBlocksWhenPoolIsExhausted() {}
+  public func testGetConnectionTimesoutWhenPoolIsExhausted() {}
+  #endif
 }
 
 extension MySQLConnectionPoolTests {
@@ -148,8 +178,9 @@ extension MySQLConnectionPoolTests {
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),
       ("testGetConnectionWithInactivePoolItemUsesExistingConnection", testGetConnectionWithInactivePoolItemUsesExistingConnection),
       ("testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey", testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey),
-      ("testGetConnectionBlocksWhenPoolIsExhausted", testGetConnectionBlocksWhenPoolIsExhausted),
       ("testReleaseConnectionReturnsConnectionToThePool", testReleaseConnectionReturnsConnectionToThePool),
+      ("testGetConnectionBlocksWhenPoolIsExhausted", testGetConnectionBlocksWhenPoolIsExhausted),
+      ("testGetConnectionTimesoutWhenPoolIsExhausted", testGetConnectionTimesoutWhenPoolIsExhausted)
     ]
   }
 }

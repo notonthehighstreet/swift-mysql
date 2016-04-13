@@ -8,7 +8,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   static var activeConnections = [String: [MySQLConnectionProtocol]]()
   static var inactiveConnections = [String: [MySQLConnectionProtocol]]()
   static var poolSize:Int = 20
-  static var poolTimeout:Int = 20 // 20s
+  static var poolTimeout:Double = 20.0 // 20s
 
   static var lock = NSLock()
 
@@ -53,8 +53,12 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   */
   public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
     // check pool has space
+    var startTime = NSDate()
     while(countActive()  >= poolSize) {
-      //sleep(1)
+      if (NSDate().timeIntervalSince1970 - startTime.timeIntervalSince1970) > poolTimeout {
+
+        throw MySQLError.ConnectionPoolTimeout
+      }
     }
 
     lock.lock()
