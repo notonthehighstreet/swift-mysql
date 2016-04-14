@@ -1,12 +1,6 @@
 import Foundation
 import CMySQLClient
 
-#if os(OSX)
-    public typealias MySQLRow = [String: AnyObject]
-#else
-    public typealias MySQLRow = [String: Any]
-#endif
-
 // MySQLResult encapsulates the fields and data returned from a query, this object is not ordinarily instanstiated.
 public class MySQLResult {
 
