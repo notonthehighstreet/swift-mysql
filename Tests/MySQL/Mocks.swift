@@ -2,9 +2,11 @@ import Foundation
 @testable import MySQL
 
 public class MockMySQLConnection : MySQLConnectionProtocol {
-  public var connectCalled:Bool = false
-  public var executeCalled:Bool = false
-  public var closeCalled:Bool = false
+  public var connectCalled = false
+  public var executeCalled = false
+  public var closeCalled = false
+
+  public var executeStatement = ""
 
   public var clientInfo:String? = nil
   public var clientVersion:UInt = 0
@@ -48,6 +50,7 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
      executeCalled = true
+     executeStatement = query
      return (executeReturnResult, executeReturnHeaders, executeReturnError)
    }
 
@@ -67,7 +70,7 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
   }
 
   public static func setPoolSize(size: Int) {
-    
+
   }
 
   public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {

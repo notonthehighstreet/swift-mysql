@@ -57,4 +57,25 @@ extension MySQLClient {
 
     return (nil, result.2)
   }
+
+  /**
+    Execute the given SQL query against the database.
+
+    - Parameters:
+      - builder: MySQLQueryBuilder
+
+    - Returns: Tuple consiting of an optional MySQLResult and MySQLError.  If the query fails then an error object will be returned and MySQLResult will be nil.  Upon success MySQLError will be nil however it is still possible for no results to be returned as some queries do not return results.
+
+    ```
+      var builder = MySQLQueryBuilder()
+        .select(["abc"], table: "MyTable")
+        .wheres("WHERE abc=?", "1")
+
+      (result, error) = mySQLClient.execute(builder)
+    ```
+  */
+  public func execute(builder: MySQLQueryBuilder) -> (MySQLResult?, MySQLError?) {
+    let statement = builder.build()
+    return execute(statement)
+  }
 }

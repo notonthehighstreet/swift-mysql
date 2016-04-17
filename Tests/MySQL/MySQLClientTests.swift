@@ -38,7 +38,22 @@ public class MySQLClientTests: XCTestCase {
     let connection = MockMySQLConnection()
     let mysql = createClient(connection)!
 
-    mysql.execute("soemthing")
+    mysql.execute("something")
+
+    XCTAssertEqual(connection.executeStatement, "something", "Query sent to connection not correct")
+    XCTAssertTrue(connection.executeCalled, "Query should have been executed")
+  }
+
+  public func testClientExecutesQueryWithBuilder() {
+    let connection = MockMySQLConnection()
+    let mysql = createClient(connection)!
+    let builder = MySQLQueryBuilder()
+      .select("SELECT * FROM")
+      .wheres("WHERE abc=?", parameters: "bcd")
+
+    mysql.execute(builder)
+
+    XCTAssertEqual(connection.executeStatement, "SELECT * FROM WHERE abc='bcd'", "Query sent to connection not correct")
     XCTAssertTrue(connection.executeCalled, "Query should have been executed")
   }
 
@@ -57,7 +72,7 @@ public class MySQLClientTests: XCTestCase {
     let connection = MockMySQLConnection()
     let mysql = createClient(connection)!
 
-    let result = mysql.execute("soemthing")
+    let result = mysql.execute("something")
     XCTAssertNil(result.0, "Query should have been executed")
   }
 
@@ -67,7 +82,7 @@ public class MySQLClientTests: XCTestCase {
 
     let mysql = createClient(connection)!
 
-    let result = mysql.execute("soemthing")
+    let result = mysql.execute("something")
     XCTAssertNotNil(result.1, "Query should have returned an error")
   }
 }
@@ -79,6 +94,7 @@ extension MySQLClientTests {
         ("testClientInfoReturnsClientInfo", testClientInfoReturnsClientInfo),
         ("testClientVersionReturnsClientVersion", testClientVersionReturnsClientVersion),
         ("testClientExecutesQuery", testClientExecutesQuery),
+        ("testClientExecutesQueryWithBuilder", testClientExecutesQueryWithBuilder),
         ("testClientQueryReturnsMySQLResultWhenResultPresent", testClientQueryReturnsMySQLResultWhenResultPresent),
         ("testClientQueryDoesNotReturnMySQLResultWhenNoResult", testClientQueryDoesNotReturnMySQLResultWhenNoResult),
         ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError)

@@ -6,4 +6,5 @@ public protocol MySQLClientProtocol {
   func info() -> String?
   func version() -> UInt
   func execute(query: String) -> (MySQLResult?, MySQLError?)
+  func execute(builder: MySQLQueryBuilder) -> (MySQLResult?, MySQLError?)
 }
