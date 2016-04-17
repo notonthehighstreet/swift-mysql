@@ -5,15 +5,42 @@ public func ==(lhs: MySQLQueryBuilder, rhs: MySQLQueryBuilder) -> Bool {
 }
 
 public class MySQLQueryBuilder: Equatable {
+  var selectStatement: String?
+  var insertStatement:String?
 
-  var insertData:MySQLRow?
+  /**
+    select sets the select statement part of the query
 
-  public func select() -> MySQLQueryBuilder {
+    - Parameters:
+      - statement: select statement
+
+    ```
+      var builder = MySQLQueryBuilder().select("SELECT 'abc', 'cde' FROM myTable")
+    ```
+  */
+  public func select(statement: String) -> MySQLQueryBuilder {
+    selectStatement = statement
+    return self
+  }
+
+  /**
+    select sets the select statement part of the query
+
+    - Parameters:
+      - fields: array of fields to return
+      - table: name of the table to select from
+
+    ```
+      var builder = MySQLQueryBuilder().select(["abc", "cde"], table: "myTable")
+    ```
+  */
+  public func select(fields: [String], table: String) -> MySQLQueryBuilder {
+    selectStatement = createSelectStatement(fields, table: table)
     return self
   }
 
   public func insert(data: MySQLRow) -> MySQLQueryBuilder {
-    insertData = data
+    insertStatement = createInsertStatement(data)
     return self
   }
 
@@ -21,14 +48,35 @@ public class MySQLQueryBuilder: Equatable {
     return self
   }
 
-  public func wheres() -> MySQLQueryBuilder {
+  public func wheres(statement: String, parameters: String...) -> MySQLQueryBuilder {
     return self
   }
 
   public func build() -> String {
-    let insertPart = createInsertStatement(insertData!)
+    var query = ""
 
-    return insertPart
+    if selectStatement != nil {
+      query += selectStatement!
+    }
+
+    if insertStatement != nil {
+      query += insertStatement!
+    }
+
+    return query
+  }
+
+  private func createSelectStatement(fields: [String], table: String) -> String {
+    var statement = "SELECT "
+
+    for field in fields {
+      statement += "\(field), "
+    }
+    statement = statement.trimChar(" ")
+    statement = statement.trimChar(",")
+    statement += " FROM \(table)"
+
+    return statement
   }
 
   private func createInsertStatement(data: MySQLRow) -> String {
@@ -37,27 +85,29 @@ public class MySQLQueryBuilder: Equatable {
     for (key, _) in data {
       statement += "'\(key)',"
     }
-    statement = trimComma(statement)
+    statement = statement.trimChar(",")
 
     statement += ") VALUES ("
 
     for (_, value) in data {
       statement += "'\(value)',"
     }
-    statement = trimComma(statement)
+    statement = statement.trimChar(",")
 
     statement += ")"
 
     return statement
   }
+}
 
-  internal func trimComma(statement: String) -> String {
-    if statement[statement.endIndex.predecessor()] == "," {
-      var chars = Array(statement.characters)
+extension String {
+  public func trimChar(character: Character) -> String {
+    if self[self.endIndex.predecessor()] == character {
+      var chars = Array(self.characters)
       chars.removeLast()
       return String(chars)
     } else {
-      return statement
+      return self
     }
   }
 }

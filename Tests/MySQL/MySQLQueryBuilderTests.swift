@@ -20,16 +20,32 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testSelectReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.select()
+    let ret = builder.select("")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
   public func testWheresReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.wheres()
+    let ret = builder.wheres("something = ?", parameters: "value")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
+  }
+
+  public func testSelectReturnsValidQuery() {
+    let builder = MySQLQueryBuilder()
+    builder.select("SELECT * FROM TABLE")
+    let statement = builder.build()
+
+    XCTAssertEqual("SELECT * FROM TABLE", statement, "Returned invalid select statement")
+  }
+
+  public func testSelectWithArrayReturnsValidQuery() {
+    let builder = MySQLQueryBuilder()
+    builder.select(["Field1", "Field2"], table: "MyTABLE")
+    let statement = builder.build()
+
+    XCTAssertEqual("SELECT Field1, Field2 FROM MyTABLE", statement, "Returned invalid select statement")
   }
 
   public func testInsertGeneratesValidQuery() {
@@ -41,18 +57,16 @@ public class MySQLQueryBuilderTests : XCTestCase {
     XCTAssertEqual("INSERT INTO ('abc') VALUES ('bcd')", query, "Should have returned valid query")
   }
 
-  public func testTrimCommaTrimsWhenStatementEndsInAComma() {
+  public func testTrimCharTrimsWhenStatementEndsInAComma() {
     let statement = "INSERT BLAH ('dfdf',"
-    let builder = MySQLQueryBuilder()
 
-    XCTAssertEqual("INSERT BLAH ('dfdf'", builder.trimComma(statement), "Should have trimmed comma from statement")
+    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(","), "Should have trimmed comma from statement")
   }
 
-  public func testTrimCommaDoesNothingWhenStatementDoesNotEndInAComma() {
+  public func testTrimCharDoesNothingWhenStatementDoesNotEndInAComma() {
     let statement = "INSERT BLAH ('dfdf'"
-    let builder = MySQLQueryBuilder()
 
-    XCTAssertEqual("INSERT BLAH ('dfdf'", builder.trimComma(statement), "Should have trimmed comma from statement")
+    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(","), "Should have trimmed comma from statement")
   }
 }
 
@@ -63,8 +77,11 @@ extension MySQLQueryBuilderTests {
         ("testUpdateReturnsSelf", testUpdateReturnsSelf),
         ("testSelectReturnsSelf", testSelectReturnsSelf),
         ("testWheresReturnsSelf", testWheresReturnsSelf),
+        ("testSelectReturnsValidQuery", testSelectReturnsValidQuery),
         ("testInsertGeneratesValidQuery", testInsertGeneratesValidQuery),
-        ("testTrimCommaTrimsWhenStatementEndsInAComma", testTrimCommaTrimsWhenStatementEndsInAComma)
+        ("testTrimCharTrimsWhenStatementEndsInAComma", testTrimCharTrimsWhenStatementEndsInAComma),
+        ("testSelectWithArrayReturnsValidQuery", testSelectWithArrayReturnsValidQuery),
+        ("testTrimCharDoesNothingWhenStatementDoesNotEndInAComma", testTrimCharDoesNothingWhenStatementDoesNotEndInAComma)
       ]
     }
 }
