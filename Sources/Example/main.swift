@@ -11,7 +11,7 @@ var connection_noDB: MySQLConnectionProtocol
 
 do {
   // get a connection from the pool with no database
-  connection_noDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw")!
+  connection_noDB = try MySQLConnectionPool.getConnection("docker.local", user: "root", password: "my-secret-pw")!
   defer {
     MySQLConnectionPool.releaseConnection(connection_noDB) // release the connection back to the pool
   }
@@ -46,10 +46,21 @@ client = MySQLClient(connection: connection_withDB)
 
 client.execute("DROP TABLE IF EXISTS Cars")
 client.execute("CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
-client.execute("INSERT INTO Cars VALUES(1,'Audi',52642)")
-client.execute("INSERT INTO Cars VALUES(2,'Mercedes',57127)")
 
-var ret = client.execute("SELECT * FROM Cars") // returns a tuple (MySQLResult, MySQLError)
+// use query builder to insert data
+var queryBuilder = MySQLQueryBuilder()
+  .insert(["Id": "1", "Name": "Audi", "Price": "52642"], table: "Cars")
+client.execute(queryBuilder)
+
+queryBuilder = MySQLQueryBuilder()
+  .insert(["Id": "2", "Name": "Mercedes", "Price": "72341"], table: "Cars")
+client.execute(queryBuilder)
+
+// create query to select data from the database
+queryBuilder = MySQLQueryBuilder()
+  .select(["Id", "Name", "Price"], table: "Cars")
+
+var ret = client.execute(queryBuilder) // returns a tuple (MySQLResult, MySQLError)
 if let result = ret.0 {
   var r = result.nextResult() // get the first result from the result set
   if r != nil {

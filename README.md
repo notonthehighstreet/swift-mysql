@@ -87,6 +87,26 @@ if result.1 != nil {
 }
 ```
 
+## QueryBuilder
+When executing queries you can use the MySQLQueryBuilder class to generate a safe query for you.  This will ensure that all parameters are escaped to avoid SQL injection attacks.
+
+### Simple select
+```swift
+var queryBuilder = MySQLQueryBuilder()
+  .select(["Id", "Name"], table: "MyTable")
+
+var result = client.execute(queryBuilder)
+```
+
+### Parametrised where clause
+```swift
+var queryBuilder = MySQLQueryBuilder()
+  .select(["Id", "Name"], table: "MyTable")
+  .wheres("WHERE Id=?", 2)
+
+var result = client.execute(queryBuilder)
+```
+
 ## Example
 Please see the example program in /Sources/Example for further usage.
 

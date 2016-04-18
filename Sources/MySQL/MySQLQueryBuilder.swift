@@ -10,6 +10,8 @@ public class MySQLQueryBuilder: Equatable {
   var updateStatement:String?
   var whereStatement:String?
 
+  public init() {}
+
   /**
     select sets the select statement part of the query
 
@@ -163,15 +165,17 @@ public class MySQLQueryBuilder: Equatable {
     var statement = "INSERT INTO \(table) ("
 
     for (key, _) in data {
-      statement += "'\(key)',"
+      statement += "\(key), "
     }
+    statement = statement.trimChar(" ")
     statement = statement.trimChar(",")
 
     statement += ") VALUES ("
 
     for (_, value) in data {
-      statement += "'\(value)',"
+      statement += "'\(value)', "
     }
+    statement = statement.trimChar(" ")
     statement = statement.trimChar(",")
 
     statement += ")"

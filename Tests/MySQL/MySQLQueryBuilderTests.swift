@@ -60,12 +60,13 @@ public class MySQLQueryBuilderTests : XCTestCase {
   public func testInsertGeneratesValidQuery() {
     var data = MySQLRow()
     data["abc"] = "bcd"
+    data["bcd"] = "efg"
 
     let query = MySQLQueryBuilder()
     .insert(data, table: "MyTable")
     .build()
 
-    XCTAssertEqual("INSERT INTO MyTable ('abc') VALUES ('bcd')", query, "Should have returned valid query")
+    XCTAssertEqual("INSERT INTO MyTable (abc, bcd) VALUES ('bcd', 'efg')", query, "Should have returned valid query")
   }
 
   public func testUpdateGeneratesValidQuery() {
