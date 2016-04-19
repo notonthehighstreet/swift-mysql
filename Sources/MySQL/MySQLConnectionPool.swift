@@ -48,7 +48,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
   public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
-    return try getConnection(host, user: user, password: password, database: "")
+    return try getConnection(host, user: user, password: password, port: 3306, database: "")
   }
 
   /**
@@ -56,14 +56,15 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
     - Parameters:
-      - host: The host name or ip address of the database.
-      - user: The username to use for the connection.
-      - password: The password to use for the connection.
-      - database: The database to connect to.
+      - host: The host name or ip address of the database
+      - user: The username to use for the connection
+      - password: The password to use for the connection
+      - port: The the port to connect to
+      - database: The database to connect to
 
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
-  public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
+  public static func getConnection(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
     // check pool has space
     var startTime = NSDate()
     while(countActive()  >= poolSize) {
@@ -84,7 +85,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       addActive(key, connection: connection)
       return connection
     } else {
-      return try createAndAddActive(host, user: user, password: password, database: database)
+      return try createAndAddActive(host, user: user, password: password, port: port, database: database)
     }
   }
 
@@ -108,9 +109,9 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
   }
 
-  private static func createAndAddActive(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
+  private static func createAndAddActive(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
     let connection = connectionProvider()
-    try connection!.connect(host, user: user, password: password, database: database)
+    try connection!.connect(host, user: user, password: password, port: port, database: database)
 
     let key = computeKey(host, user: user, password: password, database: database)
 

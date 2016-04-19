@@ -25,7 +25,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testConnectionConnectCalled() {
     do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
+      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
       XCTAssertTrue(mockConnection.connectCalled, "Connect should have been called")
     } catch {
@@ -35,7 +35,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testGetConnectionWithNoInactiveConnectionsCreatesANewConnection() {
     do {
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
+      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
       XCTAssertTrue(connection.equals(mockConnection), "Should have used connection from pool")
     } catch {
@@ -45,7 +45,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem() {
     do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "")!
+      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
       XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "Active connections should contain 1 item")
     } catch {
@@ -61,7 +61,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
       MySQLConnectionPool.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
 
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
       XCTAssertTrue(connection.equals(tempConnection), "Should have used connection from pool")
       XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
@@ -73,7 +73,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey() {
     do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
       XCTAssertEqual("192.168.99.100_root_my-secret-pw_test", MySQLConnectionPool.activeConnections.keys.first!, "Key should have correct value")
     } catch {
@@ -83,7 +83,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testReleaseConnectionReturnsConnectionToThePool() {
     do {
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
       MySQLConnectionPool.releaseConnection(connection)
 
       XCTAssertEqual(0, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
@@ -102,12 +102,12 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
     do {
       MySQLConnectionPool.poolSize = 1
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
       let thread = NSThread() { () -> Void in
         do {
           let startTime = NSDate().timeIntervalSince1970
-          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
           let endTime = NSDate().timeIntervalSince1970
           self.timer = endTime - startTime
@@ -142,11 +142,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
     do {
       MySQLConnectionPool.poolSize = 1
       MySQLConnectionPool.poolTimeout = 1
-      let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+      let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
       let thread = NSThread() { () -> Void in
         do {
-          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "test")!
+          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
         } catch {
           expectation.fulfill()
         }

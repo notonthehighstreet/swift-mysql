@@ -28,7 +28,7 @@ extension MySQLConnection {
       - password: The password to use for the connection.
   */
   public func connect(host: String, user: String, password: String) throws {
-    return try connect(host, user: user, password: password, database: "")
+    return try connect(host, user: user, password: password, port: 3306, database: "")
   }
 
   /**
@@ -38,9 +38,23 @@ extension MySQLConnection {
       - host: The host name or ip address of the database.
       - user: The username to use for the connection.
       - password: The password to use for the connection.
-      - database: The database to connect to.
+      - port: The port to be used for the connection
   */
-  public func connect(host: String, user: String, password: String, database: String) throws {
+  public func connect(host: String, user: String, password: String, port: Int) throws {
+    return try connect(host, user: user, password: password, port: port, database: "")
+  }
+
+  /**
+    Open a connection to the database with the given parameters, in the instance of a failed connection the connect method throws MySQLError.
+
+    - Parameters:
+      - host: The host name or ip address of the database
+      - user: The username to use for the connection
+      - password: The password to use for the connection
+      - port: The port to be used for the connection
+      - database: The database to connect to
+  */
+  public func connect(host: String, user: String, password: String, port: Int, database: String) throws {
     connection = CMySQLClient.mysql_init(nil);
 
     if connection == nil {

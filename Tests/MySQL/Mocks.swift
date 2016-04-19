@@ -30,8 +30,7 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
   public func connect(
     host: String,
     user: String,
-    password: String,
-    database: String
+    password: String
   ) throws {
     connectCalled = true
   }
@@ -39,7 +38,18 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
   public func connect(
     host: String,
     user: String,
-    password: String
+    password: String,
+    port: Int
+  ) throws {
+    connectCalled = true
+  }
+
+  public func connect(
+    host: String,
+    user: String,
+    password: String,
+    port: Int,
+    database: String
   ) throws {
     connectCalled = true
   }
@@ -83,7 +93,7 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
     return nil
   }
 
-  public static func getConnection(host: String, user: String, password: String, database: String) throws -> MySQLConnectionProtocol? {
+  public static func getConnection(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
     self.getConnectionCalled = true
     return nil
   }

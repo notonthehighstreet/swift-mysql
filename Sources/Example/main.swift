@@ -33,7 +33,7 @@ var connection_withDB: MySQLConnectionProtocol
 
 do {
   // get a connection from the pool connecting to a specific database
-  connection_withDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw", database: "testdb")!
+  connection_withDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw", port: 3306, database: "testdb")!
   defer {
     MySQLConnectionPool.releaseConnection(connection_withDB)
   }
