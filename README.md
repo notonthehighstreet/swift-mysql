@@ -60,7 +60,7 @@ do {
 As an alternative approach to manually calling release connection you can use the getConnection method which takes a closure.  Once the code inside the closure has executed then the connection is automatically released back to the pool.
 ```swift
 do {
-  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
+  try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
     (connection: MySQLConnectionProtocol) in
       let client = MySQLClient(connection: connection)
       let result = client.execute("SELECT * FROM MYTABLE")
