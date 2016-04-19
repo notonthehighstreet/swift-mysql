@@ -55,6 +55,53 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
     if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
+    By passing the optional closure once the code has executed within the block the connection is automatically released
+    back to the pool saving the requirement to manually call releaseConnection.
+
+    - Parameters:
+      - host: The host name or ip address of the database
+      - user: The username to use for the connection
+      - password: The password to use for the connection
+      - port: The the port to connect to
+      - database: The database to connect to
+      - closure: Code that will be executed before connection is released back to the pool
+
+    - Returns: An object implementing the MySQLConnectionProtocol.
+
+    ```
+      MySQLConnectionPoolProtocol.getConnection(host: "127.0.0.1",
+                                                user: "root",
+                                                password: "mypassword",
+                                                port: 3306,
+                                                database: "mydatabase") {
+        (connection: MySQLConnectionProtocol) in
+          let result = connection.execute("SELECT * FROM TABLE")
+          ...
+      }
+    ```
+  */
+  public static func getConnection(host: String,
+                                   user: String,
+                                   password: String,
+                                   port: Int,
+                                   database: String,
+                                   closure: ((connection: MySQLConnectionProtocol) -> Void)) throws {
+    do {
+      let connection = try getConnection(host, user: user, password: password, port: port, database: database)
+      defer {
+        self.releaseConnection(connection!)
+      }
+
+      closure(connection: connection!)
+    } catch {
+      throw error
+    }
+  }
+
+  /**
+    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
+    if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
+
     - Parameters:
       - host: The host name or ip address of the database
       - user: The username to use for the connection

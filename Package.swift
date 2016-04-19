@@ -6,8 +6,8 @@ let package = Package(
     Target(
       name: "Example",
       dependencies: [.Target(name: "MySQL")]),
-      Target(
-        name: "MySQL")
+    Target(
+      name: "MySQLMocks")
   ],
 	//exclude: ["Tests"],
   dependencies: [

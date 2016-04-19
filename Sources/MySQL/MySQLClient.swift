@@ -3,7 +3,7 @@ import Foundation
 /// MySQLClient allows execution of queries and the return of results from MySQL databases.
 public class MySQLClient: MySQLClientProtocol{
 
-  internal var connection: MySQLConnectionProtocol
+  internal let connection: MySQLConnectionProtocol
 
   /**
     Initialises a new MySQLClient with the provided connection.

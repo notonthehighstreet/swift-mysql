@@ -1,6 +1,6 @@
 import Foundation
-@testable import MySQL
 
+// MockMySQLConnection is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
 public class MockMySQLConnection : MySQLConnectionProtocol {
   public var connectCalled = false
   public var executeCalled = false
@@ -69,36 +69,4 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
    }
 
   public func close() { closeCalled = true }
-}
-
-
-public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
-  public static var getConnectionCalled = false
-  public static var setConnectionProviderCalled = false
-  static var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
-    return nil
-  }
-
-  public static func setPoolSize(size: Int) {
-
-  }
-
-  public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {
-    self.connectionProvider = provider
-    self.setConnectionProviderCalled = true
-  }
-
-  public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
-    self.getConnectionCalled = true
-    return nil
-  }
-
-  public static func getConnection(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
-    self.getConnectionCalled = true
-    return nil
-  }
-
-  public static func releaseConnection(connection: MySQLConnectionProtocol) {
-
-  }
 }

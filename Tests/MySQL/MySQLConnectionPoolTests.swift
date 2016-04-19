@@ -24,73 +24,69 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testConnectionConnectCalled() {
-    do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
+    var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
-      XCTAssertTrue(mockConnection.connectCalled, "Connect should have been called")
-    } catch {
-      XCTFail("Unable to create connection")
-    }
+    XCTAssertTrue(mockConnection.connectCalled, "Connect should have been called")
   }
 
   public func testGetConnectionWithNoInactiveConnectionsCreatesANewConnection() {
-    do {
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
-      XCTAssertTrue(connection.equals(mockConnection), "Should have used connection from pool")
-    } catch {
-      XCTFail("Unable to create connection")
-    }
+    XCTAssertTrue(connection.equals(mockConnection), "Should have used connection from pool")
   }
 
   public func testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem() {
-    do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
+    var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "")!
 
-      XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "Active connections should contain 1 item")
-    } catch {
-      XCTFail("Unable to create connection")
-    }
+    XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "Active connections should contain 1 item")
   }
 
   public func testGetConnectionWithInactivePoolItemUsesExistingConnection() {
-    do {
-      var inactiveConnections = [MySQLConnectionProtocol]()
-      let tempConnection = MockMySQLConnection()
-      inactiveConnections.append(tempConnection)
+    var inactiveConnections = [MySQLConnectionProtocol]()
+    let tempConnection = MockMySQLConnection()
+    inactiveConnections.append(tempConnection)
 
-      MySQLConnectionPool.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
+    MySQLConnectionPool.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
 
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-      XCTAssertTrue(connection.equals(tempConnection), "Should have used connection from pool")
-      XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
-      XCTAssertEqual(0, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
-    } catch {
-      XCTFail("Unable to create connection")
-    }
+    XCTAssertTrue(connection.equals(tempConnection), "Should have used connection from pool")
+    XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "There should be one active connections")
+    XCTAssertEqual(0, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be no inactive connections")
   }
 
   public func testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey() {
-    do {
-      var _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-      XCTAssertEqual("192.168.99.100_root_my-secret-pw_test", MySQLConnectionPool.activeConnections.keys.first!, "Key should have correct value")
-    } catch {
-      XCTFail("Unable to create connection")
+    XCTAssertEqual("192.168.99.100_root_my-secret-pw_test", MySQLConnectionPool.activeConnections.keys.first!, "Key should have correct value")
+  }
+
+  public func testGetConnectionWithClosureReleasesConnectionAfterUse() {
+    var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
+      (connection: MySQLConnectionProtocol) in
+        XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "There should be one active connections")
     }
+
+    XCTAssertEqual(1, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
+  }
+
+  public func testGetConnectionWithClosureExecutesClosurePassingConnection() {
+    var closureCalled = false
+
+    var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
+      (connection: MySQLConnectionProtocol) in
+        closureCalled = true
+    }
+
+    XCTAssertTrue(closureCalled, "Closure should have been called")
   }
 
   public func testReleaseConnectionReturnsConnectionToThePool() {
-    do {
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
-      MySQLConnectionPool.releaseConnection(connection)
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.releaseConnection(connection)
 
-      XCTAssertEqual(0, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
-      XCTAssertEqual(1, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
-    } catch {
-      XCTFail("Unable to create connection")
-    }
+    XCTAssertEqual(0, MySQLConnectionPool.activeConnections.values.first?.count, "There should be no active connections")
+    XCTAssertEqual(1, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be one inactive connections")
   }
 
   // Async tests are not currently implemented for Swift mac 24_03 release
@@ -100,31 +96,24 @@ public class MySQLConnectionPoolTests: XCTestCase {
   public func testGetConnectionBlocksWhenPoolIsExhausted() {
     let expectation = expectationWithDescription("Should have blocked when no pool connections are available")
 
-    do {
-      MySQLConnectionPool.poolSize = 1
-      let connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.poolSize = 1
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-      let thread = NSThread() { () -> Void in
-        do {
-          let startTime = NSDate().timeIntervalSince1970
-          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    let thread = NSThread() { () -> Void in
+      let startTime = NSDate().timeIntervalSince1970
+      let _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-          let endTime = NSDate().timeIntervalSince1970
-          self.timer = endTime - startTime
+      let endTime = NSDate().timeIntervalSince1970
+      self.timer = endTime - startTime
 
-          expectation.fulfill()
-        } catch {}
-      }
-
-      thread.start()
-
-      sleep(1)
-
-      MySQLConnectionPool.releaseConnection(connection)
-
-    } catch {
-      XCTFail("Unable to create connection")
+      expectation.fulfill()
     }
+
+    thread.start()
+
+    sleep(1)
+
+    MySQLConnectionPool.releaseConnection(connection)
 
     waitForExpectationsWithTimeout(3) { error in
       if let error = error {
@@ -139,23 +128,19 @@ public class MySQLConnectionPoolTests: XCTestCase {
   public func testGetConnectionTimesoutWhenPoolIsExhausted() {
     let expectation = expectationWithDescription("MySQLConnectionPool getConnection should have timedout")
 
-    do {
-      MySQLConnectionPool.poolSize = 1
-      MySQLConnectionPool.poolTimeout = 1
-      let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.poolSize = 1
+    MySQLConnectionPool.poolTimeout = 1
+    let _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-      let thread = NSThread() { () -> Void in
-        do {
-          let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
-        } catch {
-          expectation.fulfill()
-        }
+    let thread = NSThread() { () -> Void in
+      do {
+        let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+      } catch {
+        expectation.fulfill()
       }
-
-      thread.start()
-    } catch {
-      XCTFail("Unable to create connection")
     }
+
+    thread.start()
 
     waitForExpectationsWithTimeout(3) { error in
       if let error = error {
@@ -178,6 +163,8 @@ extension MySQLConnectionPoolTests {
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),
       ("testGetConnectionWithInactivePoolItemUsesExistingConnection", testGetConnectionWithInactivePoolItemUsesExistingConnection),
       ("testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey", testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey),
+      ("testGetConnectionWithClosureReleasesConnectionAfterUse", testGetConnectionWithClosureReleasesConnectionAfterUse),
+      ("testGetConnectionWithClosureExecutesClosurePassingConnection", testGetConnectionWithClosureExecutesClosurePassingConnection),
       ("testReleaseConnectionReturnsConnectionToThePool", testReleaseConnectionReturnsConnectionToThePool),
       ("testGetConnectionBlocksWhenPoolIsExhausted", testGetConnectionBlocksWhenPoolIsExhausted),
       ("testGetConnectionTimesoutWhenPoolIsExhausted", testGetConnectionTimesoutWhenPoolIsExhausted)
