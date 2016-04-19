@@ -48,7 +48,7 @@ extension MySQLClient {
 
     - Returns: Tuple consiting of an optional MySQLResult and MySQLError.  If the query fails then an error object will be returned and MySQLResult will be nil.  Upon success MySQLError will be nil however it is still possible for no results to be returned as some queries do not return results.
   */
-  public func execute(query: String) -> (MySQLResult?, MySQLError?) {
+  public func execute(query: String) -> (MySQLResultProtocol?, MySQLError?) {
     let result = connection.execute(query)
 
     if (result.0 != nil) {
@@ -74,7 +74,7 @@ extension MySQLClient {
       (result, error) = mySQLClient.execute(builder)
     ```
   */
-  public func execute(builder: MySQLQueryBuilder) -> (MySQLResult?, MySQLError?) {
+  public func execute(builder: MySQLQueryBuilder) -> (MySQLResultProtocol?, MySQLError?) {
     let statement = builder.build()
     return execute(statement)
   }

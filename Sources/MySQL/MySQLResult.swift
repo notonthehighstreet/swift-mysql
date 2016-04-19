@@ -2,7 +2,7 @@ import Foundation
 import CMySQLClient
 
 // MySQLResult encapsulates the fields and data returned from a query, this object is not ordinarily instanstiated.
-public class MySQLResult {
+public class MySQLResult: MySQLResultProtocol {
 
   private var resultPointer: CMySQLResult = nil
   private var getNextResult:(result:CMySQLResult) -> CMySQLRow?

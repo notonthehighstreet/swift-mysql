@@ -11,7 +11,7 @@ var connection_noDB: MySQLConnectionProtocol
 
 do {
   // get a connection from the pool with no database
-  connection_noDB = try MySQLConnectionPool.getConnection("docker.local", user: "root", password: "my-secret-pw")!
+  connection_noDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw", port: 3406, database: "")!
   defer {
     MySQLConnectionPool.releaseConnection(connection_noDB) // release the connection back to the pool
   }
@@ -33,7 +33,7 @@ var connection_withDB: MySQLConnectionProtocol
 
 do {
   // get a connection from the pool connecting to a specific database
-  connection_withDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw", port: 3306, database: "testdb")!
+  connection_withDB = try MySQLConnectionPool.getConnection("192.168.64.3", user: "root", password: "my-secret-pw", port: 3406, database: "testdb")!
   defer {
     MySQLConnectionPool.releaseConnection(connection_withDB)
   }

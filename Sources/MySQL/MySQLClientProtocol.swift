@@ -5,6 +5,6 @@ public protocol MySQLClientProtocol {
   init(connection: MySQLConnectionProtocol)
   func info() -> String?
   func version() -> UInt
-  func execute(query: String) -> (MySQLResult?, MySQLError?)
-  func execute(builder: MySQLQueryBuilder) -> (MySQLResult?, MySQLError?)
+  func execute(query: String) -> (MySQLResultProtocol?, MySQLError?)
+  func execute(builder: MySQLQueryBuilder) -> (MySQLResultProtocol?, MySQLError?)
 }
