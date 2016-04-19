@@ -62,7 +62,7 @@ extension MySQLConnection {
       throw MySQLError.UnableToCreateConnection
     }
 
-    if CMySQLClient.mysql_real_connect(connection, host, user, password, database, 0, nil, 0) == nil {
+    if CMySQLClient.mysql_real_connect(connection, host, user, password, database, UInt32(port), nil, 0) == nil {
       print("Error: Unable to connect to database")
       close()
       throw MySQLError.UnableToCreateConnection
