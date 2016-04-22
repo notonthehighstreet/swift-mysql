@@ -71,11 +71,46 @@ extension MySQLClient {
         .select(["abc"], table: "MyTable")
         .wheres("WHERE abc=?", "1")
 
-      (result, error) = mySQLClient.execute(builder)
+      var (result, error) = mySQLClient.execute(builder)
     ```
   */
   public func execute(builder: MySQLQueryBuilder) -> (MySQLResultProtocol?, MySQLError?) {
     let statement = builder.build()
+    print(statement)
     return execute(statement)
+  }
+
+  /**
+    Return the next result set after executing a query, this might be used when you
+    specify a multi statement query.
+
+    - Returns: Tuple consiting of an optional CMySQLResult, array of CMySQLField and MySQLError.  If the query fails then an error object will be returned and CMySQLResult and [CMySQLField] will be nil.  Upon success MySQLError will be nil however it is still possible for no results to be returned as some queries do not return results.
+
+    ```
+      var table1Builder = MySQLQueryBuilder()
+        .select(["abc"], table: "MyTable")
+        .wheres("WHERE abc=?", "1")
+
+      var table2Builder = = MySQLQueryBuilder()
+        .select(["abc"], table: "MyOtherTable")
+        .wheres("WHERE abc=?", "1")
+
+      table1Builder.join(table2Builder)
+
+      var (result, error) = mySQLClient.execute(table1Builder)
+      var row = result.nextResult() // use rows from table1
+
+      result = mySQLClient.nextResult()
+      row = result.nextResult() // use rows from table2
+    ```
+  */
+  public func nextResultSet() -> (MySQLResultProtocol?, MySQLError?) {
+    let result = connection.nextResultSet()
+
+    if (result.0 != nil) {
+      return (MySQLResult(result:result.0!, fields: result.1!, nextResult: connection.nextResult), result.2)
+    }
+
+    return (nil, result.2)
   }
 }

@@ -10,6 +10,10 @@ public class MockMySQLClient: MySQLClientProtocol {
   public var executeMySQLResultReturn: MySQLResultProtocol?
   public var executeMySQLErrorReturn: MySQLError?
 
+  public var nextResultSetCalled = false
+  public var nextResultSetReturn: MySQLResultProtocol?
+  public var nextResultSetErrorReturn: MySQLError?
+
   public required init(connection: MySQLConnectionProtocol) { }
   public func info() -> String? { return "1.2"}
   public func version() -> UInt { return 1 }
@@ -26,5 +30,11 @@ public class MockMySQLClient: MySQLClientProtocol {
     executeBuilderCalled = true
 
     return (executeMySQLResultReturn, executeMySQLErrorReturn)
+  }
+
+  public func nextResultSet() -> (MySQLResultProtocol?, MySQLError?) {
+    nextResultSetCalled = true
+
+    return (nextResultSetReturn, nextResultSetErrorReturn)
   }
 }

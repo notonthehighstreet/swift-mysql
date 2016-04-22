@@ -17,6 +17,10 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public var nextResultReturn:CMySQLRow? = nil
 
+  public var nextResultReturnResult:CMySQLResult? = nil
+  public var nextResultReturnHeaders:[CMySQLField]? = nil
+  public var nextResultReturnError:MySQLError? = nil
+
   private var uuid: Double
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
@@ -66,6 +70,10 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
    public func nextResult(result: CMySQLResult) -> CMySQLRow? {
      return nextResultReturn
+   }
+
+   public func nextResultSet() -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
+     return (nextResultReturnResult, nextResultReturnHeaders, nextResultReturnError)
    }
 
   public func close() { closeCalled = true }

@@ -62,7 +62,7 @@ extension MySQLConnection {
       throw MySQLError.UnableToCreateConnection
     }
 
-    if CMySQLClient.mysql_real_connect(connection, host, user, password, database, UInt32(port), nil, 0) == nil {
+    if CMySQLClient.mysql_real_connect(connection, host, user, password, database, UInt32(port), nil, CMySQLClient.CLIENT_MULTI_STATEMENTS) == nil {
       print("Error: Unable to connect to database")
       close()
       throw MySQLError.UnableToCreateConnection
@@ -114,14 +114,9 @@ extension MySQLConnection {
       return (nil, nil, MySQLError.UnableToExecuteQuery(message: error))
     }
 
-    result = CMySQLClient.mysql_store_result(connection);
-    if (result == nil) {
-      print("Error getting results for: " + query)
-      print(String(cString: CMySQLClient.mysql_error(connection)))
-      return (nil, nil, nil)
-    } else {
-      return (result, getHeaders(result), nil)
-    }
+    print("total affected rows: " + String(mysql_affected_rows(connection)))
+
+    return getResults()
   }
 
   /**
@@ -144,6 +139,42 @@ extension MySQLConnection {
       // no more results free any memory and return
       clearResult()
       return nil
+    }
+  }
+
+  /**
+    Return the next result set after executing a query, this might be used when you
+    specify a multi statement query.
+
+    - Returns: Tuple consiting of an optional CMySQLResult, array of CMySQLField and MySQLError.  If the query fails then an error object will be returned and CMySQLResult and [CMySQLField] will be nil.  Upon success MySQLError will be nil however it is still possible for no results to be returned as some queries do not return results.
+
+    ```
+      var result = connection.execute("SELECT * FROM table1; SELECT * FROM table2;")
+      var row = connection.nextResult(result) // use rows from table1
+
+      result = connection.nextResultSet()
+      row = connection.nextResult(result) // use rows from table2
+    ```
+  */
+  public func nextResultSet() -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
+    if mysql_next_result(connection) < 1 {
+      return getResults()
+    } else {
+      print("No more results")
+      return (nil, nil, MySQLError.NoMoreResults)
+    }
+  }
+
+  private func getResults() -> (CMySQLResult?, [CMySQLField]?, MySQLError?){
+    clearResult()
+
+    result = CMySQLClient.mysql_store_result(connection)
+    if (result == nil) {
+      print("Error getting results")
+      print(String(cString: CMySQLClient.mysql_error(connection)))
+      return (nil, nil, nil)
+    } else {
+      return (result, getHeaders(result), nil)
     }
   }
 

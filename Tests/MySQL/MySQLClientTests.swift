@@ -67,6 +67,24 @@ public class MySQLClientTests: XCTestCase {
 
     XCTAssertNotNil(result.1, "Query should have returned an error")
   }
+
+  public func testClientNextResultSetReturnsMySQLResultWhenResultPresent() {
+    mockConnection!.nextResultReturnResult = CMySQLResult(bitPattern: 12)
+    mockConnection!.nextResultReturnHeaders = [CMySQLField]()
+
+    let result = client!.nextResultSet()
+
+    XCTAssertNotNil(result.0, "Query should have returned results")
+  }
+
+  public func testClientNextResultSetReturnsNilWhenNoResultPresent() {
+    mockConnection!.nextResultReturnError = MySQLError.NoMoreResults
+
+    let result = client!.nextResultSet()
+
+    XCTAssertNil(result.0, "Query should have returned results")
+    XCTAssertNotNil(result.1, "Query should have returned error")
+  }
 }
 
 extension MySQLClientTests {
@@ -78,7 +96,9 @@ extension MySQLClientTests {
         ("testClientExecutesQueryWithBuilder", testClientExecutesQueryWithBuilder),
         ("testClientQueryReturnsMySQLResultWhenResultPresent", testClientQueryReturnsMySQLResultWhenResultPresent),
         ("testClientQueryDoesNotReturnMySQLResultWhenNoResult", testClientQueryDoesNotReturnMySQLResultWhenNoResult),
-        ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError)
+        ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError),
+        ("testClientNextResultSetReturnsMySQLResultWhenResultPresent", testClientNextResultSetReturnsMySQLResultWhenResultPresent),
+        ("testClientNextResultSetReturnsNilWhenNoResultPresent", testClientNextResultSetReturnsNilWhenNoResultPresent)
       ]
     }
 }
