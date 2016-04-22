@@ -153,6 +153,7 @@ extension MySQLConnection {
   private func clearResult() {
     if result != nil {
       CMySQLClient.mysql_free_result(result)
+      result = nil
     }
   }
 

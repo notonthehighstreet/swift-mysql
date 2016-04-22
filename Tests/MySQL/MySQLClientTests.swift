@@ -41,7 +41,7 @@ public class MySQLClientTests: XCTestCase {
 
     client!.execute(builder)
 
-    XCTAssertEqual(mockConnection!.executeStatement, "SELECT * FROM WHERE abc='bcd'", "Query sent to connection not correct")
+    XCTAssertEqual(mockConnection!.executeStatement, "SELECT * FROM WHERE abc='bcd';", "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")
   }
 

@@ -10,6 +10,8 @@ public class MySQLQueryBuilder: Equatable {
   var updateStatement:String?
   var whereStatement:String?
 
+  var joinedStatements = [String]()
+
   public init() {}
 
   /**
@@ -79,7 +81,7 @@ public class MySQLQueryBuilder: Equatable {
 
     ```
       var builder = MySQLQueryBuilder()
-        .select(["abc": "cde"], table: "myTable")
+        .update(["abc": "cde"], table: "myTable")
     ```
   */
   public func update(data: MySQLRow, table: String) -> MySQLQueryBuilder {
@@ -122,6 +124,31 @@ public class MySQLQueryBuilder: Equatable {
   }
 
   /**
+    join concatenates the output of one or more MySQLQueryBuilders to create a multi statement query
+
+    - Parameters:
+      - builder: MySQLQueryBuilder whos output which will be concatenated to this one
+
+    - Returns: returns self
+
+    ```
+    var builder = MySQLQueryBuilder()
+      .insert(["abc": "cde"], table: "myTable")
+
+    var builder2 = MySQLQueryBuilder()
+      .insert(["def": "ghi"], table: "myTable")
+
+    let query = builder.join(builder2).build()
+    // query: INSERT INTO myTable (abc) VALUES ('cde'); INSERT INTO myTable SET def='ghi';
+    ```
+  */
+  public func join(builder: MySQLQueryBuilder) -> MySQLQueryBuilder {
+    joinedStatements.append(builder.build())
+
+    return self
+  }
+
+  /**
     build compiles all data and returns the SQL statement for execution
 
     - Returns: SQL Statement
@@ -145,7 +172,14 @@ public class MySQLQueryBuilder: Equatable {
       query += whereStatement!
     }
 
-    return query.trimChar(" ")
+    query = query.trimChar(" ")
+    query = query + ";"
+
+    for statement in joinedStatements {
+      query = query + " " + statement
+    }
+
+    return query
   }
 
   private func createSelectStatement(fields: [String], table: String) -> String {
