@@ -5,5 +5,6 @@ public struct MySQLField {
   /**
     Name of the field.
   */
-  var name:String = ""
+  var name: String = ""
+  var type: MySQLFieldType
 }

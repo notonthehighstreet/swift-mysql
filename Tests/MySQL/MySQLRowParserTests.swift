@@ -8,7 +8,7 @@ public class MySQLRowParserTests: XCTestCase {
   public func testParsesRowWithStringValue() {
     let parser = MySQLRowParser()
 
-    var header1 = MySQLField()
+    var header1 = MySQLField(name: "tester", type: MySQLFieldType.String)
     header1.name = "header1"
 
     var headers = [MySQLField]()
