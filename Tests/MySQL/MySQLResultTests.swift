@@ -10,7 +10,10 @@ public class MySQLResultTests: XCTestCase {
 
   private func buildFields() -> [CMySQLField] {
     field1.name = "myname".getUnsafeMutablePointer()
+    field1.type = MYSQL_TYPE_STRING
+
     field2.name = "second".getUnsafeMutablePointer()
+    field2.type = MYSQL_TYPE_STRING
 
     var fields = [CMySQLField]()
     fields.append(&field1)
