@@ -20,6 +20,19 @@ extension MySQLConnection {
   }
 
   /**
+    Does the current connection have an open connection to the database?
+
+    - Returns: true if active connection, false if connection closed
+  */
+  public func isConnected() -> Bool {
+    if (mysql_ping(connection) != 0) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  /**
     Open a connection to the database with the given parameters, in the instance of a failed connection the connect method throws MySQLError.
 
     - Parameters:

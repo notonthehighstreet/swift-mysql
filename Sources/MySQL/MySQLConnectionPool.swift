@@ -116,7 +116,6 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     var startTime = NSDate()
     while(countActive()  >= poolSize) {
       if (NSDate().timeIntervalSince1970 - startTime.timeIntervalSince1970) > poolTimeout {
-
         throw MySQLError.ConnectionPoolTimeout
       }
     }
@@ -201,7 +200,8 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       // pop a connection off the stack
       let connection = inactiveConnections[key]![0]
       inactiveConnections[key]!.remove(at: 0)
-      return connection
+
+      return (connection.isConnected()) ? connection: nil
     }
 
     return nil

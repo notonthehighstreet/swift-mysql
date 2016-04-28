@@ -2,6 +2,9 @@ import Foundation
 
 // MockMySQLConnection is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
 public class MockMySQLConnection : MySQLConnectionProtocol {
+  public var isConnectedReturn = true
+  public var isConnectedCalled = false
+
   public var connectCalled = false
   public var executeCalled = false
   public var closeCalled = false
@@ -29,6 +32,11 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public init() {
     uuid = NSDate().timeIntervalSince1970
+  }
+
+  public func isConnected() -> Bool {
+    isConnectedCalled = true
+    return isConnectedReturn
   }
 
   public func connect(

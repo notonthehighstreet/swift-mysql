@@ -55,6 +55,37 @@ public class MySQLConnectionPoolTests: XCTestCase {
     XCTAssertEqual(0, MySQLConnectionPool.inactiveConnections.values.first?.count, "There should be no inactive connections")
   }
 
+  public func testGetConnectionWithInactivePoolItemChecksIfConnectionActive() {
+    var inactiveConnections = [MySQLConnectionProtocol]()
+    let tempConnection = MockMySQLConnection()
+    inactiveConnections.append(tempConnection)
+
+    MySQLConnectionPool.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
+
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+
+    XCTAssertTrue(tempConnection.isConnectedCalled, "Should have checked if connection active")
+  }
+
+  public func testGetConnectionWithInactivePoolWhenNotConnectedCreateNewConnection() {
+    var inactiveConnections = [MySQLConnectionProtocol]()
+    let tempConnection = MockMySQLConnection()
+    inactiveConnections.append(tempConnection)
+
+    MySQLConnectionPool.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
+
+    var connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.releaseConnection(connection)
+    
+    tempConnection.connectCalled = false
+    tempConnection.isConnectedReturn = false
+
+    connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+
+    XCTAssertTrue(mockConnection.connectCalled, "Should have created a new connection")
+    XCTAssertEqual(1, MySQLConnectionPool.activeConnections.values.first?.count, "There should be one active connections")
+  }
+
   public func testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey() {
     var _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
@@ -162,6 +193,8 @@ extension MySQLConnectionPoolTests {
       ("testGetConnectionWithNoInactiveConnectionsCreatesANewConnection", testGetConnectionWithNoInactiveConnectionsCreatesANewConnection),
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),
       ("testGetConnectionWithInactivePoolItemUsesExistingConnection", testGetConnectionWithInactivePoolItemUsesExistingConnection),
+      ("testGetConnectionWithInactivePoolItemChecksIfConnectionActive", testGetConnectionWithInactivePoolItemChecksIfConnectionActive),
+      ("testGetConnectionWithInactivePoolWhenNotConnectedCreateNewConnection", testGetConnectionWithInactivePoolWhenNotConnectedCreateNewConnection),
       ("testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey", testGetConnectionNoInactiveConnectionsAddsAnActivePoolItemWithAValidKey),
       ("testGetConnectionWithClosureReleasesConnectionAfterUse", testGetConnectionWithClosureReleasesConnectionAfterUse),
       ("testGetConnectionWithClosureExecutesClosurePassingConnection", testGetConnectionWithClosureExecutesClosurePassingConnection),

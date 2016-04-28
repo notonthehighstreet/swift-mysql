@@ -12,6 +12,7 @@ public typealias CMySQLField = UnsafeMutablePointer<MYSQL_FIELD>
 
 // Represents a protocol for connections to implement.
 public protocol MySQLConnectionProtocol {
+  func isConnected() -> Bool
   func connect(host: String, user: String, password: String) throws
   func connect(host: String, user: String, password: String, port: Int) throws
   func connect(host: String, user: String, password: String, port: Int, database: String) throws
