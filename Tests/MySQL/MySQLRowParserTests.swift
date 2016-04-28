@@ -44,7 +44,46 @@ public class MySQLRowParserTests: XCTestCase {
     XCTAssertTrue(row["header1"] is String, "Type should be String")
   }
 
-  public func testParsesFieldWithIntValueSetsTypeInt() {
+  public func testParsesFieldWithVarStringValueSetsTypeString() {
+    cRow[0] = "myvalue".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.VarString
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertTrue(row["header1"] is String, "Type should be String")
+  }
+
+  public func testParsesFieldWithTinyValueSetsTypeInt() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Tiny
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Int)
+    XCTAssertTrue(row["header1"] is Int, "Type should be Int")
+  }
+
+  public func testParsesFieldWithShortValueSetsTypeInt() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Short
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Int)
+    XCTAssertTrue(row["header1"] is Int, "Type should be Int")
+  }
+
+  public func testParsesFieldWithLongValueSetsTypeInt() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Long
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Int)
+    XCTAssertTrue(row["header1"] is Int, "Type should be Int")
+  }
+
+  public func testParsesFieldWithInt24ValueSetsTypeInt() {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Int24
 
@@ -53,14 +92,74 @@ public class MySQLRowParserTests: XCTestCase {
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
   }
+
+  public func testParsesFieldWithLongLongValueSetsTypeInt() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.LongLong
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Int)
+    XCTAssertTrue(row["header1"] is Int, "Type should be Int")
+  }
+
+  public func testParsesFieldWithDecimalValueSetsTypeDouble() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Decimal
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Double)
+    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+  }
+
+  public func testParsesFieldWithNewDecimalValueSetsTypeDouble() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.NewDecimal
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Double)
+    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+  }
+
+  public func testParsesFieldWithFloatValueSetsTypeFloat() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Float
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Float)
+    XCTAssertTrue(row["header1"] is Float, "Type should be Int")
+  }
+
+  public func testParsesFieldWithDoubleValueSetsTypeDouble() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Double
+
+    let row = parser.parse(cRow, headers: headers)
+
+    XCTAssertEqual(1, row["header1"] as? Double)
+    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+  }
 }
 
 extension MySQLRowParserTests {
     static var allTests: [(String, MySQLRowParserTests -> () throws -> Void)] {
       return [
         ("testParsesRowWithStringValue", testParsesRowWithStringValue),
+        ("testParsesFieldWithNilValueSetsNil", testParsesFieldWithNilValueSetsNil),
         ("testParsesFieldWithStringValueSetsTypeString", testParsesFieldWithStringValueSetsTypeString),
-        ("testParsesFieldWithIntValueSetsTypeInt", testParsesFieldWithIntValueSetsTypeInt)
+        ("testParsesFieldWithVarStringValueSetsTypeString", testParsesFieldWithVarStringValueSetsTypeString),
+        ("testParsesFieldWithTinyValueSetsTypeInt", testParsesFieldWithTinyValueSetsTypeInt),
+        ("testParsesFieldWithShortValueSetsTypeInt", testParsesFieldWithShortValueSetsTypeInt),
+        ("testParsesFieldWithLongValueSetsTypeInt", testParsesFieldWithLongValueSetsTypeInt),
+        ("testParsesFieldWithInt24ValueSetsTypeInt", testParsesFieldWithInt24ValueSetsTypeInt),
+        ("testParsesFieldWithLongLongValueSetsTypeInt", testParsesFieldWithLongLongValueSetsTypeInt),
+        ("testParsesFieldWithDecimalValueSetsTypeDouble", testParsesFieldWithDecimalValueSetsTypeDouble),
+        ("testParsesFieldWithNewDecimalValueSetsTypeDouble", testParsesFieldWithNewDecimalValueSetsTypeDouble),
+        ("testParsesFieldWithFloatValueSetsTypeFloat", testParsesFieldWithFloatValueSetsTypeFloat),
+        ("testParsesFieldWithDoubleValueSetsTypeDouble", testParsesFieldWithDoubleValueSetsTypeDouble)
       ]
     }
 }
