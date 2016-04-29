@@ -5,7 +5,8 @@ let package = Package(
   targets: [
     Target(
       name: "Example",
-      dependencies: [.Target(name: "MySQL")])
+      dependencies: [.Target(name: "MySQL")]),
+    Target(name: "Example"),
   ],
 	//exclude: ["Tests"],
   dependencies: [
