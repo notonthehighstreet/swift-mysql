@@ -28,7 +28,7 @@ public class MySQLClientTests: XCTestCase {
 
   //TODO: implement these tests correctly this is just a placeholder
   public func testClientExecutesQuery() {
-    client!.execute("something")
+    client!.execute(query: "something")
 
     XCTAssertEqual(mockConnection!.executeStatement, "something", "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")
@@ -36,10 +36,10 @@ public class MySQLClientTests: XCTestCase {
 
   public func testClientExecutesQueryWithBuilder() {
     let builder = MySQLQueryBuilder()
-      .select("SELECT * FROM")
-      .wheres("WHERE abc=?", parameters: "bcd")
+      .select(statement: "SELECT * FROM")
+      .wheres(statement: "WHERE abc=?", parameters: "bcd")
 
-    client!.execute(builder)
+    client!.execute(builder: builder)
 
     XCTAssertEqual(mockConnection!.executeStatement, "SELECT * FROM WHERE abc='bcd';", "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")
@@ -49,13 +49,13 @@ public class MySQLClientTests: XCTestCase {
     mockConnection!.executeReturnResult = CMySQLResult(bitPattern: 12)
     mockConnection!.executeReturnHeaders = [CMySQLField]()
 
-    let result = client!.execute("something")
+    let result = client!.execute(query: "something")
 
     XCTAssertNotNil(result.0, "Query should have returned results")
   }
 
   public func testClientQueryDoesNotReturnMySQLResultWhenNoResult() {
-    let result = client!.execute("something")
+    let result = client!.execute(query: "something")
 
     XCTAssertNil(result.0, "Query should have been executed")
   }
@@ -63,7 +63,7 @@ public class MySQLClientTests: XCTestCase {
   public func testClientQueryReturnsErrorWhenError() {
     mockConnection!.executeReturnError = MySQLError.UnableToExecuteQuery(message: "boom")
 
-    let result = client!.execute("something")
+    let result = client!.execute(query: "something")
 
     XCTAssertNotNil(result.1, "Query should have returned an error")
   }

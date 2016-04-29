@@ -5,8 +5,8 @@ import CMySQLClient
 public class MySQLConnection : MySQLConnectionProtocol  {
   private var uuid: Double
 
-  private var connection: UnsafeMutablePointer<MYSQL> = nil
-  private var result:UnsafeMutablePointer<MYSQL_RES> = nil
+  private var connection: UnsafeMutablePointer<MYSQL>? = nil
+  private var result:UnsafeMutablePointer<MYSQL_RES>? = nil
 
   public init() {
     uuid = NSDate().timeIntervalSince1970
@@ -41,7 +41,7 @@ extension MySQLConnection {
       - password: The password to use for the connection.
   */
   public func connect(host: String, user: String, password: String) throws {
-    return try connect(host, user: user, password: password, port: 3306, database: "")
+    return try connect(host: host, user: user, password: password, port: 3306, database: "")
   }
 
   /**
@@ -54,7 +54,7 @@ extension MySQLConnection {
       - port: The port to be used for the connection
   */
   public func connect(host: String, user: String, password: String, port: Int) throws {
-    return try connect(host, user: user, password: password, port: port, database: "")
+    return try connect(host: host, user: user, password: password, port: port, database: "")
   }
 
   /**
@@ -141,10 +141,6 @@ extension MySQLConnection {
     - Returns: A pointer to an array of strings.
   */
   public func nextResult(result: CMySQLResult) -> CMySQLRow? {
-    if result == nil {
-      return nil
-    }
-
     let row = CMySQLClient.mysql_fetch_row(result)
     if row != nil {
       return row
@@ -187,7 +183,7 @@ extension MySQLConnection {
       print(String(cString: CMySQLClient.mysql_error(connection)))
       return (nil, nil, nil)
     } else {
-      return (result, getHeaders(result), nil)
+      return (result, getHeaders(resultPointer: result!), nil)
     }
   }
 

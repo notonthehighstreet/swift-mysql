@@ -8,7 +8,7 @@ extension String {
       return pointer
     #else
       let otherStr = NSString(string: self)
-      return UnsafeMutablePointer<Int8>(otherStr.UTF8String)
+      return UnsafeMutablePointer<Int8>(otherStr.UTF8String!)
     #endif
   }
 }

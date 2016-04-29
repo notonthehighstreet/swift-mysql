@@ -56,7 +56,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
   public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
-    return try getConnection(host, user: user, password: password, port: 3306, database: "")
+    return try getConnection(host: host, user: user, password: password, port: 3306, database: "")
   }
 
   /**
@@ -88,14 +88,14 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
 
     // check if there is something available in the pool if so return it
-    let key = computeKey(host, user: user, password: password, database: database)
+    let key = computeKey(host: host, user: user, password: password, database: database)
 
-    if let connection = getInactive(key) {
-      addActive(key, connection: connection)
+    if let connection = getInactive(key: key) {
+      addActive(key: key, connection: connection)
       logger(message: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
       return connection
     } else {
-      return try createAndAddActive(host, user: user, password: password, port: port, database: database)
+      return try createAndAddActive(host: host, user: user, password: password, port: port, database: database)
     }
   }
 
@@ -135,9 +135,9 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
                                    database: String,
                                    closure: ((connection: MySQLConnectionProtocol) -> Void)) throws {
     do {
-      let connection = try getConnection(host, user: user, password: password, port: port, database: database)
+      let connection = try getConnection(host: host, user: user, password: password, port: port, database: database)
       defer {
-        self.releaseConnection(connection!)
+        self.releaseConnection(connection: connection!)
       }
 
       closure(connection: connection!)
@@ -159,11 +159,11 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       lock.unlock()
     }
 
-    let (connectionKey, index) = findActiveConnection(connection)
+    let (connectionKey, index) = findActiveConnection(connection: connection)
 
     if(connectionKey != nil) {
       activeConnections[connectionKey!]!.remove(at: index)
-      addInactive(connectionKey!, connection: connection)
+      addInactive(key: connectionKey!, connection: connection)
     }
   }
 
@@ -171,14 +171,14 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     let connection = connectionProvider()
 
     do {
-      try connection!.connect(host, user: user, password: password, port: port, database: database)
+      try connection!.connect(host: host, user: user, password: password, port: port, database: database)
     } catch {
       logger(message: MySQLConnectionPoolMessage.FailedToCreateConnection)
       throw error
     }
 
-    let key = computeKey(host, user: user, password: password, database: database)
-    addActive(key, connection: connection!)
+    let key = computeKey(host: host, user: user, password: password, database: database)
+    addActive(key: key, connection: connection!)
     logger(message: MySQLConnectionPoolMessage.CreatedNewConnection)
 
     return connection
@@ -189,7 +189,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     var connectionIndex = -1
 
     for (key, value)  in activeConnections {
-      if let index = value.index(where:{$0.equals(connection)}) {
+      if let index = value.index(where:{$0.equals(otherObject: connection)}) {
         connectionIndex = index
         connectionKey = key
       }
@@ -245,6 +245,6 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   }
 
   private static func computeKey(host: String, user: String, password: String, database: String) -> String {
-    return host + "_" + user + "_" + password + "_" + database
+    return "\(host)_\(user)_\(password)_\(database)"
   }
 }

@@ -47,7 +47,7 @@ public class MySQLQueryBuilder: Equatable {
     ```
   */
   public func select(fields: [String], table: String) -> MySQLQueryBuilder {
-    selectStatement = createSelectStatement(fields, table: table)
+    selectStatement = createSelectStatement(fields: fields, table: table)
     return self
   }
 
@@ -66,7 +66,7 @@ public class MySQLQueryBuilder: Equatable {
     ```
   */
   public func insert(data: MySQLRow, table: String) -> MySQLQueryBuilder {
-    insertStatement = createInsertStatement(data, table: table)
+    insertStatement = createInsertStatement(data: data, table: table)
     return self
   }
 
@@ -85,7 +85,7 @@ public class MySQLQueryBuilder: Equatable {
     ```
   */
   public func update(data: MySQLRow, table: String) -> MySQLQueryBuilder {
-    updateStatement = createUpdateStatement(data, table: table)
+    updateStatement = createUpdateStatement(data: data, table: table)
 
     return self
   }
@@ -172,7 +172,7 @@ public class MySQLQueryBuilder: Equatable {
       query += whereStatement!
     }
 
-    query = query.trimChar(" ")
+    query = query.trimChar(character: " ")
     query = query + ";"
 
     for statement in joinedStatements {
@@ -188,8 +188,8 @@ public class MySQLQueryBuilder: Equatable {
     for field in fields {
       statement += "\(field), "
     }
-    statement = statement.trimChar(" ")
-    statement = statement.trimChar(",")
+    statement = statement.trimChar(character: " ")
+    statement = statement.trimChar(character: ",")
     statement += " FROM \(table)"
 
     return statement
@@ -201,16 +201,16 @@ public class MySQLQueryBuilder: Equatable {
     for (key, _) in data {
       statement += "\(key), "
     }
-    statement = statement.trimChar(" ")
-    statement = statement.trimChar(",")
+    statement = statement.trimChar(character: " ")
+    statement = statement.trimChar(character: ",")
 
     statement += ") VALUES ("
 
     for (_, value) in data {
       statement += "'\(value)', "
     }
-    statement = statement.trimChar(" ")
-    statement = statement.trimChar(",")
+    statement = statement.trimChar(character: " ")
+    statement = statement.trimChar(character: ",")
 
     statement += ")"
 
@@ -223,8 +223,8 @@ public class MySQLQueryBuilder: Equatable {
     for (key, value) in data {
       statement += "\(key)='\(value)', "
     }
-    statement = statement.trimChar(" ")
-    statement = statement.trimChar(",")
+    statement = statement.trimChar(character: " ")
+    statement = statement.trimChar(character: ",")
 
     return statement
   }

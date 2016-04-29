@@ -7,7 +7,7 @@ https://github.com/kylef/swiftenv
 
 ### Install 3.0 Alpha
 ```
-$ swiftenv install DEVELOPMENT-SNAPSHOT-2016-03-24-a
+$ swiftenv install DEVELOPMENT-SNAPSHOT-2016-04-25-a
 $ swiftenv rehash
 ```
 

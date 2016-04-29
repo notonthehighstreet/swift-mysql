@@ -16,7 +16,7 @@ public class MySQLFieldParserTests: XCTestCase {
     var field = MYSQL_FIELD()
     field.name = "myname".getUnsafeMutablePointer()
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual("myname", parsed.name, "Name should be equal to myname")
   }
 
@@ -25,7 +25,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_TINY
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Tiny, parsed.type)
   }
 
@@ -34,7 +34,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_SHORT
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Short, parsed.type)
   }
 
@@ -43,7 +43,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_LONG
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Long, parsed.type)
   }
 
@@ -52,7 +52,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_INT24
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Int24, parsed.type)
   }
 
@@ -61,7 +61,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_LONGLONG
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.LongLong, parsed.type)
   }
 
@@ -70,7 +70,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_DECIMAL
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Decimal, parsed.type)
   }
 
@@ -79,7 +79,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_NEWDECIMAL
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.NewDecimal, parsed.type)
   }
 
@@ -88,7 +88,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_FLOAT
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Float, parsed.type)
   }
 
@@ -97,7 +97,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_DOUBLE
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Double, parsed.type)
   }
 
@@ -106,7 +106,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_BIT
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Bit, parsed.type)
   }
 
@@ -115,7 +115,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_TIMESTAMP
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Timestamp, parsed.type)
   }
 
@@ -124,7 +124,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_DATE
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Date, parsed.type)
   }
 
@@ -133,7 +133,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_TIME
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Time, parsed.type)
   }
 
@@ -142,7 +142,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_DATETIME
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.DateTime, parsed.type)
   }
 
@@ -151,7 +151,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_YEAR
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Year, parsed.type)
   }
 
@@ -160,7 +160,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_STRING
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.String, parsed.type)
   }
 
@@ -169,7 +169,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_VAR_STRING
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.VarString, parsed.type)
   }
 
@@ -178,7 +178,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_BLOB
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Blob, parsed.type)
   }
 
@@ -187,7 +187,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_SET
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Set, parsed.type)
   }
 
@@ -196,7 +196,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_ENUM
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Enum, parsed.type)
   }
 
@@ -205,7 +205,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_GEOMETRY
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Geometry, parsed.type)
   }
 
@@ -214,7 +214,7 @@ public class MySQLFieldParserTests: XCTestCase {
     field.name = "myname".getUnsafeMutablePointer()
     field.type = MYSQL_TYPE_NULL
 
-    let parsed = parser!.parse(field)
+    let parsed = parser!.parse(field: field)
     XCTAssertEqual(MySQLFieldType.Null, parsed.type)
   }
 }

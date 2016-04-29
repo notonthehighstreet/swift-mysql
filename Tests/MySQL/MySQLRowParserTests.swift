@@ -21,7 +21,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "myvalue".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.String
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual("myvalue", (row["header1"] as! String))
   }
@@ -30,7 +30,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = nil
     headers[0].type = MySQLFieldType.String
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertNil(row["header1"])
   }
@@ -39,7 +39,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "myvalue".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.String
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertTrue(row["header1"] is String, "Type should be String")
   }
@@ -48,7 +48,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "myvalue".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.VarString
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertTrue(row["header1"] is String, "Type should be String")
   }
@@ -57,7 +57,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Tiny
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
@@ -67,7 +67,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Short
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
@@ -77,7 +77,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Long
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
@@ -87,7 +87,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Int24
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
@@ -97,7 +97,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.LongLong
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Int)
     XCTAssertTrue(row["header1"] is Int, "Type should be Int")
@@ -107,7 +107,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Decimal
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
     XCTAssertTrue(row["header1"] is Double, "Type should be Int")
@@ -117,7 +117,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.NewDecimal
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
     XCTAssertTrue(row["header1"] is Double, "Type should be Int")
@@ -127,7 +127,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Float
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Float)
     XCTAssertTrue(row["header1"] is Float, "Type should be Int")
@@ -137,7 +137,7 @@ public class MySQLRowParserTests: XCTestCase {
     cRow[0] = "1".getUnsafeMutablePointer()
     headers[0].type = MySQLFieldType.Double
 
-    let row = parser.parse(cRow, headers: headers)
+    let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
     XCTAssertTrue(row["header1"] is Double, "Type should be Int")

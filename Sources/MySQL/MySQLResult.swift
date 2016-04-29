@@ -4,7 +4,7 @@ import CMySQLClient
 // MySQLResult encapsulates the fields and data returned from a query, this object is not ordinarily instanstiated.
 public class MySQLResult: MySQLResultProtocol {
 
-  private var resultPointer: CMySQLResult = nil
+  private var resultPointer: CMySQLResult? = nil
   private var getNextResult:(result:CMySQLResult) -> CMySQLRow?
 
   /**
@@ -18,9 +18,13 @@ public class MySQLResult: MySQLResultProtocol {
     Returns: an instance of MySQLRow which is a dictionary [field_name (String): Object], when no further rows are avaialble this method returns nil.
   */
   public func nextResult() -> MySQLRow? {
-    if let row = getNextResult(result:resultPointer) {
+    if  resultPointer == nil {
+      return nil
+    }
+
+    if let row = getNextResult(result: resultPointer!) {
       let parser = MySQLRowParser()
-      return parser.parse(row, headers:fields)
+      return parser.parse(row: row, headers:fields)
     } else {
       return nil
     }
@@ -29,13 +33,13 @@ public class MySQLResult: MySQLResultProtocol {
   internal init(result:CMySQLResult, fields: [CMySQLField], nextResult: ((result:CMySQLResult) -> CMySQLRow?)) {
     resultPointer = result
     getNextResult = nextResult
-    parseFields(fields)
+    parseFields(fields: fields)
   }
 
   private func parseFields(fields: [CMySQLField]) {
     let parser = MySQLFieldParser()
     for field in fields {
-      self.fields.append(parser.parse(field.pointee))
+      self.fields.append(parser.parse(field: field.pointee))
     }
   }
 }

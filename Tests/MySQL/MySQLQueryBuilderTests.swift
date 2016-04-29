@@ -6,35 +6,35 @@ import XCTest
 public class MySQLQueryBuilderTests : XCTestCase {
   public func testInsertReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.insert(MySQLRow(), table: "")
+    let ret = builder.insert(data: MySQLRow(), table: "")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
   public func testUpdateReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.update(MySQLRow(), table: "")
+    let ret = builder.update(data: MySQLRow(), table: "")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
   public func testSelectReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.select("")
+    let ret = builder.select(statement: "")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
   public func testSelectWithFieldsReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.select([""], table: "")
+    let ret = builder.select(fields: [""], table: "")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
   public func testWheresReturnsSelf() {
     let builder = MySQLQueryBuilder()
-    let ret = builder.wheres("something = ?", parameters: "value")
+    let ret = builder.wheres(statement: "something = ?", parameters: "value")
 
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
@@ -42,7 +42,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
   public func testSelectReturnsValidQuery() {
     let builder = MySQLQueryBuilder()
     let statement = builder
-      .select("SELECT * FROM TABLE")
+      .select(statement: "SELECT * FROM TABLE")
       .build()
 
     XCTAssertEqual("SELECT * FROM TABLE;", statement, "Returned invalid select statement")
@@ -51,7 +51,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
   public func testSelectWithArrayReturnsValidQuery() {
     let builder = MySQLQueryBuilder()
     let statement = builder
-        .select(["Field1", "Field2"], table: "MyTABLE")
+        .select(fields: ["Field1", "Field2"], table: "MyTABLE")
         .build()
 
     XCTAssertEqual("SELECT Field1, Field2 FROM MyTABLE;", statement, "Returned invalid select statement")
@@ -63,7 +63,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
     data["bcd"] = "efg"
 
     let query = MySQLQueryBuilder()
-    .insert(data, table: "MyTable")
+    .insert(data: data, table: "MyTable")
     .build()
 
     XCTAssertEqual("INSERT INTO MyTable (abc, bcd) VALUES ('bcd', 'efg');", query, "Should have returned valid query")
@@ -75,7 +75,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
     data["bcd"] = "bcd"
 
     let query = MySQLQueryBuilder()
-      .update(data, table: "MyTable")
+      .update(data: data, table: "MyTable")
       .build()
 
     XCTAssertEqual("UPDATE MyTable SET abc='abc', bcd='bcd';", query, "Should have returned valid query")
@@ -83,7 +83,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
       .build()
 
     XCTAssertEqual("WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
@@ -91,8 +91,8 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testSelectWithWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
-      .select("SELECT * FROM TABLE")
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .select(statement: "SELECT * FROM TABLE")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
       .build()
 
     XCTAssertEqual("SELECT * FROM TABLE WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
@@ -100,8 +100,8 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testUpdateWithWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
-      .update(["abc": "bcd"], table: "MyTable")
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .update(data: ["abc": "bcd"], table: "MyTable")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
       .build()
 
     XCTAssertEqual("UPDATE MyTable SET abc='bcd' WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
@@ -109,13 +109,13 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testJoinWithOneJoinConcatenatesQuery() {
     let builder = MySQLQueryBuilder()
-        .insert(["Field1": "Field2"], table: "MyTABLE")
+        .insert(data: ["Field1": "Field2"], table: "MyTABLE")
 
     let builder2 = MySQLQueryBuilder()
-      .select("SELECT * FROM TABLE")
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .select(statement: "SELECT * FROM TABLE")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
 
-    let query = builder.join(builder2).build()
+    let query = builder.join(builder: builder2).build()
 
     XCTAssertEqual("INSERT INTO MyTABLE (Field1) VALUES ('Field2'); SELECT * FROM TABLE WHERE param1='abc' and param2='bcd';",
       query, "Should have returned valid query")
@@ -123,17 +123,17 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testJoinWithTwoJoinsConcatenatesQuery() {
     let builder = MySQLQueryBuilder()
-        .insert(["Field1": "Field2"], table: "MyTABLE")
+        .insert(data: ["Field1": "Field2"], table: "MyTABLE")
 
     let builder2 = MySQLQueryBuilder()
-      .select("SELECT * FROM TABLE")
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .select(statement: "SELECT * FROM TABLE")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
 
     let builder3 = MySQLQueryBuilder()
-      .select("SELECT * FROM TABLE2")
-      .wheres("WHERE param1=? and param2=?", parameters: "abc", "bcd")
+      .select(statement: "SELECT * FROM TABLE2")
+      .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
 
-    let query = builder.join(builder2).join(builder3).build()
+    let query = builder.join(builder: builder2).join(builder: builder3).build()
 
     XCTAssertEqual("INSERT INTO MyTABLE (Field1) VALUES ('Field2'); SELECT * FROM TABLE WHERE param1='abc' and param2='bcd'; SELECT * FROM TABLE2 WHERE param1='abc' and param2='bcd';",
       query, "Should have returned valid query")
@@ -142,13 +142,13 @@ public class MySQLQueryBuilderTests : XCTestCase {
   public func testTrimCharTrimsWhenStatementEndsInAComma() {
     let statement = "INSERT BLAH ('dfdf',"
 
-    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(","), "Should have trimmed comma from statement")
+    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(character: ","), "Should have trimmed comma from statement")
   }
 
   public func testTrimCharDoesNothingWhenStatementDoesNotEndInAComma() {
     let statement = "INSERT BLAH ('dfdf'"
 
-    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(","), "Should have trimmed comma from statement")
+    XCTAssertEqual("INSERT BLAH ('dfdf'", statement.trimChar(character: ","), "Should have trimmed comma from statement")
   }
 }
 

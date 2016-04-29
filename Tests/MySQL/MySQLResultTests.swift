@@ -26,7 +26,7 @@ public class MySQLResultTests: XCTestCase {
     let connection = MockMySQLConnection()
     let cresult = CMySQLResult(bitPattern: 12)
     let myresult = MySQLResult(
-      result: cresult,
+      result: cresult!,
       fields: buildFields(),
       nextResult:connection.nextResult)
 
@@ -39,7 +39,7 @@ public class MySQLResultTests: XCTestCase {
     let connection = MockMySQLConnection()
     let cresult = CMySQLResult(bitPattern: 12)
     let myresult = MySQLResult(
-      result: cresult,
+      result: cresult!,
       fields: buildFields(),
       nextResult:connection.nextResult)
     let next = myresult.nextResult()
@@ -57,7 +57,7 @@ public class MySQLResultTests: XCTestCase {
     connection.nextResultReturn = cRow
 
     let cresult = CMySQLResult(bitPattern: 12)
-    let myresult = MySQLResult(result: cresult, fields: buildFields(), nextResult:connection.nextResult)
+    let myresult = MySQLResult(result: cresult!, fields: buildFields(), nextResult:connection.nextResult)
     let next = myresult.nextResult()
 
     XCTAssertNotNil(next, "Result should not be nil")
@@ -73,7 +73,7 @@ public class MySQLResultTests: XCTestCase {
     connection.nextResultReturn = cRow
 
     let cresult = CMySQLResult(bitPattern: 12)
-    let myresult = MySQLResult(result: cresult, fields: buildFields(), nextResult:connection.nextResult)
+    let myresult = MySQLResult(result: cresult!, fields: buildFields(), nextResult:connection.nextResult)
     let next = myresult.nextResult()
 
     XCTAssertEqual("myvalue", (next!["myname"] as! String), "Result should not be nil")

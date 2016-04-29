@@ -5,7 +5,7 @@ import CMySQLClient
 public typealias CMySQLResult = UnsafeMutablePointer<MYSQL_RES>
 
 // Pointer to an array of strings containing the data representing a row from a query.
-public typealias CMySQLRow = UnsafeMutablePointer<UnsafeMutablePointer<Int8>>
+public typealias CMySQLRow = MYSQL_ROW
 
 // Pointer to a MYSQL_FIELD struct as defined in the native c library.
 public typealias CMySQLField = UnsafeMutablePointer<MYSQL_FIELD>
