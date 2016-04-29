@@ -13,8 +13,16 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
     return nil
   }
 
+  public static var logger:(message: MySQLConnectionPoolMessage) -> Void = {
+    (message: MySQLConnectionPoolMessage) -> Void in
+  }
+
   public static func setPoolSize(size: Int) {
     self.setPoolSizeCalled = true
+  }
+
+  public static func setLogger(logger: (message: MySQLConnectionPoolMessage) -> Void) {
+    self.logger = logger
   }
 
   public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {

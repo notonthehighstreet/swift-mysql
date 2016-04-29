@@ -4,6 +4,7 @@ import Foundation
 public class MockMySQLConnection : MySQLConnectionProtocol {
   public var isConnectedReturn = true
   public var isConnectedCalled = false
+  public var connectError: MySQLError?
 
   public var connectCalled = false
   public var executeCalled = false
@@ -44,6 +45,10 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
     user: String,
     password: String
   ) throws {
+    if connectError != nil {
+      throw connectError!
+    }
+
     connectCalled = true
   }
 
@@ -53,6 +58,10 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
     password: String,
     port: Int
   ) throws {
+    if connectError != nil {
+      throw connectError!
+    }
+
     connectCalled = true
   }
 
@@ -63,6 +72,10 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
     port: Int,
     database: String
   ) throws {
+    if connectError != nil {
+      throw connectError!
+    }
+
     connectCalled = true
   }
 

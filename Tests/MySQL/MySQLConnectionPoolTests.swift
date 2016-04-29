@@ -76,7 +76,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
     var connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
     MySQLConnectionPool.releaseConnection(connection)
-    
+
     tempConnection.connectCalled = false
     tempConnection.isConnectedReturn = false
 
@@ -183,6 +183,66 @@ public class MySQLConnectionPoolTests: XCTestCase {
   public func testGetConnectionBlocksWhenPoolIsExhausted() {}
   public func testGetConnectionTimesoutWhenPoolIsExhausted() {}
   #endif
+
+  public func testBroadcastsEventWhenConnectionCreated() {
+    var dispatchedMessage:MySQLConnectionPoolMessage?
+
+    MySQLConnectionPool.setLogger {
+      (message: MySQLConnectionPoolMessage) in
+        dispatchedMessage = message
+    }
+    let _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+
+    XCTAssertEqual(MySQLConnectionPoolMessage.CreatedNewConnection, dispatchedMessage)
+  }
+
+  public func testBroadcastsEventWhenConnectionFailed() {
+    mockConnection.connectError = MySQLError.UnableToCreateConnection
+
+    var dispatchedMessage:MySQLConnectionPoolMessage?
+    MySQLConnectionPool.setLogger {
+      (message: MySQLConnectionPoolMessage) in
+        dispatchedMessage = message
+    }
+
+    do {
+      let _ = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    } catch {
+      print("BOOOM")
+    }
+
+    XCTAssertEqual(MySQLConnectionPoolMessage.FailedToCreateConnection, dispatchedMessage)
+  }
+
+  public func testBroadcastsEventWhenConnectionReused() {
+    var dispatchedMessage:MySQLConnectionPoolMessage?
+
+    MySQLConnectionPool.setLogger {
+      (message: MySQLConnectionPoolMessage) in
+        dispatchedMessage = message
+    }
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.releaseConnection(connection)
+    let _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+
+    XCTAssertEqual(MySQLConnectionPoolMessage.RetrievedConnectionFromPool, dispatchedMessage)
+  }
+
+  public func testBroadcastsEventWhenConnectionReconnected() {
+    var dispatchedMessage = [MySQLConnectionPoolMessage]()
+
+    MySQLConnectionPool.setLogger {
+      (message: MySQLConnectionPoolMessage) in
+        dispatchedMessage.append(message) // the event we are looking for will be the 2nd
+    }
+    let connection = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+    MySQLConnectionPool.releaseConnection(connection)
+    mockConnection.isConnectedReturn = false
+
+    let _ = try! MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
+
+    XCTAssertEqual(MySQLConnectionPoolMessage.ConnectionDisconnected, dispatchedMessage[1])
+  }
 }
 
 extension MySQLConnectionPoolTests {
@@ -200,7 +260,10 @@ extension MySQLConnectionPoolTests {
       ("testGetConnectionWithClosureExecutesClosurePassingConnection", testGetConnectionWithClosureExecutesClosurePassingConnection),
       ("testReleaseConnectionReturnsConnectionToThePool", testReleaseConnectionReturnsConnectionToThePool),
       ("testGetConnectionBlocksWhenPoolIsExhausted", testGetConnectionBlocksWhenPoolIsExhausted),
-      ("testGetConnectionTimesoutWhenPoolIsExhausted", testGetConnectionTimesoutWhenPoolIsExhausted)
+      ("testGetConnectionTimesoutWhenPoolIsExhausted", testGetConnectionTimesoutWhenPoolIsExhausted),
+      ("testBroadcastsEventWhenConnectionCreated", testBroadcastsEventWhenConnectionCreated),
+      ("testBroadcastsEventWhenConnectionReused", testBroadcastsEventWhenConnectionReused),
+      ("testBroadcastsEventWhenConnectionReconnected", testBroadcastsEventWhenConnectionReconnected)
     ]
   }
 }

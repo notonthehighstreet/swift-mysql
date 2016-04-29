@@ -26,6 +26,19 @@ public protocol MySQLConnectionPoolProtocol {
   static func setPoolSize(size: Int)
 
   /**
+    setLogger sets the function that will be called when an event occurs with the connectionPool,
+    you can use this method can be used to setup logging to be used for debugging or metrics.
+
+    ```
+      MySQLConnectionPool.setPoolSize {
+        (message: MySQLConnectionPoolMessage) in
+          print(message)
+    }
+    ```
+  */
+  static func setLogger(logger: (message: MySQLConnectionPoolMessage) -> Void)
+
+  /**
   getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
   if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
