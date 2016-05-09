@@ -133,6 +133,6 @@ docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
 
 ## Roadmap:
 - ~~Complete implementation of the connection pool.~~
-- ~Complete implementation for the MySQLField to give parity to C library.~
+- ~~Complete implementation for the MySQLField to give parity to C library.~~
 - Implement type casting for MySQLRow to match field type. - Complete for numbers and strings, 
 - Implement binary streaming for blob types.
