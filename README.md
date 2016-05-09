@@ -1,6 +1,6 @@
 # swift-mysql
 
-[![Join the chat at https://gitter.im/notonthehighstreet/swift-mysql](https://badges.gitter.im/notonthehighstreet/swift-mysql.svg)](https://gitter.im/notonthehighstreet/swift-mysql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/notonthehighstreet/swift-mysql](https://badges.gitter.im/notonthehighstreet/swift-mysql.svg)](https://gitter.im/notonthehighstreet/swift-mysql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  
 swift-mysql is a MySQL client implementation for Swift 3, it wraps the libmysql library and provides many convenience functions such as connection pooling and result sets as native types.
 
 ## Build instructions for Mac
@@ -133,6 +133,6 @@ docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
 
 ## Roadmap:
 - ~~Complete implementation of the connection pool.~~
-- Complete implementation for the MySQLField to give parity to C library.
-- Implement type casting for MySQLRow to match field type.
+- ~Complete implementation for the MySQLField to give parity to C library.~
+- Implement type casting for MySQLRow to match field type. - Complete for numbers and strings, 
 - Implement binary streaming for blob types.
