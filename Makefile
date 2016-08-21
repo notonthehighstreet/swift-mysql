@@ -10,10 +10,10 @@ BUILDCOMMAND := swift build -Xcc -fblocks
 REPLACECOMMAND := sed -i -e 's/MySQL.xctest/MySQLTest.xctest/g' .build/debug.yaml
 endif
 
-build: clean
+build: 
 	@echo --- Building package
 	$(BUILDCOMMAND)
-test: clean build
+test: build
 	@echo --- Running tests
 	$(REPLACECOMMAND)
 	swift test
