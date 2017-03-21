@@ -7,10 +7,10 @@ import Dispatch
 public class MySQLConnectionPoolTests: XCTestCase {
 
   var mockConnection = MockMySQLConnection()
-  var queue: dispatch_queue_t?
+  var queue: DispatchQueue?
 
   public override func setUp() {
-    queue = dispatch_queue_create("statsd_queue." + String(NSDate().timeIntervalSince1970), DISPATCH_QUEUE_CONCURRENT)
+    queue = DispatchQueue.init(label: "statsd_queue." + String(NSDate().timeIntervalSince1970), attributes: .concurrent)
 
     mockConnection = MockMySQLConnection()
     MySQLConnectionPool.setConnectionProvider() {
@@ -129,12 +129,12 @@ public class MySQLConnectionPoolTests: XCTestCase {
   var timer = 0.0
 
   public func testGetConnectionBlocksWhenPoolIsExhausted() {
-    let ex = expectation(withDescription: "Should have blocked when no pool connections are available")
+    let ex = expectation(description: "Should have blocked when no pool connections are available")
 
     MySQLConnectionPool.poolSize = 1
     let connection = try! MySQLConnectionPool.getConnection(host: "192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-    dispatch_async(queue!, {
+    queue!.async(execute: {
       let startTime = NSDate().timeIntervalSince1970
       let _ = try! MySQLConnectionPool.getConnection(host: "192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
@@ -148,7 +148,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
     MySQLConnectionPool.releaseConnection(connection: connection)
 
-    waitForExpectations(withTimeout: 3) { error in
+    waitForExpectations(timeout: 3) { error in
       if let error = error {
         XCTFail("Error: \(error.localizedDescription)")
       }
@@ -159,13 +159,13 @@ public class MySQLConnectionPoolTests: XCTestCase {
   }
 
   public func testGetConnectionTimesoutWhenPoolIsExhausted() {
-    let ex = expectation(withDescription: "MySQLConnectionPool getConnection should have timedout")
+    let ex = expectation(description: "MySQLConnectionPool getConnection should have timedout")
 
     MySQLConnectionPool.poolSize = 1
     MySQLConnectionPool.poolTimeout = 1
     let _ = try! MySQLConnectionPool.getConnection(host: "192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
 
-    dispatch_async(queue!, {
+    queue!.async(execute: {
       do {
         let _ = try MySQLConnectionPool.getConnection(host: "192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test")!
       } catch {
@@ -173,7 +173,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
       }
     })
 
-    waitForExpectations(withTimeout: 3) { error in
+    waitForExpectations(timeout: 3) { error in
       if let error = error {
         XCTFail("Error: \(error.localizedDescription)")
       }
@@ -243,7 +243,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 }
 
 extension MySQLConnectionPoolTests {
-  static var allTests: [(String, MySQLConnectionPoolTests -> () throws -> Void)] {
+  static var allTests: [(String, (MySQLConnectionPoolTests) -> () throws -> Void)] {
     return [
       ("testSetsPoolSize", testSetsPoolSize),
       ("testConnectionConnectCalled", testConnectionConnectCalled),

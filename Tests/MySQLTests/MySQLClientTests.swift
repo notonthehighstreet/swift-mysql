@@ -88,7 +88,7 @@ public class MySQLClientTests: XCTestCase {
 }
 
 extension MySQLClientTests {
-    static var allTests: [(String, MySQLClientTests -> () throws -> Void)] {
+    static var allTests: [(String, (MySQLClientTests) -> () throws -> Void)] {
       return [
         ("testClientInfoReturnsClientInfo", testClientInfoReturnsClientInfo),
         ("testClientVersionReturnsClientVersion", testClientVersionReturnsClientVersion),

@@ -49,11 +49,11 @@ client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
 
 // use query builder to insert data
 var queryBuilder = MySQLQueryBuilder()
-  .insert(data: ["Id": "1", "Name": "Audi", "Price": "52642"], table: "Cars")
+  .insert(data: ["Id": "1" as AnyObject, "Name": "Audi" as AnyObject, "Price": "52642" as AnyObject], table: "Cars")
 client.execute(builder: queryBuilder)
 
 queryBuilder = MySQLQueryBuilder()
-  .insert(data: ["Id": "2", "Name": "Mercedes", "Price": "72341"], table: "Cars")
+  .insert(data: ["Id": "2" as AnyObject, "Name": "Mercedes" as AnyObject, "Price": "72341" as AnyObject], table: "Cars")
 client.execute(builder: queryBuilder)
 
 // create query to select data from the database

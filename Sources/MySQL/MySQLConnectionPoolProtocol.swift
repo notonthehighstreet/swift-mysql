@@ -15,7 +15,7 @@ public protocol MySQLConnectionPoolProtocol {
       }
     ```
   **/
-  static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?)
+  static func setConnectionProvider(provider: @escaping () -> MySQLConnectionProtocol?)
 
   /**
     setPoolSize sets the size for the connection pool, default is 20
@@ -36,7 +36,7 @@ public protocol MySQLConnectionPoolProtocol {
     }
     ```
   */
-  static func setLogger(logger: (message: MySQLConnectionPoolMessage) -> Void)
+  static func setLogger(logger: @escaping (_ message: MySQLConnectionPoolMessage) -> Void)
 
   /**
   getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
@@ -100,7 +100,7 @@ public protocol MySQLConnectionPoolProtocol {
                             password: String,
                             port: Int,
                             database: String,
-                            closure: ((connection: MySQLConnectionProtocol) -> Void)) throws
+                            closure: ((_: MySQLConnectionProtocol) -> Void)) throws
 
   /**
     releaseConnection returns a connection to the pool.

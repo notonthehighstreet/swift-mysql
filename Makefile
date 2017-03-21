@@ -16,7 +16,7 @@ build: clean
 test: clean build
 	@echo --- Running tests
 	$(REPLACECOMMAND)
-	swift test
+	swift test -Xlinker -L/usr/local/lib
 
 clean:
 	@echo --- Invoking swift build --clean

@@ -16,7 +16,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     return nil
   }
 
-  static var logger:(message: MySQLConnectionPoolMessage) -> Void = {
+  static var logger:(_: MySQLConnectionPoolMessage) -> Void = {
     (message: MySQLConnectionPoolMessage) -> Void in
   }
 
@@ -30,7 +30,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     poolSize = size
   }
 
-  public static func setLogger(logger: (message: MySQLConnectionPoolMessage) -> Void) {
+  public static func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {
     self.logger = logger
   }
 
@@ -40,7 +40,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Parameters:
       - provider: Closure which returns an object implementing MySQLConnectionProtocol.
   */
-  public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {
+  public static func setConnectionProvider(provider: @escaping () -> MySQLConnectionProtocol?) {
     self.connectionProvider = provider
   }
 
@@ -92,7 +92,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
 
     if let connection = getInactive(key: key) {
       addActive(key: key, connection: connection)
-      logger(message: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
+      logger(_: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
       return connection
     } else {
       return try createAndAddActive(host: host, user: user, password: password, port: port, database: database)
@@ -133,16 +133,16 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
                                    password: String,
                                    port: Int,
                                    database: String,
-                                   closure: ((connection: MySQLConnectionProtocol) -> Void)) throws {
+                                   closure: ((_: MySQLConnectionProtocol) -> Void)) throws {
     do {
       let connection = try getConnection(host: host, user: user, password: password, port: port, database: database)
       defer {
         self.releaseConnection(connection: connection!)
       }
 
-      closure(connection: connection!)
+      closure(_: connection!)
     } catch {
-      logger(message: MySQLConnectionPoolMessage.FailedToCreateConnection)
+      logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
       throw error
     }
   }
@@ -173,13 +173,13 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     do {
       try connection!.connect(host: host, user: user, password: password, port: port, database: database)
     } catch {
-      logger(message: MySQLConnectionPoolMessage.FailedToCreateConnection)
+      logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
       throw error
     }
 
     let key = computeKey(host: host, user: user, password: password, database: database)
     addActive(key: key, connection: connection!)
-    logger(message: MySQLConnectionPoolMessage.CreatedNewConnection)
+    logger(_: MySQLConnectionPoolMessage.CreatedNewConnection)
 
     return connection
   }
@@ -223,7 +223,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       if connection.isConnected() {
         return connection
       } else {
-        logger(message: MySQLConnectionPoolMessage.ConnectionDisconnected)
+        logger(_: MySQLConnectionPoolMessage.ConnectionDisconnected)
         return nil
       }
     }

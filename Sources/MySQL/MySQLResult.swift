@@ -5,7 +5,7 @@ import CMySQLClient
 public class MySQLResult: MySQLResultProtocol {
 
   private var resultPointer: CMySQLResult? = nil
-  private var getNextResult:(result:CMySQLResult) -> CMySQLRow?
+  private var getNextResult:(_:CMySQLResult) -> CMySQLRow?
 
   /**
     The fields property returns an array containing the fields which corresponds to the query executed.
@@ -22,7 +22,7 @@ public class MySQLResult: MySQLResultProtocol {
       return nil
     }
 
-    if let row = getNextResult(result: resultPointer!) {
+    if let row = getNextResult(_: resultPointer!) {
       let parser = MySQLRowParser()
       return parser.parse(row: row, headers:fields)
     } else {
@@ -30,7 +30,7 @@ public class MySQLResult: MySQLResultProtocol {
     }
   }
 
-  internal init(result:CMySQLResult, fields: [CMySQLField], nextResult: ((result:CMySQLResult) -> CMySQLRow?)) {
+  internal init(result:CMySQLResult, fields: [CMySQLField], nextResult: @escaping ((_:CMySQLResult) -> CMySQLRow?)) {
     resultPointer = result
     getNextResult = nextResult
     parseFields(fields: fields)

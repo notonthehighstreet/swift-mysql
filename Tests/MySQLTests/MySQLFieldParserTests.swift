@@ -220,7 +220,7 @@ public class MySQLFieldParserTests: XCTestCase {
 }
 
 extension MySQLFieldParserTests {
-    static var allTests: [(String, MySQLFieldParserTests -> () throws -> Void)] {
+    static var allTests: [(String, (MySQLFieldParserTests) -> () throws -> Void)] {
       return [
         ("testParsesName", testParsesName),
         ("testParsesTypeMYSQL_TYPE_TINYReturnsTiny", testParsesTypeMYSQL_TYPE_TINYReturnsTiny),

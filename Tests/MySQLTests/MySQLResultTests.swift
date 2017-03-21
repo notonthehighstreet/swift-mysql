@@ -48,7 +48,7 @@ public class MySQLResultTests: XCTestCase {
   }
 
   public func testNextResultReturnsRow() {
-    let cRow = CMySQLRow(allocatingCapacity: 2)
+    let cRow = CMySQLRow.allocate(capacity: 2)
 
     cRow[0] = "myvalue".getUnsafeMutablePointer()
     cRow[1] = "myvalue2".getUnsafeMutablePointer()
@@ -64,7 +64,7 @@ public class MySQLResultTests: XCTestCase {
   }
 
   public func testNextResultParsesRow() {
-    let cRow = CMySQLRow(allocatingCapacity: 2)
+    let cRow = CMySQLRow.allocate(capacity: 2)
 
     cRow[0] = "myvalue".getUnsafeMutablePointer()
     cRow[1] = "myvalue2".getUnsafeMutablePointer()
@@ -82,7 +82,7 @@ public class MySQLResultTests: XCTestCase {
 }
 
 extension MySQLResultTests {
-  static var allTests: [(String, MySQLResultTests -> () throws -> Void)] {
+  static var allTests: [(String, (MySQLResultTests) -> () throws -> Void)] {
     return [
       ("testParsesHeadersOnInit", testParsesHeadersOnInit),
       ("testNextResultReturnsNilWhenNoResult", testNextResultReturnsNilWhenNoResult),

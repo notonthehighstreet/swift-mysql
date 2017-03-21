@@ -7,7 +7,7 @@ import CMySQLClient
 public class MySQLRowParserTests: XCTestCase {
 
   let parser = MySQLRowParser()
-  let cRow = CMySQLRow(allocatingCapacity: 1)
+  let cRow = CMySQLRow.allocate(capacity: 1)
   var headers = [MySQLField]()
 
   public override func setUp() {
@@ -145,7 +145,7 @@ public class MySQLRowParserTests: XCTestCase {
 }
 
 extension MySQLRowParserTests {
-    static var allTests: [(String, MySQLRowParserTests -> () throws -> Void)] {
+    static var allTests: [(String, (MySQLRowParserTests) -> () throws -> Void)] {
       return [
         ("testParsesRowWithStringValue", testParsesRowWithStringValue),
         ("testParsesFieldWithNilValueSetsNil", testParsesFieldWithNilValueSetsNil),

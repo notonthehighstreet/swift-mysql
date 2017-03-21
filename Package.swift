@@ -6,10 +6,9 @@ let package = Package(
     Target(
       name: "Example",
       dependencies: [.Target(name: "MySQL")]),
-    Target(name: "Example"),
+    Target(name: "MySQL"),
   ],
-	//exclude: ["Tests"],
   dependencies: [
-    .Package(url: "https://github.com/notonthehighstreet/swift-libmysql", majorVersion: 0, minor: 0)
+    .Package(url: "https://github.com/nicholasjackson/swift-libmysql", majorVersion: 0, minor: 1)
   ]
 )
