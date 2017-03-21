@@ -86,7 +86,7 @@
 		OBJ_40 /* Utility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		OBJ_42 /* Example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; path = Example; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_43 /* MySQL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MySQL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		OBJ_44 /* MySQLTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = MySQLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		OBJ_44 /* MySQLTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = MySQLTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -417,8 +417,11 @@
 					"Packages/swift-libmysql-0.1.0",
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/Example_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path /usr/local/lib";
-				OTHER_LDFLAGS = "$(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
@@ -439,8 +442,11 @@
 					"Packages/swift-libmysql-0.1.0",
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/Example_Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path /usr/local/lib";
-				OTHER_LDFLAGS = "$(inherited)";
+				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx @executable_path";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				SWIFT_FORCE_DYNAMIC_LINK_STDLIB = YES;
 				SWIFT_FORCE_STATIC_LINK_STDLIB = NO;
@@ -455,6 +461,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					/usr/local/lib,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -462,7 +469,10 @@
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/MySQL_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = MySQL;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -478,6 +488,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					/usr/local/lib,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -485,7 +496,10 @@
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/MySQL_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = MySQL;
 				PRODUCT_MODULE_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -508,7 +522,10 @@
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/MySQLTests_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				TARGET_NAME = MySQLTests;
 			};
@@ -528,7 +545,10 @@
 				);
 				INFOPLIST_FILE = MySQL.xcodeproj/MySQLTests_Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-L/usr/local/lib",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				TARGET_NAME = MySQLTests;
 			};
