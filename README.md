@@ -1,8 +1,8 @@
 # swift-mysql
 swift-mysql is a MySQL client implementation for Swift 3, it wraps the libmysql library and provides many convenience functions such as connection pooling and result sets as native types.
 
-## API Documentaion:
-[Docs](http://htmlpreview.github.io/?https://github.com/nicholasjackson/swift-mysql/blob/master/docs/index.html)
+## API Documentation:
+**[Docs](http://htmlpreview.github.io/?https://github.com/nicholasjackson/swift-mysql/blob/master/docs/index.html)**
 
 ## Build instructions for Mac
 
