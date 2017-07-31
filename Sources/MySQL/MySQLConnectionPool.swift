@@ -1,23 +1,31 @@
 import Foundation
 
-// Singleton instance which maintains a number of mysql connections
-//TODO: Check how scope works in kitura
-//TODO: Complete implementation of pool
 public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
 
-  static var activeConnections = [String: [MySQLConnectionProtocol]]()
-  static var inactiveConnections = [String: [MySQLConnectionProtocol]]()
-  static var poolSize:Int = 20
-  static var poolTimeout:Double = 20.0 // 20s
+  var connectionString: MySQLConnectionString
+  var activeConnections = [String: [MySQLConnectionProtocol]]()
+  var inactiveConnections = [String: [MySQLConnectionProtocol]]()
+  var poolSize:Int = 20
+  var poolTimeout:Double = 20.0 // 20s
 
-  static var lock = NSLock()
+  var lock = NSLock()
 
-  static var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
+  var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
     return nil
   }
 
-  static var logger:(_: MySQLConnectionPoolMessage) -> Void = {
+  var logger:(_: MySQLConnectionPoolMessage) -> Void = {
     (message: MySQLConnectionPoolMessage) -> Void in
+  }
+
+
+ public required init(connectionString: MySQLConnectionString, 
+       poolSize: Int, 
+       provider: @escaping () -> MySQLConnectionProtocol?) {
+
+    self.connectionString = connectionString
+    self.poolSize = poolSize
+    self.connectionProvider = provider
   }
 
   /**
@@ -26,11 +34,11 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Parameters:
       - size: new size of the pool
   */
-  public static func setPoolSize(size: Int) {
+  public func setPoolSize(size: Int) {
     poolSize = size
   }
 
-  public static func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {
+  public func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {
     self.logger = logger
   }
 
@@ -40,39 +48,16 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Parameters:
       - provider: Closure which returns an object implementing MySQLConnectionProtocol.
   */
-  public static func setConnectionProvider(provider: @escaping () -> MySQLConnectionProtocol?) {
+  public func setConnectionProvider(provider: @escaping () -> MySQLConnectionProtocol?) {
     self.connectionProvider = provider
   }
-
-  /**
-  getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-  if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
-
-    - Parameters:
-      - host: The host name or ip address of the database.
-      - user: The username to use for the connection.
-      - password: The password to use for the connection.
-
-    - Returns: An object conforming to the MySQLConnectionProtocol.
-  */
-  public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
-    return try getConnection(host: host, user: user, password: password, port: 3306, database: "")
-  }
-
   /**
     getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
     if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
 
-    - Parameters:
-      - host: The host name or ip address of the database
-      - user: The username to use for the connection
-      - password: The password to use for the connection
-      - port: The the port to connect to
-      - database: The database to connect to
-
     - Returns: An object conforming to the MySQLConnectionProtocol.
   */
-  public static func getConnection(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
+  public func getConnection() throws -> MySQLConnectionProtocol? {
     // check pool has space
     var startTime = NSDate()
 
@@ -88,14 +73,14 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
 
     // check if there is something available in the pool if so return it
-    let key = computeKey(host: host, user: user, password: password, database: database)
+    let key = self.connectionString.key()
 
     if let connection = getInactive(key: key) {
       addActive(key: key, connection: connection)
       logger(_: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
       return connection
     } else {
-      return try createAndAddActive(host: host, user: user, password: password, port: port, database: database)
+      return try createAndAddActive()
     }
   }
 
@@ -107,37 +92,23 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     back to the pool saving the requirement to manually call releaseConnection.
 
     - Parameters:
-      - host: The host name or ip address of the database
-      - user: The username to use for the connection
-      - password: The password to use for the connection
-      - port: The the port to connect to
-      - database: The database to connect to
       - closure: Code that will be executed before connection is released back to the pool
 
     - Returns: An object implementing the MySQLConnectionProtocol.
 
     ```
-      MySQLConnectionPoolProtocol.getConnection(host: "127.0.0.1",
-                                                user: "root",
-                                                password: "mypassword",
-                                                port: 3306,
-                                                database: "mydatabase") {
+      MySQLConnectionPoolProtocol.getConnection() {
         (connection: MySQLConnectionProtocol) in
           let result = connection.execute("SELECT * FROM TABLE")
           ...
       }
     ```
   */
-  public static func getConnection(host: String,
-                                   user: String,
-                                   password: String,
-                                   port: Int,
-                                   database: String,
-                                   closure: ((_: MySQLConnectionProtocol) -> Void)) throws {
+  public func getConnection(closure: ((_: MySQLConnectionProtocol) -> Void)) throws {
     do {
-      let connection = try getConnection(host: host, user: user, password: password, port: port, database: database)
+      let connection = try getConnection()
       defer {
-        self.releaseConnection(connection: connection!)
+        self.releaseConnection(connection!)
       }
 
       closure(_: connection!)
@@ -153,7 +124,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     - Parameters:
       - connection: Connection to be returned to the pool
   */
-  public static func releaseConnection(connection: MySQLConnectionProtocol) {
+  public func releaseConnection(_ connection: MySQLConnectionProtocol) {
     lock.lock()
     defer {
       lock.unlock()
@@ -167,24 +138,28 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
   }
 
-  private static func createAndAddActive(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
+  private func createAndAddActive() throws -> MySQLConnectionProtocol? {
     let connection = connectionProvider()
 
     do {
-      try connection!.connect(host: host, user: user, password: password, port: port, database: database)
+      try connection!.connect(host: self.connectionString.host,
+                              user: self.connectionString.user, 
+                              password: self.connectionString.password, 
+                              port: self.connectionString.port, 
+                              database: self.connectionString.database)
     } catch {
       logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
       throw error
     }
 
-    let key = computeKey(host: host, user: user, password: password, database: database)
+    let key = self.connectionString.key()
     addActive(key: key, connection: connection!)
     logger(_: MySQLConnectionPoolMessage.CreatedNewConnection)
 
     return connection
   }
 
-  private static func findActiveConnection(connection: MySQLConnectionProtocol) -> (key: String?, index: Int) {
+  private func findActiveConnection(connection: MySQLConnectionProtocol) -> (key: String?, index: Int) {
     var connectionKey:String? = nil
     var connectionIndex = -1
 
@@ -198,7 +173,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     return (connectionKey, connectionIndex)
   }
 
-  private static func addActive(key: String, connection: MySQLConnectionProtocol) {
+  private func addActive(key: String, connection: MySQLConnectionProtocol) {
     if activeConnections[key] == nil {
       activeConnections[key] = [MySQLConnectionProtocol]()
     }
@@ -206,7 +181,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     activeConnections[key]!.append(connection)
   }
 
-  private static func addInactive(key: String, connection: MySQLConnectionProtocol) {
+  private func addInactive(key: String, connection: MySQLConnectionProtocol) {
     if inactiveConnections[key] == nil {
       inactiveConnections[key] = [MySQLConnectionProtocol]()
     }
@@ -214,7 +189,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     inactiveConnections[key]!.append(connection)
   }
 
-  private static func getInactive(key: String) -> MySQLConnectionProtocol? {
+  private func getInactive(key: String) -> MySQLConnectionProtocol? {
     if inactiveConnections[key] != nil && inactiveConnections[key]!.count > 0 {
       // pop a connection off the stack
       let connection = inactiveConnections[key]![0]
@@ -231,7 +206,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     return nil
   }
 
-  private static func countActive() -> Int {
+  private func countActive() -> Int {
     lock.lock()
     defer {
       lock.unlock()
@@ -242,9 +217,5 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
       c += value.count
     }
     return c
-  }
-
-  private static func computeKey(host: String, user: String, password: String, database: String) -> String {
-    return "\(host)_\(user)_\(password)_\(database)"
   }
 }

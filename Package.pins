@@ -1,0 +1,12 @@
+{
+  "autoPin": true,
+  "pins": [
+    {
+      "package": "swift-libmysql",
+      "reason": null,
+      "repositoryURL": "https://github.com/nicholasjackson/swift-libmysql",
+      "version": "0.1.0"
+    }
+  ],
+  "version": 1
+}
