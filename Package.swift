@@ -3,9 +3,8 @@ import PackageDescription
 let package = Package(
   name: "MySQL",
   targets: [
-    Target(
-      name: "Example",
-      dependencies: [.Target(name: "MySQL")]),
+    Target(name: "MySQLTests", dependencies: ["MySQL"]),
+    Target(name: "IntegrationTests", dependencies: ["MySQL"]),
     Target(name: "MySQL"),
   ],
   dependencies: [
