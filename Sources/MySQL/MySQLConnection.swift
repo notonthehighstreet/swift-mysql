@@ -3,10 +3,10 @@ import CMySQLClient
 
 // Represents an active connection to a MySQL database.
 public class MySQLConnection : MySQLConnectionProtocol  {
-  private var uuid: Double
+  internal var uuid: Double
 
-  private var connection: UnsafeMutablePointer<MYSQL>? = nil
-  private var result:UnsafeMutablePointer<MYSQL_RES>? = nil
+  internal var connection: UnsafeMutablePointer<MYSQL>? = nil
+  internal var result:UnsafeMutablePointer<MYSQL_RES>? = nil
 
   public init() {
     uuid = NSDate().timeIntervalSince1970
@@ -71,12 +71,10 @@ extension MySQLConnection {
     connection = CMySQLClient.mysql_init(nil);
 
     if connection == nil {
-      print("Error: Unable to create connection")
       throw MySQLError.UnableToCreateConnection
     }
 
     if CMySQLClient.mysql_real_connect(connection, host, user, password, database, UInt32(port), nil, CMySQLClient.CLIENT_MULTI_STATEMENTS) == nil {
-      print("Error: Unable to connect to database")
       close()
       throw MySQLError.UnableToCreateConnection
     }
@@ -121,13 +119,9 @@ extension MySQLConnection {
 
     if (CMySQLClient.mysql_query(connection, query) == 1) {
       let error = String(cString: CMySQLClient.mysql_error(connection))
-      print("Error executing query: " + query)
-      print(error)
 
       return (nil, nil, MySQLError.UnableToExecuteQuery(message: error))
     }
-
-    print("total affected rows: " + String(mysql_affected_rows(connection)))
 
     return getResults()
   }
@@ -169,7 +163,6 @@ extension MySQLConnection {
     if mysql_next_result(connection) < 1 {
       return getResults()
     } else {
-      print("No more results")
       return (nil, nil, MySQLError.NoMoreResults)
     }
   }
@@ -179,8 +172,7 @@ extension MySQLConnection {
 
     result = CMySQLClient.mysql_store_result(connection)
     if (result == nil) {
-      print("Error getting results")
-      print(String(cString: CMySQLClient.mysql_error(connection)))
+      //print(String(cString: CMySQLClient.mysql_error(connection)))
       return (nil, nil, nil)
     } else {
       return (result, getHeaders(resultPointer: result!), nil)

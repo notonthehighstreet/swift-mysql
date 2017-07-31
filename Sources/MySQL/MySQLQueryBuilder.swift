@@ -232,7 +232,7 @@ public class MySQLQueryBuilder: Equatable {
 
 extension String {
   public func trimChar(character: Character) -> String {
-    if self[self.endIndex.predecessor()] == character {
+    if self[self.index(before:self.endIndex)] == character {
       var chars = Array(self.characters)
       chars.removeLast()
       return String(chars)

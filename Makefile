@@ -1,23 +1,41 @@
-ifeq "$(PLATFORM)" ""
-PLATFORM := $(shell uname)
-endif
+TEST_COMMAND = swift test --color always -Xlinker -L/usr/local/lib
 
-ifeq "$(PLATFORM)" "Darwin"
-BUILDCOMMAND := swift build -Xcc -fblocks -Xswiftc -I/usr/local/include -Xlinker -L/usr/local/lib
-REPLACECOMMAND := ls > /dev/null
-else
-BUILDCOMMAND := swift build -Xcc -fblocks
-REPLACECOMMAND := sed -i -e 's/MySQL.xctest/MySQLTest.xctest/g' .build/debug.yaml
-endif
-
-build: clean
+build:
 	@echo --- Building package
-	$(BUILDCOMMAND)
-test: clean build
+	swift build -Xlinker -L/usr/local/lib
+
+test_unit: build
 	@echo --- Running tests
-	$(REPLACECOMMAND)
-	swift test
+	
+	$(TEST_COMMAND) -s MySQLTests.MySQLClientTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionPoolTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLFieldParserTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLQueryBuilderTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLResultTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLRowParserTests
+
+test_one: build
+	swift test --color always  -Xlinker -L/usr/local/lib -s ${TEST}
+
+test_integration: build
+	@echo --- Running integration tests
+	docker run -d -e "MYSQL_ROOT_PASSWORD=my-secret-pw" --name mysqlswift -p 3306:3306 mysql
+	sleep 10
+
+	trap '$(TEST_COMMAND) -s IntegrationTests.IntegrationTests' EXIT
+
+	docker stop mysqlswift
+	docker rm -v mysqlswift
+
+docs:
+	jazzy \
+  --clean \
+  --author Nic Jackson \
+  --author_url https://nicholasjackson.io \
+  --github_url https://github.com/nicholasjackson/swift-mysql \
+  --module MySQL \
+  --output docs/ \
 
 clean:
-	@echo --- Invoking swift build --clean
-	swift build --clean
+	@echo --- Clean build folder 
+	rm -rf .build
