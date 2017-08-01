@@ -6,19 +6,18 @@ var connectionString: MySQLConnectionString?
 
 public class IntegrationTests: XCTestCase {
   public override func setUp() {
-    let environment = ProcessInfo.processInfo.environment
-    let mySQLServer = environment["MYSQL_SERVER"]
-    connectionString = MySQLConnectionString(host: mySQLServer!)
+    let mySQLServer = "0.0.0.0"
+    connectionString = MySQLConnectionString(host: mySQLServer)
     connectionString!.port = 3306
     connectionString!.user = "root"
-    connectionString!.password = environment["MYSQL_ROOT_PASSWORD"] ?? "my-secret-pw"
+    connectionString!.password = "my-secret-pw"
     connectionString!.database = ""
   }
 
   func createConnection(
     connectionString: MySQLConnectionString,
     block: ((MySQLConnectionProtocol) -> Void)) {
-    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize:1) {
+    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1) {
       return MySQL.MySQLConnection()
     }
 
@@ -64,14 +63,15 @@ public class IntegrationTests: XCTestCase {
         let client = MySQLClient(connection: connection)
 
         let _ = client.execute(query: "DROP TABLE IF EXISTS Cars")
-        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
+        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name VARCHAR(50), Price INT, UpdatedAt TIMESTAMP)")
 
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
           .insert(data: [
             "Id": 1,
             "Name": "Audi",
-            "Price": 52642], table: "Cars")
+            "Price": 52642,
+            "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
 
@@ -79,13 +79,14 @@ public class IntegrationTests: XCTestCase {
           .insert(data: [
             "Id": 2,
             "Name": "Mercedes",
-            "Price": 72341], table: "Cars")
+            "Price": 72341,
+            "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
 
         // create query to select data from the database
         queryBuilder = MySQLQueryBuilder()
-          .select(fields: ["Id", "Name", "Price"], table: "Cars")
+          .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
 
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
@@ -109,13 +110,13 @@ public class IntegrationTests: XCTestCase {
 
         let client = MySQLClient(connection: connection)
         let queryBuilder = MySQLQueryBuilder()
-          .select(fields: ["Id", "Name", "Price"], table: "Cars")
+          .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
 
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
 
         if let resultSet = ret.0 {
-          while case let row? = resultSet.nextResult() {
+          while case let row? = resultSet.nextResult() {            
             XCTAssertNotNil(row)
             rowCount += 1
           }

@@ -21,11 +21,11 @@ test_integration: build
 	@echo --- Running integration tests
 
 	docker run --name mysqlswift \
-	--rm -d \
-	-e MYSQL_SERVER=$(MYSQL_SERVER) \
-	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) mysql
+	-e MYSQL_ROOT_PASSWORD=my-secret-pw \
+	-d \
+	-p 3306:3306 mysql
 
-	sleep 10
+	sleep 15
 
 	trap '$(TEST_COMMAND) -s IntegrationTests.IntegrationTests' EXIT
 
