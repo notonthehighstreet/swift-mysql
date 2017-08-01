@@ -59,8 +59,8 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testInsertGeneratesValidQuery() {
     var data = MySQLRow()
-    data["abc"] = "bcd" as AnyObject?
-    data["bcd"] = "efg" as AnyObject?
+    data["abc"] = "bcd"
+    data["bcd"] = "efg"
 
     let query = MySQLQueryBuilder()
     .insert(data: data, table: "MyTable")
@@ -71,8 +71,8 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testUpdateGeneratesValidQuery() {
     var data = MySQLRow()
-    data["abc"] = "abc" as AnyObject?
-    data["bcd"] = "bcd" as AnyObject?
+    data["abc"] = "abc"
+    data["bcd"] = "bcd"
 
     let query = MySQLQueryBuilder()
       .update(data: data, table: "MyTable")
@@ -100,7 +100,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testUpdateWithWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
-      .update(data: ["abc": "bcd" as AnyObject], table: "MyTable")
+      .update(data: ["abc": "bcd"], table: "MyTable")
       .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
       .build()
 
@@ -109,7 +109,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testJoinWithOneJoinConcatenatesQuery() {
     let builder = MySQLQueryBuilder()
-        .insert(data: ["Field1": "Field2" as AnyObject], table: "MyTABLE")
+        .insert(data: ["Field1": "Field2"], table: "MyTABLE")
 
     let builder2 = MySQLQueryBuilder()
       .select(statement: "SELECT * FROM TABLE")
@@ -123,7 +123,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testJoinWithTwoJoinsConcatenatesQuery() {
     let builder = MySQLQueryBuilder()
-        .insert(data: ["Field1": "Field2" as AnyObject], table: "MyTABLE")
+        .insert(data: ["Field1": "Field2"], table: "MyTABLE")
 
     let builder2 = MySQLQueryBuilder()
       .select(statement: "SELECT * FROM TABLE")

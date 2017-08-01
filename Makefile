@@ -1,4 +1,4 @@
-TEST_COMMAND = swift test --color always -Xlinker -L/usr/local/lib
+TEST_COMMAND = swift test -Xlinker -L/usr/local/lib
 
 build:
 	@echo --- Building package
@@ -6,7 +6,7 @@ build:
 
 test_unit: build
 	@echo --- Running tests
-	
+
 	$(TEST_COMMAND) -s MySQLTests.MySQLClientTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionPoolTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLFieldParserTests
@@ -15,7 +15,7 @@ test_unit: build
 	$(TEST_COMMAND) -s MySQLTests.MySQLRowParserTests
 
 test_one: build
-	swift test --color always  -Xlinker -L/usr/local/lib -s ${TEST}
+	swift test -Xlinker -L/usr/local/lib -s ${TEST}
 
 test_integration: build
 	@echo --- Running integration tests
@@ -37,5 +37,5 @@ docs:
   --output docs/ \
 
 clean:
-	@echo --- Clean build folder 
+	@echo --- Clean build folder
 	rm -rf .build

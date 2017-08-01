@@ -11,13 +11,13 @@ internal class MySQLRowParser {
       } else {
         switch headers[i].type {
           case MySQLFieldType.String, MySQLFieldType.VarString:
-            result[headers[i].name] = pointerToString(row[i]!) as AnyObject?
+            result[headers[i].name] = pointerToString(row[i]!)
           case MySQLFieldType.Tiny, MySQLFieldType.Short, MySQLFieldType.Long, MySQLFieldType.Int24, MySQLFieldType.LongLong:
-            result[headers[i].name] = Int(pointerToString(row[i]!)) as AnyObject?
+            result[headers[i].name] = Int(pointerToString(row[i]!))
           case MySQLFieldType.Decimal, MySQLFieldType.NewDecimal, MySQLFieldType.Double:
-            result[headers[i].name] = Double(pointerToString(row[i]!)) as AnyObject?
+            result[headers[i].name] = Double(pointerToString(row[i]!))
           case MySQLFieldType.Float:
-            result[headers[i].name] = Float(pointerToString(row[i]!)) as AnyObject?
+            result[headers[i].name] = Float(pointerToString(row[i]!))
           default:
             result[headers[i].name] = nil
         }

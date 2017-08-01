@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import MySQLTestSuite
+@testable import MySQLTests
 
 XCTMain([
   testCase(MySQLClientTests.allTests),
