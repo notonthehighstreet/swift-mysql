@@ -15,19 +15,19 @@ public class IntegrationTests: XCTestCase {
   }
 
   func createConnection(
-    connectionString: MySQLConnectionString, 
+    connectionString: MySQLConnectionString,
     block: ((MySQLConnectionProtocol) -> Void)) {
     var pool = MySQLConnectionPool(connectionString: connectionString, poolSize:1) {
       return MySQL.MySQLConnection()
     }
-    
+
     do {
       // get a connection from the pool with no database
       let connection = try pool.getConnection()!
 
       // release the connection back to the pool
       defer {
-        pool.releaseConnection(connection) 
+        pool.releaseConnection(connection)
       }
 
       block(connection)
@@ -58,34 +58,34 @@ public class IntegrationTests: XCTestCase {
   func testConnectionInsertsAndReadsData() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
-      (connection: MySQLConnectionProtocol) in 
+      (connection: MySQLConnectionProtocol) in
 
         let client = MySQLClient(connection: connection)
 
         let _ = client.execute(query: "DROP TABLE IF EXISTS Cars")
         let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
-        
+
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
           .insert(data: [
-            "Id": 1 as AnyObject, 
-            "Name": "Audi" as AnyObject, 
-            "Price": 52642 as AnyObject], table: "Cars")
+            "Id": 1,
+            "Name": "Audi",
+            "Price": 52642], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
-        
+
         queryBuilder = MySQLQueryBuilder()
           .insert(data: [
-            "Id": 2 as AnyObject, 
-            "Name": "Mercedes" as AnyObject, 
-            "Price": 72341 as AnyObject], table: "Cars")
+            "Id": 2,
+            "Name": "Mercedes",
+            "Price": 72341], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
-        
+
         // create query to select data from the database
         queryBuilder = MySQLQueryBuilder()
           .select(fields: ["Id", "Name", "Price"], table: "Cars")
-        
+
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
 
@@ -104,12 +104,12 @@ public class IntegrationTests: XCTestCase {
 
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
-      (connection: MySQLConnectionProtocol) in 
+      (connection: MySQLConnectionProtocol) in
 
         let client = MySQLClient(connection: connection)
         let queryBuilder = MySQLQueryBuilder()
           .select(fields: ["Id", "Name", "Price"], table: "Cars")
-        
+
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
 
