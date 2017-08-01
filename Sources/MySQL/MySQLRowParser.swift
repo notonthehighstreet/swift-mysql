@@ -18,6 +18,8 @@ internal class MySQLRowParser {
             result[headers[i].name] = Double(pointerToString(row[i]!))
           case MySQLFieldType.Float:
             result[headers[i].name] = Float(pointerToString(row[i]!))
+          case MySQLFieldType.Timestamp:
+            result[headers[i].name] = pointerToString(row[i]!)
           default:
             result[headers[i].name] = nil
         }

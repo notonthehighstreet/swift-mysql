@@ -2,15 +2,16 @@ import Foundation
 import XCTest
 import MySQL
 
-  var connectionString: MySQLConnectionString?
+var connectionString: MySQLConnectionString?
 
 public class IntegrationTests: XCTestCase {
   public override func setUp() {
-    let mySQLServer = ProcessInfo.processInfo.environment["MYSQL_SERVER"]
+    let environment = ProcessInfo.processInfo.environment
+    let mySQLServer = environment["MYSQL_SERVER"]
     connectionString = MySQLConnectionString(host: mySQLServer!)
     connectionString!.port = 3306
     connectionString!.user = "root"
-    connectionString!.password = "my-secret-pw"
+    connectionString!.password = environment["MYSQL_ROOT_PASSWORD"] ?? "my-secret-pw"
     connectionString!.database = ""
   }
 
