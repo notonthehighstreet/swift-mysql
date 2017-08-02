@@ -28,7 +28,7 @@ public class MySQLClientTests: XCTestCase {
 
   //TODO: implement these tests correctly this is just a placeholder
   public func testClientExecutesQuery() {
-    client!.execute(query: "something")
+    let _ = client!.execute(query: "something")
 
     XCTAssertEqual(mockConnection!.executeStatement, "something", "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")
@@ -39,7 +39,7 @@ public class MySQLClientTests: XCTestCase {
       .select(statement: "SELECT * FROM")
       .wheres(statement: "WHERE abc=?", parameters: "bcd")
 
-    client!.execute(builder: builder)
+    let _ = client!.execute(builder: builder)
 
     XCTAssertEqual(mockConnection!.executeStatement, "SELECT * FROM WHERE abc='bcd';", "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")

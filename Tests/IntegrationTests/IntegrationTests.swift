@@ -2,12 +2,12 @@ import Foundation
 import XCTest
 import MySQL
 
-  var connectionString: MySQLConnectionString?
+var connectionString: MySQLConnectionString?
 
 public class IntegrationTests: XCTestCase {
   public override func setUp() {
-    let mySQLServer = ProcessInfo.processInfo.environment["MYSQL_SERVER"]
-    connectionString = MySQLConnectionString(host: mySQLServer!)
+    let mySQLServer = "0.0.0.0"
+    connectionString = MySQLConnectionString(host: mySQLServer)
     connectionString!.port = 3306
     connectionString!.user = "root"
     connectionString!.password = "my-secret-pw"
@@ -15,19 +15,19 @@ public class IntegrationTests: XCTestCase {
   }
 
   func createConnection(
-    connectionString: MySQLConnectionString, 
+    connectionString: MySQLConnectionString,
     block: ((MySQLConnectionProtocol) -> Void)) {
-    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize:1) {
+    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1) {
       return MySQL.MySQLConnection()
     }
-    
+
     do {
       // get a connection from the pool with no database
       let connection = try pool.getConnection()!
 
       // release the connection back to the pool
       defer {
-        pool.releaseConnection(connection) 
+        pool.releaseConnection(connection)
       }
 
       block(connection)
@@ -58,34 +58,36 @@ public class IntegrationTests: XCTestCase {
   func testConnectionInsertsAndReadsData() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
-      (connection: MySQLConnectionProtocol) in 
+      (connection: MySQLConnectionProtocol) in
 
         let client = MySQLClient(connection: connection)
 
         let _ = client.execute(query: "DROP TABLE IF EXISTS Cars")
-        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT)")
-        
+        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name VARCHAR(50), Price INT, UpdatedAt TIMESTAMP)")
+
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
           .insert(data: [
-            "Id": 1 as AnyObject, 
-            "Name": "Audi" as AnyObject, 
-            "Price": 52642 as AnyObject], table: "Cars")
+            "Id": 1,
+            "Name": "Audi",
+            "Price": 52642,
+            "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
-        
+
         queryBuilder = MySQLQueryBuilder()
           .insert(data: [
-            "Id": 2 as AnyObject, 
-            "Name": "Mercedes" as AnyObject, 
-            "Price": 72341 as AnyObject], table: "Cars")
+            "Id": 2,
+            "Name": "Mercedes",
+            "Price": 72341,
+            "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
         let _ = client.execute(builder: queryBuilder)
-        
+
         // create query to select data from the database
         queryBuilder = MySQLQueryBuilder()
-          .select(fields: ["Id", "Name", "Price"], table: "Cars")
-        
+          .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
+
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
 
@@ -104,17 +106,17 @@ public class IntegrationTests: XCTestCase {
 
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
-      (connection: MySQLConnectionProtocol) in 
+      (connection: MySQLConnectionProtocol) in
 
         let client = MySQLClient(connection: connection)
         let queryBuilder = MySQLQueryBuilder()
-          .select(fields: ["Id", "Name", "Price"], table: "Cars")
-        
+          .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
+
         let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
         XCTAssertNil(ret.1)
 
         if let resultSet = ret.0 {
-          while case let row? = resultSet.nextResult() {
+          while case let row? = resultSet.nextResult() {            
             XCTAssertNotNil(row)
             rowCount += 1
           }

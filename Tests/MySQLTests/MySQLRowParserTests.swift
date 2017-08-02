@@ -110,7 +110,7 @@ public class MySQLRowParserTests: XCTestCase {
     let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
-    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+    XCTAssertTrue(row["header1"] is Double, "Type should be Double")
   }
 
   public func testParsesFieldWithNewDecimalValueSetsTypeDouble() {
@@ -120,7 +120,7 @@ public class MySQLRowParserTests: XCTestCase {
     let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
-    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+    XCTAssertTrue(row["header1"] is Double, "Type should be Double")
   }
 
   public func testParsesFieldWithFloatValueSetsTypeFloat() {
@@ -130,7 +130,7 @@ public class MySQLRowParserTests: XCTestCase {
     let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Float)
-    XCTAssertTrue(row["header1"] is Float, "Type should be Int")
+    XCTAssertTrue(row["header1"] is Float, "Type should be Float")
   }
 
   public func testParsesFieldWithDoubleValueSetsTypeDouble() {
@@ -140,7 +140,16 @@ public class MySQLRowParserTests: XCTestCase {
     let row = parser.parse(row: cRow, headers: headers)
 
     XCTAssertEqual(1, row["header1"] as? Double)
-    XCTAssertTrue(row["header1"] is Double, "Type should be Int")
+    XCTAssertTrue(row["header1"] is Double, "Type should be Double")
+  }
+
+  public func testParsesFieldWithTimestampValueSetsTypeString() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Timestamp
+
+    let row = parser.parse(row: cRow, headers: headers)
+
+    XCTAssertTrue(row["header1"] is String, "Type should be String")
   }
 }
 
@@ -159,7 +168,8 @@ extension MySQLRowParserTests {
         ("testParsesFieldWithDecimalValueSetsTypeDouble", testParsesFieldWithDecimalValueSetsTypeDouble),
         ("testParsesFieldWithNewDecimalValueSetsTypeDouble", testParsesFieldWithNewDecimalValueSetsTypeDouble),
         ("testParsesFieldWithFloatValueSetsTypeFloat", testParsesFieldWithFloatValueSetsTypeFloat),
-        ("testParsesFieldWithDoubleValueSetsTypeDouble", testParsesFieldWithDoubleValueSetsTypeDouble)
+        ("testParsesFieldWithDoubleValueSetsTypeDouble", testParsesFieldWithDoubleValueSetsTypeDouble),
+        ("testParsesFieldWithTimestampValueSetsTypeString", testParsesFieldWithTimestampValueSetsTypeString)
       ]
     }
 }
