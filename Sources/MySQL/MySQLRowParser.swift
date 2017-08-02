@@ -12,6 +12,8 @@ internal class MySQLRowParser {
         switch headers[i].type {
           case MySQLFieldType.String, MySQLFieldType.VarString:
             result[headers[i].name] = pointerToString(row[i]!)
+          case MySQLFieldType.Blob:            
+            result[headers[i].name] = pointerToString(row[i]!)
           case MySQLFieldType.Tiny, MySQLFieldType.Short, MySQLFieldType.Long, MySQLFieldType.Int24, MySQLFieldType.LongLong:
             result[headers[i].name] = Int(pointerToString(row[i]!))
           case MySQLFieldType.Decimal, MySQLFieldType.NewDecimal, MySQLFieldType.Double:

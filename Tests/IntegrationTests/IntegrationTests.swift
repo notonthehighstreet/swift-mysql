@@ -6,7 +6,7 @@ var connectionString: MySQLConnectionString?
 
 public class IntegrationTests: XCTestCase {
   public override func setUp() {
-    let mySQLServer = "0.0.0.0"
+    let mySQLServer = ProcessInfo.processInfo.environment["MYSQL_SERVER"] ?? "0.0.0.0"
     connectionString = MySQLConnectionString(host: mySQLServer)
     connectionString!.port = 3306
     connectionString!.user = "root"
@@ -63,7 +63,7 @@ public class IntegrationTests: XCTestCase {
         let client = MySQLClient(connection: connection)
 
         let _ = client.execute(query: "DROP TABLE IF EXISTS Cars")
-        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name VARCHAR(50), Price INT, UpdatedAt TIMESTAMP)")
+        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT, UpdatedAt TIMESTAMP)")
 
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
@@ -94,6 +94,9 @@ public class IntegrationTests: XCTestCase {
         if let result = ret.0 {
           if let r = result.nextResult() {
             XCTAssertEqual(1, r["Id"] as! Int)
+            XCTAssertEqual("Audi", r["Name"] as! String)
+            XCTAssertNotNil(r["Price"])
+            XCTAssertNotNil(r["UpdatedAt"])
           } else {
             XCTFail("No results")
           }
@@ -116,7 +119,7 @@ public class IntegrationTests: XCTestCase {
         XCTAssertNil(ret.1)
 
         if let resultSet = ret.0 {
-          while case let row? = resultSet.nextResult() {            
+          while case let row? = resultSet.nextResult() {
             XCTAssertNotNil(row)
             rowCount += 1
           }

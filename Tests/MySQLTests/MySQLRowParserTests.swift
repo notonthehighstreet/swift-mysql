@@ -151,6 +151,15 @@ public class MySQLRowParserTests: XCTestCase {
 
     XCTAssertTrue(row["header1"] is String, "Type should be String")
   }
+
+  public func testParsesFieldWithBlobValueSetsTypeString() {
+    cRow[0] = "1".getUnsafeMutablePointer()
+    headers[0].type = MySQLFieldType.Blob
+
+    let row = parser.parse(row: cRow, headers: headers)
+
+    XCTAssertTrue(row["header1"] is String, "Type should be String")
+  }
 }
 
 extension MySQLRowParserTests {
@@ -169,7 +178,8 @@ extension MySQLRowParserTests {
         ("testParsesFieldWithNewDecimalValueSetsTypeDouble", testParsesFieldWithNewDecimalValueSetsTypeDouble),
         ("testParsesFieldWithFloatValueSetsTypeFloat", testParsesFieldWithFloatValueSetsTypeFloat),
         ("testParsesFieldWithDoubleValueSetsTypeDouble", testParsesFieldWithDoubleValueSetsTypeDouble),
-        ("testParsesFieldWithTimestampValueSetsTypeString", testParsesFieldWithTimestampValueSetsTypeString)
+        ("testParsesFieldWithTimestampValueSetsTypeString", testParsesFieldWithTimestampValueSetsTypeString),
+        ("testParsesFieldWithBlobValueSetsTypeString", testParsesFieldWithBlobValueSetsTypeString)
       ]
     }
 }
