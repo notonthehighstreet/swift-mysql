@@ -44,7 +44,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testSetConnectionCharset() {
     let connection = try! connectionPool!.getConnection()!
-    connection.setCharset(charset: "utf8mb4")
+    let _ = connection.setCharset(charset: "utf8mb4")
 
     XCTAssertNotEqual(connection.charset()!, "utf8")
     XCTAssertEqual(connection.charset()!, "utf8mb4")

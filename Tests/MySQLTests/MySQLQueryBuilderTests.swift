@@ -18,6 +18,13 @@ public class MySQLQueryBuilderTests : XCTestCase {
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
+  public func testDeleteReturnsSelf() {
+    let builder = MySQLQueryBuilder()
+    let ret = builder.delete(fromTable: "")
+
+    XCTAssertEqual(builder, ret, "Should have returned self")
+  }
+
   public func testSelectReturnsSelf() {
     let builder = MySQLQueryBuilder()
     let ret = builder.select(statement: "")
@@ -81,6 +88,15 @@ public class MySQLQueryBuilderTests : XCTestCase {
     XCTAssertEqual("UPDATE MyTable SET abc='abc', bcd='bcd';", query, "Should have returned valid query")
   }
 
+  public func testDeleteGeneratesValidQuery() {
+    let builder = MySQLQueryBuilder()
+    let statement = builder
+        .delete(fromTable: "MyTABLE")
+        .build()
+
+    XCTAssertEqual("DELETE FROM MyTABLE;", statement, "Returned invalid select statement")
+  }
+
   public func testWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
       .wheres(statement: "WHERE param1=? and param2=?", parameters: "abc", "bcd")
@@ -105,6 +121,15 @@ public class MySQLQueryBuilderTests : XCTestCase {
       .build()
 
     XCTAssertEqual("UPDATE MyTable SET abc='bcd' WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
+  }
+
+  public func testDeleteWithWheresGeneratesValidQuery() {
+    let query = MySQLQueryBuilder()
+        .delete(fromTable: "MyTable")
+        .wheres(statement: "WHERE id=?", parameters: "2")
+        .build()
+
+    XCTAssertEqual("DELETE FROM MyTable WHERE id='2';", query, "Should have returned valid query")
   }
 
   public func testJoinWithOneJoinConcatenatesQuery() {
@@ -157,6 +182,7 @@ extension MySQLQueryBuilderTests {
       return [
         ("testInsertReturnsSelf", testInsertReturnsSelf),
         ("testUpdateReturnsSelf", testUpdateReturnsSelf),
+        ("testDeleteReturnsSelf", testDeleteReturnsSelf),
         ("testSelectReturnsSelf", testSelectReturnsSelf),
         ("testSelectWithFieldsReturnsSelf", testSelectWithFieldsReturnsSelf),
         ("testWheresReturnsSelf", testWheresReturnsSelf),
@@ -164,9 +190,11 @@ extension MySQLQueryBuilderTests {
         ("testSelectWithArrayReturnsValidQuery", testSelectWithArrayReturnsValidQuery),
         ("testInsertGeneratesValidQuery", testInsertGeneratesValidQuery),
         ("testUpdateGeneratesValidQuery", testUpdateGeneratesValidQuery),
+        ("testDeleteGeneratesValidQuery", testDeleteGeneratesValidQuery),
         ("testWheresGeneratesValidQuery", testWheresGeneratesValidQuery),
         ("testSelectWithWheresGeneratesValidQuery", testSelectWithWheresGeneratesValidQuery),
         ("testUpdateWithWheresGeneratesValidQuery", testUpdateWithWheresGeneratesValidQuery),
+        ("testDeleteWithWheresGeneratesValidQuery", testDeleteWithWheresGeneratesValidQuery),
         ("testJoinWithOneJoinConcatenatesQuery", testJoinWithOneJoinConcatenatesQuery),
         ("testJoinWithTwoJoinsConcatenatesQuery", testJoinWithTwoJoinsConcatenatesQuery),
         ("testTrimCharTrimsWhenStatementEndsInAComma", testTrimCharTrimsWhenStatementEndsInAComma),
