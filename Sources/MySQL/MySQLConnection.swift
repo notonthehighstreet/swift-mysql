@@ -6,7 +6,7 @@ public class MySQLConnection : MySQLConnectionProtocol  {
   internal var uuid: Double
 
   internal var connection: UnsafeMutablePointer<MYSQL>? = nil
-  internal var result:UnsafeMutablePointer<MYSQL_RES>? = nil
+  internal var result: UnsafeMutablePointer<MYSQL_RES>? = nil
 
   public init() {
     uuid = NSDate().timeIntervalSince1970
@@ -17,6 +17,31 @@ extension MySQLConnection {
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
     return uuid == (otherObject as! MySQLConnection).uuid
+  }
+
+  /**
+    What is the connection's charset?
+
+    - Returns: the charset (ex: "utf8") if active connection, nil if connection closed
+  */
+  public func charset() -> String? {
+    if let connection = connection {
+      return String(cString: CMySQLClient.mysql_character_set_name(connection))
+    } else {
+      return nil
+    }
+  }
+
+  /**
+    Sets the connection's character set.
+
+    - Returns: true if succeeds, false is fails
+  */
+  public func setCharset(charset: String) -> Bool {
+    if let connection = connection {
+        return (CMySQLClient.mysql_set_character_set(connection, charset) == 0)
+    }
+    return false
   }
 
   /**
@@ -41,7 +66,7 @@ extension MySQLConnection {
       - password: The password to use for the connection.
   */
   public func connect(host: String, user: String, password: String) throws {
-    return try connect(host: host, user: user, password: password, port: 3306, database: "")
+    return try connect(host: host, user: user, password: password, port: 3306, database: "", charset: "utf8")
   }
 
   /**
@@ -54,7 +79,21 @@ extension MySQLConnection {
       - port: The port to be used for the connection
   */
   public func connect(host: String, user: String, password: String, port: Int) throws {
-    return try connect(host: host, user: user, password: password, port: port, database: "")
+    return try connect(host: host, user: user, password: password, port: port, database: "", charset: "utf8")
+  }
+
+  /**
+    Open a connection to the database with the given parameters, in the instance of a failed connection the connect method throws MySQLError.
+
+    - Parameters:
+      - host: The host name or ip address of the database.
+      - user: The username to use for the connection.
+      - password: The password to use for the connection.
+      - port: The port to be used for the connection
+      - database: The database to connect to
+  */
+  public func connect(host: String, user: String, password: String, port: Int, database: String) throws {
+    return try connect(host: host, user: user, password: password, port: port, database: database, charset: "utf8")
   }
 
   /**
@@ -66,8 +105,9 @@ extension MySQLConnection {
       - password: The password to use for the connection
       - port: The port to be used for the connection
       - database: The database to connect to
+      - charset: The default character set for the connection (https://dev.mysql.com/doc/refman/5.7/en/charset-charsets.html)
   */
-  public func connect(host: String, user: String, password: String, port: Int, database: String) throws {
+  public func connect(host: String, user: String, password: String, port: Int, database: String, charset: String) throws {
     connection = CMySQLClient.mysql_init(nil);
 
     if connection == nil {
@@ -77,6 +117,11 @@ extension MySQLConnection {
     if CMySQLClient.mysql_real_connect(connection, host, user, password, database, UInt32(port), nil, CMySQLClient.CLIENT_MULTI_STATEMENTS) == nil {
       close()
       throw MySQLError.UnableToCreateConnection
+    }
+
+    if CMySQLClient.mysql_set_character_set(connection, charset) != 0 {
+        close()
+        throw MySQLError.UnableToCreateConnection
     }
   }
 

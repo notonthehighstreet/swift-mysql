@@ -19,7 +19,8 @@ public class MySQLConnectionPoolTests: XCTestCase {
                                                             user: "root",
                                                             password: "my-secret-pw",
                                                             database: "test"),
-                    poolSize: 10) {
+                                                            poolSize: 10,
+                                                            defaultCharset: "utf8") {
       return self.mockConnection
     }
 
@@ -27,16 +28,26 @@ public class MySQLConnectionPoolTests: XCTestCase {
     connectionPool!.inactiveConnections = [String: [MySQLConnectionProtocol]]()
   }
 
-  public func testSetsPoolSize() {
-    connectionPool!.setPoolSize(size: 10)
-
-    XCTAssertEqual(10, connectionPool!.poolSize)
-  }
-
   public func testConnectionConnectCalled() {
     let _ = try! connectionPool!.getConnection()!
 
     XCTAssertTrue(mockConnection.connectCalled, "Connect should have been called")
+  }
+
+  public func testGetConnectionWithDefaultCharset() {
+    let connection = try! connectionPool!.getConnection()!
+    let charset = connection.charset()
+
+    XCTAssertNotNil(charset)
+    XCTAssertEqual(charset!, "utf8")
+  }
+
+  public func testSetConnectionCharset() {
+    let connection = try! connectionPool!.getConnection()!
+    connection.setCharset(charset: "utf8mb4")
+
+    XCTAssertNotEqual(connection.charset()!, "utf8")
+    XCTAssertEqual(connection.charset()!, "utf8mb4")
   }
 
   public func testGetConnectionWithNoInactiveConnectionsCreatesANewConnection() {
@@ -82,7 +93,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
     let tempConnection = MockMySQLConnection()
     tempConnection.connectCalled = false
     tempConnection.isConnectedReturn = false
-    
+
     inactiveConnections.append(tempConnection)
 
     connectionPool!.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
@@ -166,11 +177,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
     connectionPool!.poolSize = 1
     connectionPool!.poolTimeout = 1
-    let _ = try! connectionPool!.getConnection() 
+    let _ = try! connectionPool!.getConnection()
 
     queue!.async(execute: {
       do {
-        let _ = try self.connectionPool!.getConnection() 
+        let _ = try self.connectionPool!.getConnection()
       } catch {
         ex.fulfill()
       }
@@ -190,8 +201,8 @@ public class MySQLConnectionPoolTests: XCTestCase {
       (message: MySQLConnectionPoolMessage) in
         dispatchedMessage = message
     }
-    
-    let _ = try! connectionPool!.getConnection() 
+
+    let _ = try! connectionPool!.getConnection()
 
     XCTAssertEqual(MySQLConnectionPoolMessage.CreatedNewConnection, dispatchedMessage)
   }
@@ -206,7 +217,7 @@ public class MySQLConnectionPoolTests: XCTestCase {
     }
 
     do {
-      let _ = try connectionPool!.getConnection() 
+      let _ = try connectionPool!.getConnection()
     } catch {}
 
     XCTAssertEqual(MySQLConnectionPoolMessage.FailedToCreateConnection, dispatchedMessage)
@@ -219,11 +230,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
       (message: MySQLConnectionPoolMessage) in
         dispatchedMessage = message
     }
-    
-    let connection = try! connectionPool!.getConnection() 
+
+    let connection = try! connectionPool!.getConnection()
     connectionPool!.releaseConnection(connection!)
 
-    let _ = try! connectionPool!.getConnection() 
+    let _ = try! connectionPool!.getConnection()
 
     XCTAssertEqual(MySQLConnectionPoolMessage.RetrievedConnectionFromPool, dispatchedMessage)
   }
@@ -235,11 +246,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
       (message: MySQLConnectionPoolMessage) in
         dispatchedMessage.append(message) // the event we are looking for will be the 2nd
     }
-    let connection = try! connectionPool!.getConnection() 
+    let connection = try! connectionPool!.getConnection()
     connectionPool!.releaseConnection(connection!)
     mockConnection.isConnectedReturn = false
 
-    let _ = try! connectionPool!.getConnection() 
+    let _ = try! connectionPool!.getConnection()
 
     XCTAssertEqual(MySQLConnectionPoolMessage.ConnectionDisconnected, dispatchedMessage[1])
   }
@@ -248,8 +259,9 @@ public class MySQLConnectionPoolTests: XCTestCase {
 extension MySQLConnectionPoolTests {
   static var allTests: [(String, (MySQLConnectionPoolTests) -> () throws -> Void)] {
     return [
-      ("testSetsPoolSize", testSetsPoolSize),
       ("testConnectionConnectCalled", testConnectionConnectCalled),
+      ("testGetConnectionWithDefaultCharset", testGetConnectionWithDefaultCharset),
+      ("testSetConnectionCharset", testSetConnectionCharset),
       ("testGetConnectionWithNoInactiveConnectionsCreatesANewConnection", testGetConnectionWithNoInactiveConnectionsCreatesANewConnection),
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),
       ("testGetConnectionWithInactivePoolItemUsesExistingConnection", testGetConnectionWithInactivePoolItemUsesExistingConnection),

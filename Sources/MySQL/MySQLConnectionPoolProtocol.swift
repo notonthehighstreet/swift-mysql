@@ -2,8 +2,9 @@ import Foundation
 
 public protocol MySQLConnectionPoolProtocol {
 
-  init(connectionString: MySQLConnectionString, 
-       poolSize: Int, 
+  init(connectionString: MySQLConnectionString,
+       poolSize: Int,
+       defaultCharset: String,
        provider: @escaping () -> MySQLConnectionProtocol?)
 
   /**
@@ -22,22 +23,13 @@ public protocol MySQLConnectionPoolProtocol {
   func setConnectionProvider(provider: @escaping () -> MySQLConnectionProtocol?)
 
   /**
-    setPoolSize sets the size for the connection pool, default is 20
-
-    - Parameters:
-      - size: new size of the pool
-  */
-  func setPoolSize(size: Int)
-
-  /**
     setLogger sets the function that will be called when an event occurs with the connectionPool,
     you can use this method can be used to setup logging to be used for debugging or metrics.
 
     ```
-      MySQLConnectionPool.setPoolSize {
-        (message: MySQLConnectionPoolMessage) in
+      MySQLConnectionPool.getConnection { (message: MySQLConnectionPoolMessage) in
           print(message)
-    }
+      }
     ```
   */
   func setLogger(logger: @escaping (_ message: MySQLConnectionPoolMessage) -> Void)
