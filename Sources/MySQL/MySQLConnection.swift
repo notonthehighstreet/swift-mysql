@@ -78,6 +78,11 @@ extension MySQLConnection {
       close()
       throw MySQLError.UnableToCreateConnection
     }
+
+    if CMySQLClient.mysql_set_character_set(connection, "utf8mb4") != 0 {
+        close()
+        throw MySQLError.UnableToCreateConnection
+    }
   }
 
   /**
