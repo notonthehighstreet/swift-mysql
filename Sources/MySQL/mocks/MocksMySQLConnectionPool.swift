@@ -1,7 +1,7 @@
 import Foundation
 
 // MockMySQLConnectionPool is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
-public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
+public class MockMySQLConnectionPool: MySQLConnectionPoolProtocol {
   public var setPoolSizeCalled = false
   public var setConnectionProviderCalled = false
   public var releaseConnectionCalled = false
@@ -11,13 +11,16 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
 
   var connectionString: MySQLConnectionString
   var poolSize: Int
+  var defaultCharset: String
   var provider: () -> MySQLConnectionProtocol?
 
-  public required init(connectionString: MySQLConnectionString, 
-       poolSize: Int, 
+  public required init(connectionString: MySQLConnectionString,
+       poolSize: Int,
+       defaultCharset: String,
        provider: @escaping () -> MySQLConnectionProtocol?) {
     self.connectionString = connectionString
     self.poolSize = poolSize
+    self.defaultCharset = defaultCharset
     self.provider = provider
 }
 
@@ -27,10 +30,6 @@ public class MockMySQLConnectionPool : MySQLConnectionPoolProtocol {
 
   public var logger:(_: MySQLConnectionPoolMessage) -> Void = {
     (message: MySQLConnectionPoolMessage) -> Void in
-  }
-
-  public func setPoolSize(size: Int) {
-    self.setPoolSizeCalled = true
   }
 
   public func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {

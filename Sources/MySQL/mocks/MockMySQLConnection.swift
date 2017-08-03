@@ -12,18 +12,19 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
 
   public var executeStatement = ""
 
-  public var clientInfo:String? = nil
-  public var clientVersion:UInt = 0
+  public var clientInfo: String? = nil
+  public var clientVersion: UInt = 0
+  public var defaultCharset: String = "utf8"
 
-  public var executeReturnResult:CMySQLResult? = nil
-  public var executeReturnHeaders:[CMySQLField]? = nil
-  public var executeReturnError:MySQLError? = nil
+  public var executeReturnResult: CMySQLResult? = nil
+  public var executeReturnHeaders: [CMySQLField]? = nil
+  public var executeReturnError: MySQLError? = nil
 
-  public var nextResultReturn:CMySQLRow? = nil
+  public var nextResultReturn: CMySQLRow? = nil
 
-  public var nextResultReturnResult:CMySQLResult? = nil
-  public var nextResultReturnHeaders:[CMySQLField]? = nil
-  public var nextResultReturnError:MySQLError? = nil
+  public var nextResultReturnResult: CMySQLResult? = nil
+  public var nextResultReturnHeaders: [CMySQLField]? = nil
+  public var nextResultReturnError: MySQLError? = nil
 
   private var uuid: Double
 
@@ -79,9 +80,31 @@ public class MockMySQLConnection : MySQLConnectionProtocol {
     connectCalled = true
   }
 
+  public func connect(
+    host: String,
+    user: String,
+    password: String,
+    port: Int,
+    database: String,
+    charset: String
+  ) throws {
+    if connectError != nil {
+      throw connectError!
+    }
+
+    connectCalled = true
+  }
+
   public func client_info() -> String? { return clientInfo }
 
   public func client_version() -> UInt { return clientVersion }
+
+  public func charset() -> String? { return defaultCharset }
+
+  public func setCharset(charset: String) -> Bool {
+     self.defaultCharset = charset
+     return true
+  }
 
   public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
      executeCalled = true

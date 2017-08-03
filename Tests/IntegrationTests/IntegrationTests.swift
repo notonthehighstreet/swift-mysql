@@ -17,7 +17,7 @@ public class IntegrationTests: XCTestCase {
   func createConnection(
     connectionString: MySQLConnectionString,
     block: ((MySQLConnectionProtocol) -> Void)) {
-    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1) {
+    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1, defaultCharset: "utf8") {
       return MySQL.MySQLConnection()
     }
 

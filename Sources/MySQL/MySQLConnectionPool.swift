@@ -5,8 +5,9 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
   var connectionString: MySQLConnectionString
   var activeConnections = [String: [MySQLConnectionProtocol]]()
   var inactiveConnections = [String: [MySQLConnectionProtocol]]()
-  var poolSize:Int = 20
-  var poolTimeout:Double = 20.0 // 20s
+  var poolSize: Int = 20
+  var poolTimeout: Double = 20.0 // 20s
+  var defaultCharset: String = "utf8"
 
   var lock = NSLock()
 
@@ -18,24 +19,15 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     (message: MySQLConnectionPoolMessage) -> Void in
   }
 
-
- public required init(connectionString: MySQLConnectionString, 
-       poolSize: Int, 
+ public required init(connectionString: MySQLConnectionString,
+       poolSize: Int,
+       defaultCharset: String,
        provider: @escaping () -> MySQLConnectionProtocol?) {
 
     self.connectionString = connectionString
     self.poolSize = poolSize
     self.connectionProvider = provider
-  }
-
-  /**
-    setPoolSize sets the size for the connection pool, default is 20
-
-    - Parameters:
-      - size: new size of the pool
-  */
-  public func setPoolSize(size: Int) {
-    poolSize = size
+    self.defaultCharset = defaultCharset
   }
 
   public func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {
@@ -61,7 +53,7 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     // check pool has space
     var startTime = NSDate()
 
-    while(countActive()  >= poolSize) {
+    while(countActive() >= poolSize) {
       if (NSDate().timeIntervalSince1970 - startTime.timeIntervalSince1970) > poolTimeout {
         throw MySQLError.ConnectionPoolTimeout
       }
@@ -73,10 +65,10 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
     }
 
     // check if there is something available in the pool if so return it
-    let key = self.connectionString.key()
+    let key = connectionString.key()
 
     if let connection = getInactive(key: key) {
-      addActive(key: key, connection: connection)
+      addActive(key: key, connection: connection)      
       logger(_: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
       return connection
     } else {
@@ -143,10 +135,11 @@ public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
 
     do {
       try connection!.connect(host: self.connectionString.host,
-                              user: self.connectionString.user, 
-                              password: self.connectionString.password, 
-                              port: self.connectionString.port, 
-                              database: self.connectionString.database)
+                              user: self.connectionString.user,
+                              password: self.connectionString.password,
+                              port: self.connectionString.port,
+                              database: self.connectionString.database,
+                              charset: self.defaultCharset)
     } catch {
       logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
       throw error
