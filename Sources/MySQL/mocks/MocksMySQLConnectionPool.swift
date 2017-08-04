@@ -1,5 +1,5 @@
 import Foundation
-
+/*
 // MockMySQLConnectionPool is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
 public class MockMySQLConnectionPool: MySQLConnectionPoolProtocol {
   public var setPoolSizeCalled = false
@@ -67,3 +67,4 @@ public class MockMySQLConnectionPool: MySQLConnectionPoolProtocol {
     connectionProvider = { () -> MySQLConnectionProtocol? in return nil }
   }
 }
+*/

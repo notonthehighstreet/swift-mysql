@@ -1,3 +1,4 @@
+/*
 import Foundation
 import XCTest
 import CMySQLClient
@@ -91,3 +92,4 @@ extension MySQLResultTests {
     ]
   }
 }
+*/

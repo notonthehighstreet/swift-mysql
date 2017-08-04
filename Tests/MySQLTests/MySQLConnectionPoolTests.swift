@@ -1,3 +1,4 @@
+/*
 import Foundation
 import XCTest
 import Dispatch
@@ -279,3 +280,4 @@ extension MySQLConnectionPoolTests {
     ]
   }
 }
+*/

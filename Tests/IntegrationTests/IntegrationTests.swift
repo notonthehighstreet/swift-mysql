@@ -16,24 +16,23 @@ public class IntegrationTests: XCTestCase {
 
   func createConnection(
     connectionString: MySQLConnectionString,
-    block: ((MySQLConnectionProtocol) -> Void)) {
-    var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1, defaultCharset: "utf8") {
-      return MySQL.MySQLConnection()
-    }
+    block: ((MySQLConnectionProtocol) throws -> Void)) {
+    
+        var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1, defaultCharset: "utf8")
 
-    do {
-      // get a connection from the pool with no database
-      let connection = try pool.getConnection()!
+        do {
+           // get a connection from the pool with no database
+           let connection = try pool.getConnection()!
 
-      // release the connection back to the pool
-      defer {
-        pool.releaseConnection(connection)
-      }
+           // release the connection back to the pool
+           defer {
+             pool.releaseConnection(connection)
+           }
 
-      block(connection)
-    } catch {
-      XCTFail("Unable to create connection: \(error)")
-    }
+           try block(connection)
+        } catch {
+           XCTFail("Unable to create connection: \(error)")
+        }
   }
 
   func testConnectsToDBWithNoDatabase() {
@@ -44,14 +43,11 @@ public class IntegrationTests: XCTestCase {
     createConnection(connectionString: connectionString!) {
       (connection: MySQLConnectionProtocol) in
 
-      // create a new client using the leased connection
-      let client = MySQLClient(connection: connection)
+      print("MySQL Client Info: " + connection.info()!)
+      print("MySQL Client Version: " + String(connection.version()))
 
-      print("MySQL Client Info: " + client.info()!)
-      print("MySQL Client Version: " + String(client.version()))
-
-      let _ = client.execute(query: "DROP DATABASE IF EXISTS testdb")
-      let _ = client.execute(query: "CREATE DATABASE testdb")
+      let _ = try connection.execute(query: "DROP DATABASE IF EXISTS testdb")
+      let _ = try connection.execute(query: "CREATE DATABASE testdb")
     }
   }
 
@@ -60,10 +56,8 @@ public class IntegrationTests: XCTestCase {
     createConnection(connectionString: connectionString!) {
       (connection: MySQLConnectionProtocol) in
 
-        let client = MySQLClient(connection: connection)
-
-        let _ = client.execute(query: "DROP TABLE IF EXISTS Cars")
-        let _ = client.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT, UpdatedAt TIMESTAMP)")
+        let _ = try connection.execute(query: "DROP TABLE IF EXISTS Cars")
+        let _ = try connection.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT, UpdatedAt TIMESTAMP)")
 
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
@@ -73,7 +67,7 @@ public class IntegrationTests: XCTestCase {
             "Price": 52642,
             "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
-        let _ = client.execute(builder: queryBuilder)
+        let _ = try connection.execute(builder: queryBuilder)
 
         queryBuilder = MySQLQueryBuilder()
           .insert(data: [
@@ -82,24 +76,23 @@ public class IntegrationTests: XCTestCase {
             "Price": 72341,
             "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
-        let _ = client.execute(builder: queryBuilder)
+        let _ = try connection.execute(builder: queryBuilder)
 
         // create query to select data from the database
         queryBuilder = MySQLQueryBuilder()
           .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
 
-        let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
-        XCTAssertNil(ret.1)
-
-        if let result = ret.0 {
-          if let r = result.nextResult() {
+        let result = try connection.execute(builder: queryBuilder)
+        
+        if result == nil {
+            XCTFail("No results")
+        }
+        
+        if let r = result!.nextResult() {
             XCTAssertEqual(1, r["Id"] as! Int)
             XCTAssertEqual("Audi", r["Name"] as! String)
             XCTAssertNotNil(r["Price"])
             XCTAssertNotNil(r["UpdatedAt"])
-          } else {
-            XCTFail("No results")
-          }
         }
     }
   }
@@ -111,18 +104,18 @@ public class IntegrationTests: XCTestCase {
     createConnection(connectionString: connectionString!) {
       (connection: MySQLConnectionProtocol) in
 
-        let client = MySQLClient(connection: connection)
         let queryBuilder = MySQLQueryBuilder()
           .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
 
-        let ret = client.execute(builder: queryBuilder) // returns a tuple (MySQLResult, MySQLError)
-        XCTAssertNil(ret.1)
+        let result = try connection.execute(builder: queryBuilder)
 
-        if let resultSet = ret.0 {
-          while case let row? = resultSet.nextResult() {
+        if result == nil {
+            XCTFail("No results")
+        }
+
+        while case let row? = result!.nextResult() {
             XCTAssertNotNil(row)
             rowCount += 1
-          }
         }
     }
 
