@@ -6,9 +6,10 @@ public func ==(lhs: MySQLQueryBuilder, rhs: MySQLQueryBuilder) -> Bool {
 
 public class MySQLQueryBuilder: Equatable {
   var selectStatement: String?
-  var insertStatement:String?
-  var updateStatement:String?
-  var whereStatement:String?
+  var insertStatement: String?
+  var updateStatement: String?
+  var deleteStatement: String?
+  var whereStatement: String?
 
   var joinedStatements = [String]()
 
@@ -91,6 +92,25 @@ public class MySQLQueryBuilder: Equatable {
   }
 
   /**
+    delete sets the delete statement part of the query
+
+    - Parameters:
+      - recordFromTable: table to remove record from
+
+    - Returns: returns self
+
+    ```
+      var builder = MySQLQueryBuilder()
+        .delete(recordFromTable: "myTable")
+    ```
+  */
+  public func delete(fromTable table: String) -> MySQLQueryBuilder {
+    deleteStatement = createDeleteStatement(withTable: table)
+
+    return self
+  }
+
+  /**
     wheres sets the where statement part of the query, escapting the parameters
     to secure against SQL injection
 
@@ -156,20 +176,24 @@ public class MySQLQueryBuilder: Equatable {
   public func build() -> String {
     var query = ""
 
-    if selectStatement != nil {
-      query += "\(selectStatement!) "
+    if let selectStatement = selectStatement {
+      query += "\(selectStatement) "
     }
 
-    if insertStatement != nil {
-      query += insertStatement!
+    if let insertStatement = insertStatement {
+      query += insertStatement
     }
 
-    if updateStatement != nil {
-      query += "\(updateStatement!) "
+    if let updateStatement = updateStatement {
+      query += "\(updateStatement) "
     }
 
-    if whereStatement != nil {
-      query += whereStatement!
+    if let deleteStatement = deleteStatement {
+      query += "\(deleteStatement) "
+    }
+
+    if let whereStatement = whereStatement {
+      query += whereStatement
     }
 
     query = query.trimChar(character: " ")
@@ -227,6 +251,10 @@ public class MySQLQueryBuilder: Equatable {
     statement = statement.trimChar(character: ",")
 
     return statement
+  }
+
+  private func createDeleteStatement(withTable table: String) -> String {
+    return "DELETE FROM \(table)"    
   }
 }
 
