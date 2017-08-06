@@ -1,51 +1,61 @@
 import Foundation
-/*
-// MockMySQLConnection is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
-public class MockInternalMySQLConnection : MySQLInternalConnectionProtocol {
-  public var isConnectedReturn = true
-  public var isConnectedCalled = false
-  public var connectError: MySQLError?
 
-  public var connectCalled = false
-  public var executeCalled = false
-  public var closeCalled = false
+// MockMySQLInternalConnection is a mock object which can be used in 
+// unit tests to replace the real instance in order to test behaviour
+class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
+  var isConnectedReturn = true
+  var isConnectedCalled = false
+  var connectError: MySQLError?
 
-  public var executeStatement = ""
+  var connectCalled = false
+  var executeCalled = false
+  var closeCalled = false
 
-  public var clientInfo: String? = nil
-  public var clientVersion: UInt = 0
-  public var defaultCharset: String = "utf8"
+  var executeStatement = ""
 
-  public var executeReturnResult: CMySQLResult? = nil
-  public var executeReturnHeaders: [CMySQLField]? = nil
-  public var executeReturnError: MySQLError? = nil
+  var clientInfo: String? = nil
+  var clientVersion: UInt = 0
+  var defaultCharset: String = "utf8"
 
-  public var nextResultReturn: CMySQLRow? = nil
+  var executeReturnResult: CMySQLResult? = nil
+  var executeReturnHeaders: [CMySQLField]? = nil
+  var executeReturnError: MySQLError? = nil
 
-  public var nextResultReturnResult: CMySQLResult? = nil
-  public var nextResultReturnHeaders: [CMySQLField]? = nil
-  public var nextResultReturnError: MySQLError? = nil
+  var nextResultReturn: CMySQLRow? = nil
 
-  private var uuid: Double
+  var nextResultReturnResult: CMySQLResult? = nil
+  var nextResultReturnHeaders: [CMySQLField]? = nil
+  var nextResultReturnError: MySQLError? = nil
 
-  public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
-    return uuid == (otherObject as! MockMySQLConnection).uuid
+  var nextResultSetCalled = false
+  var nextResultSetReturn: MySQLResultProtocol?
+  var nextResultSetErrorReturn: MySQLError?
+
+  var uuid: Double
+
+  func equals(otherObject: MySQLInternalConnectionProtocol) -> Bool {
+    return uuid == (otherObject as! MockMySQLInternalConnection).uuid
   }
 
-  public init() {
+  func charset() -> String? {
+    return defaultCharset
+  }
+
+  func setCharset(charset: String) -> Bool {
+    defaultCharset = charset
+    return true
+  }
+
+  init() {
     uuid = NSDate().timeIntervalSince1970
   }
 
-  public func isConnected() -> Bool {
+  func isConnected() -> Bool {
     isConnectedCalled = true
     return isConnectedReturn
   }
 
-  public func connect(
-    host: String,
-    user: String,
-    password: String
-  ) throws {
+  func connect(host: String, user: String, password: String) throws {
     if connectError != nil {
       throw connectError!
     }
@@ -53,12 +63,7 @@ public class MockInternalMySQLConnection : MySQLInternalConnectionProtocol {
     connectCalled = true
   }
 
-  public func connect(
-    host: String,
-    user: String,
-    password: String,
-    port: Int
-  ) throws {
+  func connect(host: String, user: String, password: String, port: Int) throws {
     if connectError != nil {
       throw connectError!
     }
@@ -66,13 +71,11 @@ public class MockInternalMySQLConnection : MySQLInternalConnectionProtocol {
     connectCalled = true
   }
 
-  public func connect(
-    host: String,
-    user: String,
-    password: String,
-    port: Int,
-    database: String
-  ) throws {
+  func connect(host: String,
+               user: String,
+               password: String,
+               port: Int,
+               database: String) throws {
     if connectError != nil {
       throw connectError!
     }
@@ -80,14 +83,12 @@ public class MockInternalMySQLConnection : MySQLInternalConnectionProtocol {
     connectCalled = true
   }
 
-  public func connect(
-    host: String,
-    user: String,
-    password: String,
-    port: Int,
-    database: String,
-    charset: String
-  ) throws {
+  public func connect(host: String,
+                      user: String,
+                      password: String, 
+                      port: Int,
+                      database: String,
+                      charset: String) throws {
     if connectError != nil {
       throw connectError!
     }
@@ -95,31 +96,32 @@ public class MockInternalMySQLConnection : MySQLInternalConnectionProtocol {
     connectCalled = true
   }
 
-  public func client_info() -> String? { return clientInfo }
+  func client_info() -> String? { return clientInfo }
 
-  public func client_version() -> UInt { return clientVersion }
+  func client_version() -> UInt { return clientVersion }
 
-  public func charset() -> String? { return defaultCharset }
-
-  public func setCharset(charset: String) -> Bool {
-     self.defaultCharset = charset
-     return true
-  }
-
-  public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
+  func execute(query: String) throws -> (CMySQLResult?, [CMySQLField]?) {
      executeCalled = true
      executeStatement = query
-     return (executeReturnResult, executeReturnHeaders, executeReturnError)
+
+     if executeReturnError != nil {
+        throw executeReturnError!
+     }
+
+     return (executeReturnResult, executeReturnHeaders)
    }
 
-   public func nextResult(result: CMySQLResult) -> CMySQLRow? {
+   func nextResult(result: CMySQLResult) -> CMySQLRow? {
      return nextResultReturn
    }
 
-   public func nextResultSet() -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
-     return (nextResultReturnResult, nextResultReturnHeaders, nextResultReturnError)
+   func nextResultSet() throws -> (CMySQLResult?, [CMySQLField]?) {
+        if nextResultSetErrorReturn != nil {
+            throw nextResultSetErrorReturn!
+        }
+
+     return (nextResultReturnResult, nextResultReturnHeaders)
    }
 
-  public func close() { closeCalled = true }
+  func close() { closeCalled = true }
 }
-*/

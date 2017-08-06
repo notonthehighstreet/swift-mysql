@@ -7,7 +7,7 @@ build:
 test_unit: build
 	@echo --- Running tests
 
-	$(TEST_COMMAND) -s MySQLTests.MySQLClientTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionPoolTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLFieldParserTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLQueryBuilderTests
@@ -32,7 +32,7 @@ test_integration: build
 	docker stop mysqlswift
 	docker rm -v mysqlswift
 
-docs:
+swiftdocs:
 	jazzy \
   --clean \
   --author Nic Jackson \

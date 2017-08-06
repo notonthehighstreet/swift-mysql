@@ -14,7 +14,7 @@
     <a title="MySQLQueryBuilder Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">MySQL Docs</a> (26% documented)</p>
+        <p><a href="../index.html">MySQL Docs</a> (27% documented)</p>
         <p class="header-right"><a href="https://github.com/nicholasjackson/swift-mysql"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,19 +32,10 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Classes/MockMySQLClient.html">MockMySQLClient</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/MockMySQLConnection.html">MockMySQLConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/MockMySQLConnectionPool.html">MockMySQLConnectionPool</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/MockMySQLResult.html">MockMySQLResult</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/MySQLClient.html">MySQLClient</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/MySQLConnection.html">MySQLConnection</a>
@@ -93,9 +84,6 @@
           <li class="nav-group-name">
             <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a href="../Protocols/MySQLClientProtocol.html">MySQLClientProtocol</a>
-              </li>
               <li class="nav-group-task">
                 <a href="../Protocols/MySQLConnectionPoolProtocol.html">MySQLConnectionPoolProtocol</a>
               </li>
@@ -270,9 +258,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC5MySQL17MySQLQueryBuilder6insertFT4dataGVs10DictionarySSPs9AnyObject__5tableSS_S0_"></a>
+                    <a name="/s:FC5MySQL17MySQLQueryBuilder6insertFT4dataGVs10DictionarySSP__5tableSS_S0_"></a>
                     <a name="//apple_ref/swift/Method/insert(data:table:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC5MySQL17MySQLQueryBuilder6insertFT4dataGVs10DictionarySSPs9AnyObject__5tableSS_S0_">insert(data:table:)</a>
+                    <a class="token" href="#/s:FC5MySQL17MySQLQueryBuilder6insertFT4dataGVs10DictionarySSP__5tableSS_S0_">insert(data:table:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -335,9 +323,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC5MySQL17MySQLQueryBuilder6updateFT4dataGVs10DictionarySSPs9AnyObject__5tableSS_S0_"></a>
+                    <a name="/s:FC5MySQL17MySQLQueryBuilder6updateFT4dataGVs10DictionarySSP__5tableSS_S0_"></a>
                     <a name="//apple_ref/swift/Method/update(data:table:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC5MySQL17MySQLQueryBuilder6updateFT4dataGVs10DictionarySSPs9AnyObject__5tableSS_S0_">update(data:table:)</a>
+                    <a class="token" href="#/s:FC5MySQL17MySQLQueryBuilder6updateFT4dataGVs10DictionarySSP__5tableSS_S0_">update(data:table:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -384,6 +372,59 @@
                               <td>
                                 <div>
                                   <p>table to insert data into</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>returns self</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC5MySQL17MySQLQueryBuilder6deleteFT9fromTableSS_S0_"></a>
+                    <a name="//apple_ref/swift/Method/delete(fromTable:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC5MySQL17MySQLQueryBuilder6deleteFT9fromTableSS_S0_">delete(fromTable:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>delete sets the delete statement part of the query</p>
+<pre class="highlight plaintext"><code>  var builder = MySQLQueryBuilder()
+    .delete(recordFromTable: "myTable")
+</code></pre>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">delete</span><span class="p">(</span><span class="n">fromTable</span> <span class="nv">table</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">MySQLQueryBuilder</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>recordFromTable</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>table to remove record from</p>
                                 </div>
                               </td>
                             </tr>
@@ -559,7 +600,7 @@ let query = builder.join(builder2).build()
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://nicholasjackson.io" target="_blank" rel="external">Nic</a>. All rights reserved. (Last updated: 2017-07-30)</p>
+          <p>&copy; 2017 <a class="link" href="https://nicholasjackson.io" target="_blank" rel="external">Nic</a>. All rights reserved. (Last updated: 2017-08-06)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

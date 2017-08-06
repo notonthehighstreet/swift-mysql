@@ -1,4 +1,3 @@
-/*
 import Foundation
 import XCTest
 import Dispatch
@@ -8,20 +7,21 @@ import Dispatch
 public class MySQLConnectionPoolTests: XCTestCase {
 
   var connectionPool: MySQLConnectionPool?
-  var mockConnection = MockMySQLConnection()
+  var mockConnection = MockMySQLInternalConnection()
   var queue: DispatchQueue?
 
   public override func setUp() {
     queue = DispatchQueue.init(label: "statsd_queue." + String(NSDate().timeIntervalSince1970), attributes: .concurrent)
 
-    mockConnection = MockMySQLConnection()
+    mockConnection = MockMySQLInternalConnection()
     connectionPool = MySQLConnectionPool(
                     connectionString: MySQLConnectionString(host: "192.168.99.100",
                                                             user: "root",
                                                             password: "my-secret-pw",
                                                             database: "test"),
                                                             poolSize: 10,
-                                                            defaultCharset: "utf8") {
+                                                            defaultCharset: "utf8")
+    connectionPool?.setConnectionProvider() {
       return self.mockConnection
     }
 
@@ -35,26 +35,10 @@ public class MySQLConnectionPoolTests: XCTestCase {
     XCTAssertTrue(mockConnection.connectCalled, "Connect should have been called")
   }
 
-  public func testGetConnectionWithDefaultCharset() {
-    let connection = try! connectionPool!.getConnection()!
-    let charset = connection.charset()
-
-    XCTAssertNotNil(charset)
-    XCTAssertEqual(charset!, "utf8")
-  }
-
-  public func testSetConnectionCharset() {
-    let connection = try! connectionPool!.getConnection()!
-    let _ = connection.setCharset(charset: "utf8mb4")
-
-    XCTAssertNotEqual(connection.charset()!, "utf8")
-    XCTAssertEqual(connection.charset()!, "utf8mb4")
-  }
-
   public func testGetConnectionWithNoInactiveConnectionsCreatesANewConnection() {
     let connection = try! connectionPool!.getConnection()!
 
-    XCTAssertTrue(connection.equals(otherObject: mockConnection), "Should have used connection from pool")
+    XCTAssertNotNil(connection, "Should have created a connection")
   }
 
   public func testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem() {
@@ -79,8 +63,8 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testGetConnectionWithInactivePoolItemChecksIfConnectionActive() {
     var inactiveConnections = [MySQLConnectionProtocol]()
-    let tempConnection = MockMySQLConnection()
-    inactiveConnections.append(tempConnection)
+    let tempConnection = MockMySQLInternalConnection()
+    inactiveConnections.append(MySQLConnection(connection: tempConnection))
 
     connectionPool!.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
 
@@ -91,11 +75,11 @@ public class MySQLConnectionPoolTests: XCTestCase {
 
   public func testGetConnectionWithInactivePoolWhenNotConnectedCreateNewConnection() {
     var inactiveConnections = [MySQLConnectionProtocol]()
-    let tempConnection = MockMySQLConnection()
+    let tempConnection = MockMySQLInternalConnection()
     tempConnection.connectCalled = false
     tempConnection.isConnectedReturn = false
 
-    inactiveConnections.append(tempConnection)
+    inactiveConnections.append(MySQLConnection(connection: tempConnection))
 
     connectionPool!.inactiveConnections["192.168.99.100_root_my-secret-pw_test"] = inactiveConnections
 
@@ -261,8 +245,6 @@ extension MySQLConnectionPoolTests {
   static var allTests: [(String, (MySQLConnectionPoolTests) -> () throws -> Void)] {
     return [
       ("testConnectionConnectCalled", testConnectionConnectCalled),
-      ("testGetConnectionWithDefaultCharset", testGetConnectionWithDefaultCharset),
-      ("testSetConnectionCharset", testSetConnectionCharset),
       ("testGetConnectionWithNoInactiveConnectionsCreatesANewConnection", testGetConnectionWithNoInactiveConnectionsCreatesANewConnection),
       ("testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem", testGetConnectionWithNoInactiveConnectionsAddsAnActivePoolItem),
       ("testGetConnectionWithInactivePoolItemUsesExistingConnection", testGetConnectionWithInactivePoolItemUsesExistingConnection),
@@ -280,4 +262,3 @@ extension MySQLConnectionPoolTests {
     ]
   }
 }
-*/

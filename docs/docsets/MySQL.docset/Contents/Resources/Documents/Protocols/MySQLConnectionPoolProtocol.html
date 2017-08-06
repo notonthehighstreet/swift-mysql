@@ -14,7 +14,7 @@
     <a title="MySQLConnectionPoolProtocol Protocol Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html">MySQL Docs</a> (26% documented)</p>
+        <p><a href="../index.html">MySQL Docs</a> (27% documented)</p>
         <p class="header-right"><a href="https://github.com/nicholasjackson/swift-mysql"><img src="../img/gh.png"/>View on GitHub</a></p>
       </div>
     </header>
@@ -32,19 +32,10 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Classes/MockMySQLClient.html">MockMySQLClient</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/MockMySQLConnection.html">MockMySQLConnection</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/MockMySQLConnectionPool.html">MockMySQLConnectionPool</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/MockMySQLResult.html">MockMySQLResult</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/MySQLClient.html">MySQLClient</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/MySQLConnection.html">MySQLConnection</a>
@@ -94,9 +85,6 @@
             <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="../Protocols/MySQLClientProtocol.html">MySQLClientProtocol</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Protocols/MySQLConnectionPoolProtocol.html">MySQLConnectionPoolProtocol</a>
               </li>
               <li class="nav-group-task">
@@ -133,9 +121,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocolcFT16connectionStringVS_21MySQLConnectionString8poolSizeSi8providerFT_GSqPS_23MySQLConnectionProtocol___x"></a>
-                    <a name="//apple_ref/swift/Method/init(connectionString:poolSize:provider:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocolcFT16connectionStringVS_21MySQLConnectionString8poolSizeSi8providerFT_GSqPS_23MySQLConnectionProtocol___x">init(connectionString:poolSize:provider:)</a>
+                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocolcFT16connectionStringVS_21MySQLConnectionString8poolSizeSi14defaultCharsetSS_x"></a>
+                    <a name="//apple_ref/swift/Method/init(connectionString:poolSize:defaultCharset:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocolcFT16connectionStringVS_21MySQLConnectionString8poolSizeSi14defaultCharsetSS_x">init(connectionString:poolSize:defaultCharset:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -145,103 +133,6 @@
                       <div class="abstract">
                         <p>Undocumented</p>
 
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocol21setConnectionProviderFT8providerFT_GSqPS_23MySQLConnectionProtocol___T_"></a>
-                    <a name="//apple_ref/swift/Method/setConnectionProvider(provider:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocol21setConnectionProviderFT8providerFT_GSqPS_23MySQLConnectionProtocol___T_">setConnectionProvider(provider:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>setConnectionProvider requires you to provide a closure which returns a new object which implements
- the MySQLConnectionProtocol.  Everytime a new connection is required this block is called.</p>
-<pre class="highlight plaintext"><code>   MySQLConnectionPoolProtocol.setConnectionProvider() {
-     return MySQLConnection()
-   }
-</code></pre>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">setConnectionProvider</span><span class="p">(</span><span class="nv">provider</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Protocols/MySQLConnectionProtocol.html">MySQLConnectionProtocol</a></span><span class="p">?)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>provider</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>closure returning an object implementing MySQLConnectionProtocol</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocol11setPoolSizeFT4sizeSi_T_"></a>
-                    <a name="//apple_ref/swift/Method/setPoolSize(size:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocol11setPoolSizeFT4sizeSi_T_">setPoolSize(size:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>setPoolSize sets the size for the connection pool, default is 20</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">setPoolSize</span><span class="p">(</span><span class="nv">size</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>size</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>new size of the pool</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                       </div>
                     </section>
                   </div>
@@ -261,10 +152,9 @@
                       <div class="abstract">
                         <p>setLogger sets the function that will be called when an event occurs with the connectionPool,
 you can use this method can be used to setup logging to be used for debugging or metrics.</p>
-<pre class="highlight plaintext"><code>  MySQLConnectionPool.setPoolSize {
-    (message: MySQLConnectionPoolMessage) in
+<pre class="highlight plaintext"><code>  MySQLConnectionPool.getConnection { (message: MySQLConnectionPoolMessage) in
       print(message)
-}
+  }
 </code></pre>
 
                       </div>
@@ -292,8 +182,9 @@ you can use this method can be used to setup logging to be used for debugging or
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.</p>
+                        <p>getClient returns a client from the pool, if a connection is unsuccessful 
+then getConnection throws a MySQLError. If the pool has no available connections 
+getConnection will block util either a connection is free or a timeout occurs.</p>
 
                       </div>
                       <div class="declaration">
@@ -306,7 +197,7 @@ if the pool has no available connections getConnection will block util either a 
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>An object implementing the MySQLConnectionProtocol.</p>
+                        <p>An object implementing the MySQLClientProtocol.</p>
                       </div>
                     </section>
                   </div>
@@ -314,9 +205,9 @@ if the pool has no available connections getConnection will block util either a 
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocol13getConnectionFzT7closureFPS_23MySQLConnectionProtocol_T__T_"></a>
+                    <a name="/s:FP5MySQL27MySQLConnectionPoolProtocol13getConnectionFzT7closureFzPS_23MySQLConnectionProtocol_T__T_"></a>
                     <a name="//apple_ref/swift/Method/getConnection(closure:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocol13getConnectionFzT7closureFPS_23MySQLConnectionProtocol_T__T_">getConnection(closure:)</a>
+                    <a class="token" href="#/s:FP5MySQL27MySQLConnectionPoolProtocol13getConnectionFzT7closureFzPS_23MySQLConnectionProtocol_T__T_">getConnection(closure:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -324,11 +215,13 @@ if the pool has no available connections getConnection will block util either a 
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.</p>
+                        <p>getClient returns a client from the pool, if a connection is unsuccessful 
+then getClient throws a MySQLError. If the pool has no available connections 
+getConnection will block util either a connection is free or a timeout occurs.</p>
 
-<p>By passing the optional closure once the code has executed within the block the connection is automatically released
-back to the pool saving the requirement to manually call releaseConnection.</p>
+<p>By passing the optional closure once the code has executed within the block 
+the connection is automatically released back to the pool saving the 
+requirement to manually call releaseConnection.</p>
 <pre class="highlight plaintext"><code>  MySQLConnectionPoolProtocol.getConnection() {
     (connection: MySQLConnectionProtocol) in
       let result = connection.execute("SELECT * FROM TABLE")
@@ -341,7 +234,7 @@ back to the pool saving the requirement to manually call releaseConnection.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">getConnection</span><span class="p">(</span><span class="nv">closure</span><span class="p">:</span> <span class="p">((</span><span class="nv">_</span><span class="p">:</span> <span class="kt"><a href="../Protocols/MySQLConnectionProtocol.html">MySQLConnectionProtocol</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span> <span class="k">throws</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">getConnection</span><span class="p">(</span><span class="nv">closure</span><span class="p">:</span> <span class="p">((</span><span class="nv">_</span><span class="p">:</span> <span class="kt"><a href="../Protocols/MySQLConnectionProtocol.html">MySQLConnectionProtocol</a></span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">))</span> <span class="k">throws</span></code></pre>
 
                         </div>
                       </div>
@@ -366,7 +259,7 @@ back to the pool saving the requirement to manually call releaseConnection.</p>
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>An object implementing the MySQLConnectionProtocol.</p>
+                        <p>An object implementing the MySQLClientProtocol.</p>
                       </div>
                     </section>
                   </div>
@@ -384,7 +277,7 @@ back to the pool saving the requirement to manually call releaseConnection.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>releaseConnection returns a connection to the pool.</p>
+                        <p>releaseClient returns a client to the pool.</p>
 
                       </div>
                       <div class="declaration">
@@ -402,12 +295,12 @@ back to the pool saving the requirement to manually call releaseConnection.</p>
                             <tr>
                               <td>
                                 <code>
-                                <em>connection</em>
+                                <em>clent</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>Connection to be returned to the pool</p>
+                                  <p>Client to be returned to the pool</p>
                                 </div>
                               </td>
                             </tr>
@@ -422,7 +315,7 @@ back to the pool saving the requirement to manually call releaseConnection.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="https://nicholasjackson.io" target="_blank" rel="external">Nic</a>. All rights reserved. (Last updated: 2017-07-30)</p>
+          <p>&copy; 2017 <a class="link" href="https://nicholasjackson.io" target="_blank" rel="external">Nic</a>. All rights reserved. (Last updated: 2017-08-06)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

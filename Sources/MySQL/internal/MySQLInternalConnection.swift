@@ -122,7 +122,7 @@ extension MySQLInternalConnection {
             throw MySQLError.UnableToCreateConnection
         }
 
-        guard let real = CMySQLClient.mysql_real_connect(
+        guard let _ = CMySQLClient.mysql_real_connect(
                             connection, 
                             host, 
                             user, 
