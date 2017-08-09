@@ -31,7 +31,8 @@ public class IntegrationTests: XCTestCase {
 
            try block(connection)
         } catch {
-           XCTFail("An exception has ocurred: \(error)")
+            print(error) 
+            XCTFail("An exception has ocurred: \(error)")
         }
   }
 
@@ -67,7 +68,7 @@ public class IntegrationTests: XCTestCase {
             "Price": 52642,
             "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
-        let _ = try connection.execute(builder: queryBuilder)
+        let result2 = try connection.execute(builder: queryBuilder)
 
         queryBuilder = MySQLQueryBuilder()
           .insert(data: [
@@ -84,15 +85,13 @@ public class IntegrationTests: XCTestCase {
 
         let result = try connection.execute(builder: queryBuilder)
         
-        if result.affectedRows == 0 {
-            XCTFail("No results")
-        }
-        
         if let r = result.nextResult() {
             XCTAssertEqual(1, r["Id"] as! Int)
             XCTAssertEqual("Audi", r["Name"] as! String)
             XCTAssertNotNil(r["Price"])
             XCTAssertNotNil(r["UpdatedAt"])
+        } else {
+            XCTFail("No results")
         }
     }
   }

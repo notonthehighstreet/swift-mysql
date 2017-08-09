@@ -16,7 +16,7 @@ public class MySQLResult: MySQLResultProtocol {
         and this value is 0 then is can be assumed that the query has not been succesful.
         For Select queries the value of affectedRows will be equal to the number of rows in the dataset.
      */
-    public var affectedRows = 0
+    public var affectedRows: Int64 = 0
 
     /**
         nextResult returns the next row from the database for the executed query, when no more rows 
@@ -38,7 +38,7 @@ public class MySQLResult: MySQLResultProtocol {
         }
     }
 
-    internal init(rows: Int, 
+    internal init(rows: Int64, 
                   result:CMySQLResult?, 
                   fields: [CMySQLField]?, 
                   nextResult: @escaping ((_:CMySQLResult) -> CMySQLRow?)) {

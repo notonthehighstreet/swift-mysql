@@ -5,7 +5,7 @@ public class MockMySQLResult: MySQLResultProtocol {
   public var nextCalled = 0
 
   public var results: [MySQLRow?]?
-  public var affectedRows = 0
+  public var affectedRows: Int64 = 0
   public var fields = [MySQLField]()
 
   private var resultItterator = 0
