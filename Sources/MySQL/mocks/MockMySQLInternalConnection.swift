@@ -17,12 +17,14 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
   var clientVersion: UInt = 0
   var defaultCharset: String = "utf8"
 
+  var executeReturnRows = 0
   var executeReturnResult: CMySQLResult? = nil
   var executeReturnHeaders: [CMySQLField]? = nil
   var executeReturnError: MySQLError? = nil
 
   var nextResultReturn: CMySQLRow? = nil
 
+  var nextResultReturnRows = 0
   var nextResultReturnResult: CMySQLResult? = nil
   var nextResultReturnHeaders: [CMySQLField]? = nil
   var nextResultReturnError: MySQLError? = nil
@@ -100,7 +102,7 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
 
   func client_version() -> UInt { return clientVersion }
 
-  func execute(query: String) throws -> (CMySQLResult?, [CMySQLField]?) {
+  func execute(query: String) throws -> (Int, CMySQLResult?, [CMySQLField]?) {
      executeCalled = true
      executeStatement = query
 
@@ -108,19 +110,19 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
         throw executeReturnError!
      }
 
-     return (executeReturnResult, executeReturnHeaders)
+     return (executeReturnRows, executeReturnResult, executeReturnHeaders)
    }
 
    func nextResult(result: CMySQLResult) -> CMySQLRow? {
      return nextResultReturn
    }
 
-   func nextResultSet() throws -> (CMySQLResult?, [CMySQLField]?) {
+   func nextResultSet() throws -> (Int, CMySQLResult?, [CMySQLField]?) {
         if nextResultSetErrorReturn != nil {
             throw nextResultSetErrorReturn!
         }
 
-     return (nextResultReturnResult, nextResultReturnHeaders)
+     return (executeReturnRows, nextResultReturnResult, nextResultReturnHeaders)
    }
 
   func close() { closeCalled = true }

@@ -69,14 +69,21 @@ extension MySQLConnection {
             thrown.  It possible for no results to be returned as some queries do 
             not return results.
     */
-    public func execute(query: String) throws -> (MySQLResultProtocol?) {
+    public func execute(query: String) throws -> MySQLResultProtocol {
         let result = try connection.execute(query: query)
 
-        guard let mysqlResult = result.0, let mysqlFields = result.1 else {
-            return nil
+        guard let mysqlResult = result.1, let mysqlFields = result.2 else {
+            return MySQLResult(rows: result.0, 
+                           result: nil, 
+                           fields: nil, 
+                           nextResult: connection.nextResult)
+
         }
     
-        return MySQLResult(result: mysqlResult, fields: mysqlFields, nextResult: connection.nextResult)
+        return MySQLResult(rows: result.0, 
+                           result: mysqlResult, 
+                           fields: mysqlFields, 
+                           nextResult: connection.nextResult)
     }
 
     /**
@@ -97,7 +104,7 @@ extension MySQLConnection {
         var (result, error) = mySQLClient.execute(builder)
         ```
     */
-    public func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol? {
+    public func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol {
         let statement = builder.build()
     
         return try execute(query: statement)
@@ -131,13 +138,19 @@ extension MySQLConnection {
         }
         ```
     */
-    public func nextResultSet() throws -> MySQLResultProtocol? {
+    public func nextResultSet() throws -> MySQLResultProtocol {
         let result = try connection.nextResultSet()
 
-        guard let mysqlResult = result.0, let mysqlFields = result.1 else {
-            return nil
+        guard let mysqlResult = result.1, let mysqlFields = result.2 else {
+            return MySQLResult(rows: result.0, 
+                           result: nil, 
+                           fields: nil, 
+                           nextResult: connection.nextResult)
         }
       
-        return MySQLResult(result:mysqlResult, fields: mysqlFields, nextResult: connection.nextResult)
+        return MySQLResult(rows: result.0,
+                           result:mysqlResult, 
+                           fields: mysqlFields, 
+                           nextResult: connection.nextResult)
     }
 }

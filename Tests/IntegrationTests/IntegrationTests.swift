@@ -31,7 +31,7 @@ public class IntegrationTests: XCTestCase {
 
            try block(connection)
         } catch {
-           XCTFail("Unable to create connection: \(error)")
+           XCTFail("An exception has ocurred: \(error)")
         }
   }
 
@@ -84,11 +84,11 @@ public class IntegrationTests: XCTestCase {
 
         let result = try connection.execute(builder: queryBuilder)
         
-        if result == nil {
+        if result.affectedRows == 0 {
             XCTFail("No results")
         }
         
-        if let r = result!.nextResult() {
+        if let r = result.nextResult() {
             XCTAssertEqual(1, r["Id"] as! Int)
             XCTAssertEqual("Audi", r["Name"] as! String)
             XCTAssertNotNil(r["Price"])
@@ -109,16 +109,33 @@ public class IntegrationTests: XCTestCase {
 
         let result = try connection.execute(builder: queryBuilder)
 
-        if result == nil {
+        if result.affectedRows == 0 {
             XCTFail("No results")
         }
 
-        while case let row? = result!.nextResult() {
+        while case let row? = result.nextResult() {
             XCTAssertNotNil(row)
             rowCount += 1
         }
     }
 
     XCTAssertEqual(2, rowCount)
+  }
+  
+  func testUpdateWithNoRecordFails() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        var row = MySQLRow()
+        row["Name"] = "Something"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .update(data: row, table: "Cars")
+          .wheres(statement: "WHERE id=?", parameters: "12")
+
+        let result = try connection.execute(builder: queryBuilder)
+        
+        XCTAssertEqual(0, result.affectedRows)
+    }
   }
 }

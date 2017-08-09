@@ -19,24 +19,24 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
   public func version() -> UInt { return 1 }
   public func isConnected() -> Bool { return true }
 
-  public func execute(query: String) throws -> (MySQLResultProtocol?) {
+  public func execute(query: String) throws -> MySQLResultProtocol {
     executeQueryParams = query
     executeQueryCalled = true
 
-    return executeMySQLResultReturn
+    return executeMySQLResultReturn!
   }
 
-  public func execute(builder: MySQLQueryBuilder) throws -> (MySQLResultProtocol?) {
+  public func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol {
     executeBuilderParams = builder
     executeBuilderCalled = true
 
-    return executeMySQLResultReturn
+    return executeMySQLResultReturn!
   }
 
-  public func nextResultSet() throws -> (MySQLResultProtocol?) {
+  public func nextResultSet() throws -> MySQLResultProtocol {
     nextResultSetCalled = true
 
-    return nextResultSetReturn
+    return nextResultSetReturn!
   }
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {

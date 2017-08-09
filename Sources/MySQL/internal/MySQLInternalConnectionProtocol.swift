@@ -22,7 +22,7 @@ internal protocol MySQLInternalConnectionProtocol {
   func close()
   func client_info() -> String?
   func client_version() -> UInt
-  func execute(query: String) throws -> (CMySQLResult?, [CMySQLField]?)
+  func execute(query: String) throws -> (Int, CMySQLResult?, [CMySQLField]?)
   func nextResult(result: CMySQLResult) -> CMySQLRow?
-  func nextResultSet() throws -> (CMySQLResult?, [CMySQLField]?)
+  func nextResultSet() throws -> (Int, CMySQLResult?, [CMySQLField]?)
 }

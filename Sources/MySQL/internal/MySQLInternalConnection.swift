@@ -181,10 +181,12 @@ extension MySQLInternalConnection {
         MySQLError will be nil however it is still possible for no results to 
         be returned as some queries do not return results.
   */
-  public func execute(query: String) throws -> (CMySQLResult?, [CMySQLField]?) {
+  public func execute(query: String) throws -> (Int, CMySQLResult?, [CMySQLField]?) {
     clearResult() // clear any memory allocated to a previous result
 
-    if (CMySQLClient.mysql_query(connection, query) == 1) {
+    print("Executing query: \(query)")
+
+    if (CMySQLClient.mysql_query(connection, query) != 0) {
       let error = String(cString: CMySQLClient.mysql_error(connection))
       throw MySQLError.UnableToExecuteQuery(message: error)
     }
@@ -225,23 +227,25 @@ extension MySQLInternalConnection {
       row = connection.nextResult(result) // use rows from table2
     ```
   */
-  public func nextResultSet() -> (CMySQLResult?, [CMySQLField]?) {
+  public func nextResultSet() -> (Int, CMySQLResult?, [CMySQLField]?) {
     if mysql_next_result(connection) < 1 {
       return getResults()
     } else {
-      return (nil, nil)
+      return (0, nil, nil)
     }
   }
 
-  private func getResults() -> (CMySQLResult?, [CMySQLField]?){
+  private func getResults() -> (Int, CMySQLResult?, [CMySQLField]?){
     clearResult()
 
+    // get the number of rows affected by the query
+    let rows = Int(CMySQLClient.mysql_affected_rows(connection))
+
     guard let result = CMySQLClient.mysql_store_result(connection) else {
-      //print(String(cString: CMySQLClient.mysql_error(connection)))
-      return (nil, nil)
+      return (rows, nil, nil)
     }
 
-    return (result, getHeaders(resultPointer: result))
+    return (rows, result, getHeaders(resultPointer: result))
   }
 
   /**

@@ -40,7 +40,9 @@ public class MySQLConnectionTests: XCTestCase {
 
     let _ = try connection!.execute(builder: builder)
 
-    XCTAssertEqual(mockConnection!.executeStatement, "SELECT * FROM WHERE abc='bcd';", "Query sent to connection not correct")
+    XCTAssertEqual(mockConnection!.executeStatement, 
+                   "SELECT * FROM WHERE abc='bcd';", 
+                   "Query sent to connection not correct")
     XCTAssertTrue(mockConnection!.executeCalled, "Query should have been executed")
   }
 
@@ -53,10 +55,11 @@ public class MySQLConnectionTests: XCTestCase {
     XCTAssertNotNil(result, "Query should have returned results")
   }
 
-  public func testClientQueryDoesNotReturnMySQLResultWhenNoResult() throws {
+  public func testClientQuerySetsAffectedRowsWhenNoResult() throws {
+    mockConnection!.executeReturnRows = 0
     let result = try connection!.execute(query: "something")
 
-    XCTAssertNil(result, "Query should have been executed")
+    XCTAssertEqual(0, result.affectedRows, "Affected rows should be 0 when no result")
   }
 
   public func testClientQueryReturnsErrorWhenError() throws {
@@ -107,7 +110,7 @@ extension MySQLConnectionTests {
         ("testClientExecutesQuery", testClientExecutesQuery),
         ("testClientExecutesQueryWithBuilder", testClientExecutesQueryWithBuilder),
         ("testClientQueryReturnsMySQLResultWhenResultPresent", testClientQueryReturnsMySQLResultWhenResultPresent),
-        ("testClientQueryDoesNotReturnMySQLResultWhenNoResult", testClientQueryDoesNotReturnMySQLResultWhenNoResult),
+        ("testClientQuerySetsAffectedRowsWhenNoResult", testClientQuerySetsAffectedRowsWhenNoResult),
         ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError),
         ("testClientNextResultSetReturnsMySQLResultWhenResultPresent", testClientNextResultSetReturnsMySQLResultWhenResultPresent),
         ("testClientNextResultSetReturnsNilWhenNoResultPresent", testClientNextResultSetReturnsNilWhenNoResultPresent)
