@@ -68,7 +68,7 @@ public class IntegrationTests: XCTestCase {
             "Price": 52642,
             "UpdatedAt": "2017-07-24 20:43:51"], table: "Cars")
 
-        let result2 = try connection.execute(builder: queryBuilder)
+        let _ = try connection.execute(builder: queryBuilder)
 
         queryBuilder = MySQLQueryBuilder()
           .insert(data: [
