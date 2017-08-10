@@ -23,6 +23,10 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
     executeQueryParams = query
     executeQueryCalled = true
 
+    if executeMySQLErrorReturn != nil {
+        throw executeMySQLErrorReturn!
+    }
+
     return executeMySQLResultReturn!
   }
 
@@ -30,11 +34,19 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
     executeBuilderParams = builder
     executeBuilderCalled = true
 
+    if executeMySQLErrorReturn != nil {
+        throw executeMySQLErrorReturn!
+    }
+
     return executeMySQLResultReturn!
   }
 
   public func nextResultSet() throws -> MySQLResultProtocol {
     nextResultSetCalled = true
+
+    if nextResultSetErrorReturn != nil {
+        throw nextResultSetErrorReturn!
+    }
 
     return nextResultSetReturn!
   }
