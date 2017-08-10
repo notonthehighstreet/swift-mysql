@@ -37,7 +37,13 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
     if executeMySQLErrorReturn != nil {
         throw executeMySQLErrorReturn!
     }
-
+    
+    if executeMySQLResultReturn == nil {
+        return MySQLResult(rows: -1, result: nil, fields: nil, nextResult: (() -> CMySQLRow?) {
+            return nil
+        })
+    }
+    
     return executeMySQLResultReturn!
   }
 
@@ -46,6 +52,12 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
 
     if nextResultSetErrorReturn != nil {
         throw nextResultSetErrorReturn!
+    }
+    
+    if executeMySQLResultReturn == nil {
+        return MySQLResult(rows: -1, result: nil, fields: nil, nextResult: (() -> CMySQLRow?) {
+            return nil
+        })
     }
 
     return nextResultSetReturn!
