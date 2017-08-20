@@ -36,7 +36,7 @@ public class MySQLConnectionTests: XCTestCase {
   public func testClientExecutesQueryWithBuilder() throws {
     let builder = MySQLQueryBuilder()
       .select(statement: "SELECT * FROM")
-      .wheres(statement: "WHERE abc=?", parameters: "bcd")
+      .wheres(statement: "abc=?", parameters: "bcd")
 
     let _ = try connection!.execute(builder: builder)
 

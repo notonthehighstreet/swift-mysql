@@ -130,7 +130,7 @@ public class IntegrationTests: XCTestCase {
 
         let queryBuilder = MySQLQueryBuilder()
           .update(data: row, table: "Cars")
-          .wheres(statement: "WHERE id=?", parameters: "12")
+          .wheres(statement: "id=?", parameters: "12")
 
         let result = try connection.execute(builder: queryBuilder)
         
