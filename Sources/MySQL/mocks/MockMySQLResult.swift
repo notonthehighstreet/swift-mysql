@@ -8,6 +8,8 @@ public class MockMySQLResult: MySQLResultProtocol {
   public var affectedRows: Int64 = 0
   public var fields = [MySQLField]()
 
+  public var seekCalled = false
+
   private var resultItterator = 0
 
   public func nextResult() -> MySQLRow? {
@@ -20,5 +22,10 @@ public class MockMySQLResult: MySQLResultProtocol {
       resultItterator += 1
       return results![resultItterator - 1]
     }
+  }
+
+  public func seek(offset: Int64) {
+    seekCalled = true
+    resultItterator = Int(offset)
   }
 }

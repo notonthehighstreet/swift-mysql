@@ -38,6 +38,19 @@ public class MySQLResult: MySQLResultProtocol {
         }
     }
 
+    /**
+        seek moves the cursor in the result set by the number of rows defined
+        by the offset.  Since nextResult lazily fetches data from the database
+        seek can be used to query a large result set and then retrieve a page
+        of records without having to wite a SQL statement containing a limit
+        or offset.
+    **/
+    public func seek(offset: Int64) {
+        if self.resultPointer != nil {
+            CMySQLClient.mysql_data_seek(self.resultPointer, UInt64(offset))
+        }
+    }
+
     internal init(rows: Int64, 
                   result:CMySQLResult?, 
                   fields: [CMySQLField]?, 

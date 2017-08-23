@@ -137,4 +137,27 @@ public class IntegrationTests: XCTestCase {
         XCTAssertEqual(0, result.affectedRows)
     }
   }
+
+  func testSeeksToRow() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        let queryBuilder = MySQLQueryBuilder()
+          .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
+
+        let result = try connection.execute(builder: queryBuilder)
+
+        if result.affectedRows == 0 {
+            XCTFail("No results")
+        }
+
+        result.seek(offset: 1)
+
+        if let r = result.nextResult() {
+            XCTAssertEqual(2, r["Id"] as! Int)
+        } else {
+            XCTFail("No results")
+        }
+    }
+  }
 }
