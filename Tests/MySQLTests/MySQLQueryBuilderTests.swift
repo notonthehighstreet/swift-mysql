@@ -199,6 +199,7 @@ extension MySQLQueryBuilderTests {
         ("testSelectWithArrayReturnsValidQuery", testSelectWithArrayReturnsValidQuery),
         ("testInsertGeneratesValidQuery", testInsertGeneratesValidQuery),
         ("testUpdateGeneratesValidQuery", testUpdateGeneratesValidQuery),
+        ("testUpsertGeneratesValidQuery", testUpsertGeneratesValidQuery),
         ("testDeleteGeneratesValidQuery", testDeleteGeneratesValidQuery),
         ("testWheresGeneratesValidQuery", testWheresGeneratesValidQuery),
         ("testSelectWithWheresGeneratesValidQuery", testSelectWithWheresGeneratesValidQuery),

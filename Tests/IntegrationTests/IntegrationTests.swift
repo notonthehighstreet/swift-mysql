@@ -58,7 +58,7 @@ public class IntegrationTests: XCTestCase {
       (connection: MySQLConnectionProtocol) in
 
         let _ = try connection.execute(query: "DROP TABLE IF EXISTS Cars")
-        let _ = try connection.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT, UpdatedAt TIMESTAMP)")
+        let _ = try connection.execute(query: "CREATE TABLE Cars(Id INT, Name TEXT, Price INT, UpdatedAt TIMESTAMP, PRIMARY KEY (Id))")
 
         // use query builder to insert data
         var queryBuilder = MySQLQueryBuilder()
@@ -158,6 +158,51 @@ public class IntegrationTests: XCTestCase {
         } else {
             XCTFail("No results")
         }
+    }
+  }
+
+  func testUpsertWithNoRecordInserts() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        var row = MySQLRow()
+        row["Id"] = 7
+        row["Name"] = "Car A"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .upsert(data: row, table: "Cars")
+
+        let result = try connection.execute(builder: queryBuilder)
+        
+        XCTAssertEqual(1, result.affectedRows)
+    }
+  }
+  
+  func testUpsertWithRecordUpdates() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        var row = MySQLRow()
+        row["Id"] = 7
+        row["Name"] = "Car B"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .upsert(data: row, table: "Cars")
+
+        let result = try connection.execute(builder: queryBuilder)
+        XCTAssertEqual(2, result.affectedRows)
+
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["Id", "Name"], table: "Cars")
+            .wheres(statement: "Id = ?", parameters: "7") 
+        let selectResult = try connection.execute(builder: selectBuilder)
+
+        guard let data = selectResult.nextResult() else {
+            XCTFail("No results")
+            return
+        }
+
+        XCTAssertEqual("Car B", data["Name"] as? String)
     }
   }
 }
