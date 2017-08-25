@@ -30,6 +30,7 @@ public class MySQLQueryBuilder: Equatable {
   var updateStatement: String?
   var deleteStatement: String?
   var whereStatement: String?
+  var upsertStatement: String?
 
   var joinedStatements = [MySQLJoin]()
 
@@ -112,6 +113,27 @@ public class MySQLQueryBuilder: Equatable {
   */
   public func update(data: MySQLRow, table: String) -> MySQLQueryBuilder {
     updateStatement = createUpdateStatement(data: data, table: table)
+
+    return self
+  }
+    
+  /**
+    upsert updates a record if it exists and inserts a new one if it does not
+    exist
+
+    - Parameters:
+      - data: dictionary containing the data to be inserted
+      - table: table to insert data into
+
+    - Returns: returns self
+
+    ```
+      var builder = MySQLQueryBuilder()
+        .upsert(["abc": "cde"], table: "myTable")
+    ```
+  */
+  public func upsert(data: MySQLRow, table: String) -> MySQLQueryBuilder {
+    upsertStatement = createUpsertStatement(data: data, table: table)
 
     return self
   }
@@ -226,6 +248,10 @@ public class MySQLQueryBuilder: Equatable {
     if let updateStatement = updateStatement {
       query += updateStatement
     }
+    
+    if let upsertStatement = upsertStatement {
+      query += upsertStatement
+    }
 
     if let deleteStatement = deleteStatement {
       query += deleteStatement
@@ -298,6 +324,20 @@ public class MySQLQueryBuilder: Equatable {
     statement += ")"
 
     return statement
+  }
+
+  private func createUpsertStatement(data: MySQLRow, table: String) -> String {
+    let update = createInsertStatement(data: data, table: table)
+    
+    var statement = " ON DUPLICATE KEY UPDATE "
+    for (key, value) in data {
+      statement += "\(key) = '\(value)', "
+    }
+
+    statement = statement.trimChar(character: " ")
+    statement = statement.trimChar(character: ",")
+
+    return update + statement
   }
 
   private func createUpdateStatement(data: MySQLRow, table: String) -> String {

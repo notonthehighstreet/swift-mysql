@@ -87,6 +87,20 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("UPDATE MyTable SET abc='abc', bcd='bcd';", query, "Should have returned valid query")
   }
+  
+  public func testUpsertGeneratesValidQuery() {
+    var data = MySQLRow()
+    data["abc"] = "abc"
+    data["bcd"] = "bcd"
+
+    let query = MySQLQueryBuilder()
+      .upsert(data: data, table: "MyTable")
+      .build()
+    
+      XCTAssertEqual("INSERT INTO MyTable (abc, bcd) VALUES ('abc', 'bcd') ON DUPLICATE KEY UPDATE abc = 'abc', bcd = 'bcd';", 
+                   query,
+                   "Should have returned valid query")
+  }
 
   public func testDeleteGeneratesValidQuery() {
     let builder = MySQLQueryBuilder()
