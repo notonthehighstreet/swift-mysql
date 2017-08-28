@@ -205,4 +205,66 @@ public class IntegrationTests: XCTestCase {
         XCTAssertEqual("Car B", data["Name"] as? String)
     }
   }
+  
+  func testInsertAndRollbackDoesNotCreateRecord() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        connection.startTransaction()
+
+        var row = MySQLRow()
+        row["Id"] = 10
+        row["Name"] = "Car Transaction"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .insert(data: row, table: "Cars")
+
+        let result = try connection.execute(builder: queryBuilder)
+        XCTAssertEqual(1, result.affectedRows)
+
+        try connection.rollbackTransaction()
+
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["Id", "Name"], table: "Cars")
+            .wheres(statement: "Id = ?", parameters: "10") 
+        let selectResult = try connection.execute(builder: selectBuilder)
+
+        if let _ = selectResult.nextResult() { 
+            XCTFail("Transaction should have been rolled back")
+            return
+        }
+    }
+  }
+  
+  func testInsertAndCommitCreatesRecord() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        connection.startTransaction()
+
+        var row = MySQLRow()
+        row["Id"] = 11
+        row["Name"] = "Car Transaction"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .insert(data: row, table: "Cars")
+
+        let result = try connection.execute(builder: queryBuilder)
+        XCTAssertEqual(1, result.affectedRows)
+
+        try connection.commitTransaction()
+
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["Id", "Name"], table: "Cars")
+            .wheres(statement: "Id = ?", parameters: "11") 
+        let selectResult = try connection.execute(builder: selectBuilder)
+
+        guard let data = selectResult.nextResult() else { 
+            XCTFail("No data")
+            return
+        }
+
+        XCTAssertEqual("Car Transaction", data["Name"] as? String)
+    }
+  }
 }

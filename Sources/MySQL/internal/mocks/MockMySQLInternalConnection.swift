@@ -33,6 +33,14 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
   var nextResultSetReturn: MySQLResultProtocol?
   var nextResultSetErrorReturn: MySQLError?
 
+  var startTransactionCalled = false
+
+  var commitTransactionCalled = false
+  var commitTransactionError: MySQLError?
+
+  var rollbackTransactionCalled = false
+  var rollbackTransactionError: MySQLError?
+
   var uuid: Double
 
   func equals(otherObject: MySQLInternalConnectionProtocol) -> Bool {
@@ -126,4 +134,18 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
    }
 
   func close() { closeCalled = true }
+
+  func startTransaction() {
+    startTransactionCalled = true
+  }
+  
+  func commitTransaction() throws {
+    commitTransactionCalled = true
+    if commitTransactionError != nil { throw commitTransactionError! }
+  }
+  
+  func rollbackTransaction() throws {
+    rollbackTransactionCalled = true
+    if rollbackTransactionError != nil { throw rollbackTransactionError! }
+  }
 }

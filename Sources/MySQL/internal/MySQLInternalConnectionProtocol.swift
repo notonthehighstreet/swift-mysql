@@ -25,4 +25,7 @@ internal protocol MySQLInternalConnectionProtocol {
   func execute(query: String) throws -> (Int64, CMySQLResult?, [CMySQLField]?)
   func nextResult(result: CMySQLResult) -> CMySQLRow?
   func nextResultSet() throws -> (Int64, CMySQLResult?, [CMySQLField]?)
+  func startTransaction()
+  func commitTransaction() throws
+  func rollbackTransaction() throws
 }

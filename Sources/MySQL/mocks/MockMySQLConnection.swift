@@ -19,6 +19,14 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
   public func version() -> UInt { return 1 }
   public func isConnected() -> Bool { return true }
 
+  var startTransactionCalled = false
+
+  var commitTransactionCalled = false
+  var commitTransactionError: MySQLError?
+
+  var rollbackTransactionCalled = false
+  var rollbackTransactionError: MySQLError?
+
   public func execute(query: String) throws -> MySQLResultProtocol {
     executeQueryParams = query
     executeQueryCalled = true
@@ -65,5 +73,19 @@ public class MockMySQLConnection: MySQLConnectionProtocol {
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
     return true
+  }
+
+  public func startTransaction() {
+    startTransactionCalled = true
+  }
+  
+  public func commitTransaction() throws {
+    commitTransactionCalled = true
+    if commitTransactionError != nil { throw commitTransactionError! }
+  }
+  
+  public func rollbackTransaction() throws {
+    rollbackTransactionCalled = true
+    if rollbackTransactionError != nil { throw rollbackTransactionError! }
   }
 }
