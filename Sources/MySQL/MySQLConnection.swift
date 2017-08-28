@@ -153,4 +153,19 @@ extension MySQLConnection {
                            fields: mysqlFields, 
                            nextResult: connection.nextResult)
     }
+
+
+    // Transaction support
+
+    public func startTransaction() {
+        connection.startTransaction()
+    }
+
+    public func commitTransaction() throws {
+        try connection.commitTransaction() 
+    }
+
+    public func rollbackTransaction() throws {
+        try connection.rollbackTransaction() 
+    }
 }

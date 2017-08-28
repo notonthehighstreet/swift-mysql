@@ -100,6 +100,24 @@ public class MySQLConnectionTests: XCTestCase {
     XCTAssertNil(result, "Query should not have returned results")
     XCTAssertNotNil(err, "Query should have returned error")
   }
+
+    public func testStartCallsStartTransaction() throws {
+        connection!.startTransaction()
+
+        XCTAssertTrue(mockConnection!.startTransactionCalled)
+    }
+    
+    public func testCommitCallsCommitTransaction() throws {
+        try connection!.commitTransaction()
+
+        XCTAssertTrue(mockConnection!.commitTransactionCalled)
+    }
+    
+    public func testRollbackCallsRollbackTransaction() throws {
+        try connection!.rollbackTransaction()
+
+        XCTAssertTrue(mockConnection!.rollbackTransactionCalled)
+    }
 }
 
 extension MySQLConnectionTests {
@@ -113,7 +131,10 @@ extension MySQLConnectionTests {
         ("testClientQuerySetsAffectedRowsWhenNoResult", testClientQuerySetsAffectedRowsWhenNoResult),
         ("testClientQueryReturnsErrorWhenError", testClientQueryReturnsErrorWhenError),
         ("testClientNextResultSetReturnsMySQLResultWhenResultPresent", testClientNextResultSetReturnsMySQLResultWhenResultPresent),
-        ("testClientNextResultSetReturnsNilWhenNoResultPresent", testClientNextResultSetReturnsNilWhenNoResultPresent)
+        ("testClientNextResultSetReturnsNilWhenNoResultPresent", testClientNextResultSetReturnsNilWhenNoResultPresent),
+        ("testStartCallsStartTransaction", testStartCallsStartTransaction), 
+        ("testCommitCallsCommitTransaction", testCommitCallsCommitTransaction), 
+        ("testRollbackCallsRollbackTransaction", testRollbackCallsRollbackTransaction)
       ]
     }
 }

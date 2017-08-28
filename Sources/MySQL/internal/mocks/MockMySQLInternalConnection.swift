@@ -34,7 +34,6 @@ class MockMySQLInternalConnection : MySQLInternalConnectionProtocol {
   var nextResultSetErrorReturn: MySQLError?
 
   var startTransactionCalled = false
-  var startTransactionError: MySQLError?
 
   var commitTransactionCalled = false
   var commitTransactionError: MySQLError?

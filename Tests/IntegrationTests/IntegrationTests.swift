@@ -210,8 +210,7 @@ public class IntegrationTests: XCTestCase {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
       (connection: MySQLConnectionProtocol) in
-        let trans = MySQLTransaction((connection as! MySQLConnection))
-        trans.start()
+        connection.startTransaction()
 
         var row = MySQLRow()
         row["Id"] = 10
@@ -220,15 +219,15 @@ public class IntegrationTests: XCTestCase {
         let queryBuilder = MySQLQueryBuilder()
           .insert(data: row, table: "Cars")
 
-        let result = try trans.execute(builder: queryBuilder)
+        let result = try connection.execute(builder: queryBuilder)
         XCTAssertEqual(1, result.affectedRows)
 
-        try trans.rollback()
+        try connection.rollbackTransaction()
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
             .wheres(statement: "Id = ?", parameters: "10") 
-        let selectResult = try trans.execute(builder: selectBuilder)
+        let selectResult = try connection.execute(builder: selectBuilder)
 
         if let _ = selectResult.nextResult() { 
             XCTFail("Transaction should have been rolled back")
@@ -241,8 +240,7 @@ public class IntegrationTests: XCTestCase {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
       (connection: MySQLConnectionProtocol) in
-        let trans = MySQLTransaction((connection as! MySQLConnection))
-        trans.start()
+        connection.startTransaction()
 
         var row = MySQLRow()
         row["Id"] = 11
@@ -251,15 +249,15 @@ public class IntegrationTests: XCTestCase {
         let queryBuilder = MySQLQueryBuilder()
           .insert(data: row, table: "Cars")
 
-        let result = try trans.execute(builder: queryBuilder)
+        let result = try connection.execute(builder: queryBuilder)
         XCTAssertEqual(1, result.affectedRows)
 
-        try trans.commit()
+        try connection.commitTransaction()
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
             .wheres(statement: "Id = ?", parameters: "11") 
-        let selectResult = try trans.execute(builder: selectBuilder)
+        let selectResult = try connection.execute(builder: selectBuilder)
 
         guard let data = selectResult.nextResult() else { 
             XCTFail("No data")
