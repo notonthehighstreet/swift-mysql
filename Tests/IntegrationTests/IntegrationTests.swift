@@ -221,7 +221,7 @@ public class IntegrationTests: XCTestCase {
           .insert(data: row, table: "Cars")
 
         let result = try trans.execute(builder: queryBuilder)
-        XCTAssertEqual(2, result.affectedRows)
+        XCTAssertEqual(1, result.affectedRows)
 
         try trans.rollback()
 
@@ -245,20 +245,20 @@ public class IntegrationTests: XCTestCase {
         trans.start()
 
         var row = MySQLRow()
-        row["Id"] = 10
+        row["Id"] = 11
         row["Name"] = "Car Transaction"
 
         let queryBuilder = MySQLQueryBuilder()
           .insert(data: row, table: "Cars")
 
         let result = try trans.execute(builder: queryBuilder)
-        XCTAssertEqual(2, result.affectedRows)
+        XCTAssertEqual(1, result.affectedRows)
 
         try trans.commit()
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
-            .wheres(statement: "Id = ?", parameters: "10") 
+            .wheres(statement: "Id = ?", parameters: "11") 
         let selectResult = try trans.execute(builder: selectBuilder)
 
         guard let data = selectResult.nextResult() else { 
