@@ -205,4 +205,68 @@ public class IntegrationTests: XCTestCase {
         XCTAssertEqual("Car B", data["Name"] as? String)
     }
   }
+  
+  func testInsertAndRollbackDoesNotCreateRecord() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        let trans = MySQLTransaction((connection as! MySQLConnection))
+        trans.start()
+
+        var row = MySQLRow()
+        row["Id"] = 10
+        row["Name"] = "Car Transaction"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .insert(data: row, table: "Cars")
+
+        let result = try trans.execute(builder: queryBuilder)
+        XCTAssertEqual(2, result.affectedRows)
+
+        try trans.rollback()
+
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["Id", "Name"], table: "Cars")
+            .wheres(statement: "Id = ?", parameters: "10") 
+        let selectResult = try trans.execute(builder: selectBuilder)
+
+        if let _ = selectResult.nextResult() { 
+            XCTFail("Transaction should have been rolled back")
+            return
+        }
+    }
+  }
+  
+  func testInsertAndCommitCreatesRecord() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+        let trans = MySQLTransaction((connection as! MySQLConnection))
+        trans.start()
+
+        var row = MySQLRow()
+        row["Id"] = 10
+        row["Name"] = "Car Transaction"
+
+        let queryBuilder = MySQLQueryBuilder()
+          .insert(data: row, table: "Cars")
+
+        let result = try trans.execute(builder: queryBuilder)
+        XCTAssertEqual(2, result.affectedRows)
+
+        try trans.commit()
+
+        let selectBuilder = MySQLQueryBuilder()
+            .select(fields: ["Id", "Name"], table: "Cars")
+            .wheres(statement: "Id = ?", parameters: "10") 
+        let selectResult = try trans.execute(builder: selectBuilder)
+
+        guard let data = selectResult.nextResult() else { 
+            XCTFail("No data")
+            return
+        }
+
+        XCTAssertEqual("Car Transaction", data["Name"] as? String)
+    }
+  }
 }

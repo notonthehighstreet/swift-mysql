@@ -3,4 +3,5 @@ public enum MySQLError: Error {
   case UnableToExecuteQuery(message: String)
   case ConnectionPoolTimeout
   case NoMoreResults
+  case TransactionNotStarted
 }

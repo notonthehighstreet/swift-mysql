@@ -8,6 +8,7 @@ test_unit: build
 	@echo --- Running tests
 
 	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionTests
+	$(TEST_COMMAND) -s MySQLTests.MySQLTransactionTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionPoolTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLFieldParserTests
 	$(TEST_COMMAND) -s MySQLTests.MySQLQueryBuilderTests

@@ -8,6 +8,8 @@ class MySQLInternalConnection : MySQLInternalConnectionProtocol  {
   internal var connection: UnsafeMutablePointer<MYSQL>? = nil
   internal var result: UnsafeMutablePointer<MYSQL_RES>? = nil
 
+  internal var isTransaction = false
+
   public init() {
     uuid = NSDate().timeIntervalSince1970
   }
@@ -231,6 +233,41 @@ extension MySQLInternalConnection {
     } else {
       return (0, nil, nil)
     }
+  }
+
+  /*
+  * startTransaction disables mysql autocommit, to commit data to the database
+  * commitTransaction or rollbackTransaction must be called
+  */
+  func startTransaction() {
+    isTransaction = true
+    mysql_autocommit(connection, 0)
+  }
+
+  /*
+  * commitTransaction commits the current transaction for the connection, this
+  * method throws an throw MySQLError.TransactionNotStarted if startTransaction 
+  * has not be called first
+  */
+  func commitTransaction() throws {
+    if !isTransaction {
+        throw MySQLError.TransactionNotStarted
+    }
+    
+    mysql_commit(connection)
+  }
+  
+  /*
+  * rollbackTransaction rollsback the current transaction for the connection, this
+  * method throws an MySQLError.TransactionNotStarted if startTransaction has 
+  * not be called first
+  */
+  func rollbackTransaction() throws {
+    if !isTransaction {
+        throw MySQLError.TransactionNotStarted
+    }
+    
+    mysql_rollback(connection)
   }
 
   private func getResults() -> (Int64, CMySQLResult?, [CMySQLField]?){
