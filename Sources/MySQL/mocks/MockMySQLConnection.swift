@@ -1,101 +1,91 @@
 import Foundation
 
-// MockMySQLConnection is a mock object which can be used in unit tests to replace the real instance in order to test behaviour
-public class MockMySQLConnection : MySQLConnectionProtocol {
-  public var isConnectedReturn = true
-  public var isConnectedCalled = false
-  public var connectError: MySQLError?
+// MockMySQLClient is a mock object which can be used in unit tests to replace 
+// the real instance in order to test behaviour
+public class MockMySQLConnection: MySQLConnectionProtocol {
+  public var executeQueryCalled = false
+  public var executeQueryParams: String?
 
-  public var connectCalled = false
-  public var executeCalled = false
-  public var closeCalled = false
+  public var executeBuilderCalled = false
+  public var executeBuilderParams: MySQLQueryBuilder?
+  public var executeMySQLResultReturn: MySQLResultProtocol?
+  public var executeMySQLErrorReturn: MySQLError?
 
-  public var executeStatement = ""
+  public var nextResultSetCalled = false
+  public var nextResultSetReturn: MySQLResultProtocol?
+  public var nextResultSetErrorReturn: MySQLError?
 
-  public var clientInfo:String? = nil
-  public var clientVersion:UInt = 0
+  public func info() -> String? { return "1.2"}
+  public func version() -> UInt { return 1 }
+  public func isConnected() -> Bool { return true }
 
-  public var executeReturnResult:CMySQLResult? = nil
-  public var executeReturnHeaders:[CMySQLField]? = nil
-  public var executeReturnError:MySQLError? = nil
+  var startTransactionCalled = false
 
-  public var nextResultReturn:CMySQLRow? = nil
+  var commitTransactionCalled = false
+  var commitTransactionError: MySQLError?
 
-  public var nextResultReturnResult:CMySQLResult? = nil
-  public var nextResultReturnHeaders:[CMySQLField]? = nil
-  public var nextResultReturnError:MySQLError? = nil
+  var rollbackTransactionCalled = false
+  var rollbackTransactionError: MySQLError?
 
-  private var uuid: Double
+  public func execute(query: String) throws -> MySQLResultProtocol {
+    executeQueryParams = query
+    executeQueryCalled = true
+
+    if executeMySQLErrorReturn != nil {
+        throw executeMySQLErrorReturn!
+    }
+
+    return executeMySQLResultReturn!
+  }
+
+  public func execute(builder: MySQLQueryBuilder) throws -> MySQLResultProtocol {
+    executeBuilderParams = builder
+    executeBuilderCalled = true
+
+    if executeMySQLErrorReturn != nil {
+        throw executeMySQLErrorReturn!
+    }
+    
+    if executeMySQLResultReturn == nil {
+        return MySQLResult(rows: -1, result: nil, fields: nil) { _ in
+            return nil
+        }
+    }
+    
+    return executeMySQLResultReturn!
+  }
+
+  public func nextResultSet() throws -> MySQLResultProtocol {
+    nextResultSetCalled = true
+
+    if nextResultSetErrorReturn != nil {
+        throw nextResultSetErrorReturn!
+    }
+    
+    if executeMySQLResultReturn == nil {
+        return MySQLResult(rows: -1, result: nil, fields: nil) { _ in
+            return nil
+        }
+    }
+
+    return nextResultSetReturn!
+  }
 
   public func equals(otherObject: MySQLConnectionProtocol) -> Bool {
-    return uuid == (otherObject as! MockMySQLConnection).uuid
+    return true
   }
 
-  public init() {
-    uuid = NSDate().timeIntervalSince1970
+  public func startTransaction() {
+    startTransactionCalled = true
   }
-
-  public func isConnected() -> Bool {
-    isConnectedCalled = true
-    return isConnectedReturn
+  
+  public func commitTransaction() throws {
+    commitTransactionCalled = true
+    if commitTransactionError != nil { throw commitTransactionError! }
   }
-
-  public func connect(
-    host: String,
-    user: String,
-    password: String
-  ) throws {
-    if connectError != nil {
-      throw connectError!
-    }
-
-    connectCalled = true
+  
+  public func rollbackTransaction() throws {
+    rollbackTransactionCalled = true
+    if rollbackTransactionError != nil { throw rollbackTransactionError! }
   }
-
-  public func connect(
-    host: String,
-    user: String,
-    password: String,
-    port: Int
-  ) throws {
-    if connectError != nil {
-      throw connectError!
-    }
-
-    connectCalled = true
-  }
-
-  public func connect(
-    host: String,
-    user: String,
-    password: String,
-    port: Int,
-    database: String
-  ) throws {
-    if connectError != nil {
-      throw connectError!
-    }
-
-    connectCalled = true
-  }
-
-  public func client_info() -> String? { return clientInfo }
-
-  public func client_version() -> UInt { return clientVersion }
-
-  public func execute(query: String) -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
-     executeCalled = true
-     executeStatement = query
-     return (executeReturnResult, executeReturnHeaders, executeReturnError)
-   }
-
-   public func nextResult(result: CMySQLResult) -> CMySQLRow? {
-     return nextResultReturn
-   }
-
-   public func nextResultSet() -> (CMySQLResult?, [CMySQLField]?, MySQLError?) {
-     return (nextResultReturnResult, nextResultReturnHeaders, nextResultReturnError)
-   }
-
-  public func close() { closeCalled = true }
 }

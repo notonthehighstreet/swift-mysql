@@ -11,13 +11,17 @@ internal class MySQLRowParser {
       } else {
         switch headers[i].type {
           case MySQLFieldType.String, MySQLFieldType.VarString:
-            result[headers[i].name] = String(cString: row[i]!)
+            result[headers[i].name] = pointerToString(row[i]!)
+          case MySQLFieldType.Blob:            
+            result[headers[i].name] = pointerToString(row[i]!)
           case MySQLFieldType.Tiny, MySQLFieldType.Short, MySQLFieldType.Long, MySQLFieldType.Int24, MySQLFieldType.LongLong:
-            result[headers[i].name] = Int(String(cString: row[i]!))
+            result[headers[i].name] = Int(pointerToString(row[i]!))
           case MySQLFieldType.Decimal, MySQLFieldType.NewDecimal, MySQLFieldType.Double:
-            result[headers[i].name] = Double(String(cString: row[i]!))
+            result[headers[i].name] = Double(pointerToString(row[i]!))
           case MySQLFieldType.Float:
-            result[headers[i].name] = Float(String(cString: row[i]!))
+            result[headers[i].name] = Float(pointerToString(row[i]!))
+          case MySQLFieldType.Timestamp:
+            result[headers[i].name] = pointerToString(row[i]!)
           default:
             result[headers[i].name] = nil
         }
@@ -25,5 +29,10 @@ internal class MySQLRowParser {
     }
 
     return result
+  }
+
+  private func pointerToString(_ pointer: UnsafeMutablePointer<Int8>) -> String {
+    let p2 = UnsafePointer<Int8>(pointer)
+    return String(cString: p2)
   }
 }

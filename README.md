@@ -1,17 +1,10 @@
 # swift-mysql
-
-[![Join the chat at https://gitter.im/notonthehighstreet/swift-mysql](https://badges.gitter.im/notonthehighstreet/swift-mysql.svg)](https://gitter.im/notonthehighstreet/swift-mysql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  
 swift-mysql is a MySQL client implementation for Swift 3, it wraps the libmysql library and provides many convenience functions such as connection pooling and result sets as native types.
 
-## Build instructions for Mac
-### Install Swiftenv
-https://github.com/kylef/swiftenv
+## API Documentation
+**[Swift Docs](http://htmlpreview.github.io/?https://github.com/nicholasjackson/swift-mysql/blob/master/docs/index.html)**
 
-### Install 3.0 Alpha
-```
-$ swiftenv install DEVELOPMENT-SNAPSHOT-2016-04-25-a
-$ swiftenv rehash
-```
+## Build instructions for Mac
 
 ### Install C dependencies
 ```
@@ -20,7 +13,8 @@ $ brew install mysql // for the client, needed to build the mysql module
 
 ### Build and run tests
 ```
-$ make test
+$ make test_unit
+$ MYSQL_SERVER=[DOCKER HOST IP] make test_integration
 ```
 
 ## Build instructions using Docker
@@ -38,31 +32,39 @@ $ make test
 ### Usage
 Set the connection provider for the connection pool, this closure should return a new instance as internally the connection pool manages the connections.
 ```swift
-MySQLConnectionPool.setConnectionProvider() {
+let connectionString = MySQLConnectionString(host: "127.0.0.1")
+connectionString!.port = 3306
+connectionString!.user = "root"
+connectionString!.password = "my-secret-pw"
+connectionString!.database = ""
+
+
+var pool = MySQLConnectionPool(connectionString: connectionString, poolSize:10) {
   return MySQL.MySQLConnection()
 }
+
 ```
 
 To get a connection from the pool call get connection with the parameters for your connection, at present pooling is on the todo list and this call will return a new connection and attempt to connect to the database with the given details.  When a connection fails a MySQLError will be thrown.
 ```swift
 do {
-  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "mydatabase")!
-
-  // always release the connection back to the pool once you have finished with it,  
-  // not releasing connections back to the pool will cause a deadlock when all connections are in use.
+  let connection = try pool.getConnection()!
+  
+  // release the connection back to the pool
   defer {
-    MySQLConnectionPool.releaseConnection(connection)
+    pool.releaseConnection(connection) 
   }
+
+  // do some work
 } catch {
   print("Unable to create connection")
-  exit(0)
 }
 ```
 
 As an alternative approach to manually calling release connection you can use the getConnection method which takes a closure.  Once the code inside the closure has executed then the connection is automatically released back to the pool.
 ```swift
 do {
-  try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
+  let connection = try pool.getConnection() {
     (connection: MySQLConnectionProtocol) in
       let client = MySQLClient(connection: connection)
       let result = client.execute("SELECT * FROM MYTABLE")
@@ -74,31 +76,17 @@ do {
 }
 ```
 
-To create a new client pass the reference to the connection obtained from the pool, at present you need to call connection.close once done with the connection, this will be managed automatically in a later releases.
-```swift
-let client = MySQLClient(connection: connection)
-```
+To read from the result set:
 
 To execute a query
 ```swift
 var result = client.execute("SELECT * FROM Cars")
 
 // result.1 contains an error, when present the query has failed.
-if result.1 != nil {
-  print("Error executing query")
-} else {
-  // if MySQLResult is nil then no rows have been returned from the query.
-  if let result = ret.0 {
-    var r = result.nextResult() // get the first result from the set
-    if r != nil {
-      repeat {
-        for value in r! {
-          print(value) // print the returned dictionary ("Name", "Audi"), ("Price", "52642"), ("Id", "1")
-        }
-        r = result.nextResult() // get the next result in the set, returns nil when no more records are available.
-      } while(r != nil)
-    } else {
-      print("No results")
+// if MySQLResult is nil then no rows have been returned from the query.
+  if let resultSet = ret.0 {
+    while case let row? = resultSet.nextResult() {
+      // do something with result dictionary, row["Id"] etc
     }
   }
 }
@@ -123,10 +111,6 @@ var queryBuilder = MySQLQueryBuilder()
 
 var result = client.execute(queryBuilder)
 ```
-
-## Example
-Please see the example program in /Sources/Example for further usage.
-
 
 ## Run MySQL in docker
 docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
