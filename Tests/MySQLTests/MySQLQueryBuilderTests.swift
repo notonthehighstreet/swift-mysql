@@ -63,6 +63,15 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("SELECT MyTABLE.Field1, MyTABLE.Field2 FROM MyTABLE;", statement, "Returned invalid select statement")
   }
+  
+  public func testSelectWithArrayContainingFunctionReturnsValidQuery() {
+    let builder = MySQLQueryBuilder()
+    let statement = builder
+        .select(fields: ["Field1", MySQLFunction.LastInsertID], table: "MyTABLE")
+        .build()
+
+    XCTAssertEqual("SELECT MyTABLE.Field1, LAST_INSERT_ID() FROM MyTABLE;", statement, "Returned invalid select statement")
+  }
 
   public func testInsertGeneratesValidQuery() {
     var data = MySQLRow()
@@ -113,10 +122,18 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
-      .wheres(statement: "param1=? and param2=?", parameters: "abc", "bcd")
+      .wheres(statement: "param1=? and param2=?", parameters: "abc", Int32(10))
       .build()
 
-    XCTAssertEqual(" WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
+    XCTAssertEqual(" WHERE param1='abc' and param2=10;", query, "Should have returned valid query")
+  }
+  
+  public func testWheresGeneratesValidQueryWithFunctionParameters() {
+    let query = MySQLQueryBuilder()
+      .wheres(statement: "param1=? and param2=?", parameters: "abc", MySQLFunction.LastInsertID)
+      .build()
+
+    XCTAssertEqual(" WHERE param1='abc' and param2=LAST_INSERT_ID();", query, "Should have returned valid query")
   }
 
   public func testSelectWithWheresGeneratesValidQuery() {
@@ -197,11 +214,13 @@ extension MySQLQueryBuilderTests {
         ("testWheresReturnsSelf", testWheresReturnsSelf),
         ("testSelectReturnsValidQuery", testSelectReturnsValidQuery),
         ("testSelectWithArrayReturnsValidQuery", testSelectWithArrayReturnsValidQuery),
+        ("testSelectWithArrayContainingFunctionReturnsValidQuery", testSelectWithArrayContainingFunctionReturnsValidQuery),
         ("testInsertGeneratesValidQuery", testInsertGeneratesValidQuery),
         ("testUpdateGeneratesValidQuery", testUpdateGeneratesValidQuery),
         ("testUpsertGeneratesValidQuery", testUpsertGeneratesValidQuery),
         ("testDeleteGeneratesValidQuery", testDeleteGeneratesValidQuery),
         ("testWheresGeneratesValidQuery", testWheresGeneratesValidQuery),
+        ("testWheresGeneratesValidQueryWithFunctionParameters", testWheresGeneratesValidQueryWithFunctionParameters),
         ("testSelectWithWheresGeneratesValidQuery", testSelectWithWheresGeneratesValidQuery),
         ("testUpdateWithWheresGeneratesValidQuery", testUpdateWithWheresGeneratesValidQuery),
         ("testDeleteWithWheresGeneratesValidQuery", testDeleteWithWheresGeneratesValidQuery),
