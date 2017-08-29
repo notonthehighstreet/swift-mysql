@@ -4,6 +4,10 @@ public func ==(lhs: MySQLQueryBuilder, rhs: MySQLQueryBuilder) -> Bool {
     return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
 }
 
+public enum MySQLFunction {
+    case LastInsertID    
+}
+
 public enum Joins {
     case LeftJoin
     case RightJoin
@@ -34,7 +38,7 @@ public class MySQLQueryBuilder: Equatable {
 
   var joinedStatements = [MySQLJoin]()
 
-  var fields: [String]?
+  var fields: [Any]?
   var tableName: String?
 
   public init() {}
@@ -71,7 +75,7 @@ public class MySQLQueryBuilder: Equatable {
         .select(["abc", "cde"], table: "myTable")
     ```
   */
-  public func select(fields: [String], table: String) -> MySQLQueryBuilder {
+  public func select(fields: [Any], table: String) -> MySQLQueryBuilder {
     self.fields = fields
     self.tableName = table
     
@@ -173,12 +177,14 @@ public class MySQLQueryBuilder: Equatable {
         .wheres("WHERE abc = ? and bcd = ?", abcValue, bcdValue)
     ```
   */
-    public func wheres(statement: String, parameters: String...) -> MySQLQueryBuilder {
+    public func wheres(statement: String, parameters: Any...) -> MySQLQueryBuilder {
         var tempStatement = statement
         // prepend the table name
         if let fields = self.fields, let tableName = self.tableName {
             for field in fields {
-                tempStatement = tempStatement.replacingOccurrences(of: field, with: "\(tableName).\(field)")
+                if let f = field as? String {
+                    tempStatement = tempStatement.replacingOccurrences(of: f, with: "\(tableName).\(f)")
+                }
             }
         }
 
@@ -188,7 +194,24 @@ public class MySQLQueryBuilder: Equatable {
 
         for char in tempStatement.characters {
             if char == "?" {
-                w += "'\(parameters[i])'"
+                switch parameters[i] {
+                case is Int:
+                    fallthrough
+                case is Int32:
+                    fallthrough
+                case is Int64:
+                    fallthrough
+                case is UInt:
+                    fallthrough
+                case is UInt32:
+                    fallthrough
+                case is UInt64:
+                    w += "\(parameters[i])"
+                case MySQLFunction.LastInsertID:
+                    w += "LAST_INSERT_ID()"
+                default:
+                    w += "'\(parameters[i])'"
+                }
                 i += 1
             } else {
                 w += String(char)
@@ -264,7 +287,7 @@ public class MySQLQueryBuilder: Equatable {
     return query + ";"
   }
 
-    private func createSelectStatement(fields: [String]?, table: String?, joins: [MySQLJoin]?) -> String {
+    private func createSelectStatement(fields: [Any]?, table: String?, joins: [MySQLJoin]?) -> String {
         guard let fields = fields, let table = table, let joins = joins else {
             return ""
         }
@@ -272,7 +295,12 @@ public class MySQLQueryBuilder: Equatable {
         var statement = "SELECT "
 
         for field in fields {
-            statement += "\(table).\(field), "
+            switch field {
+                case MySQLFunction.LastInsertID:
+                    statement += "LAST_INSERT_ID(), "
+                default:
+                    statement += "\(table).\(field), "
+            }
         }
 
         for join in joins {
