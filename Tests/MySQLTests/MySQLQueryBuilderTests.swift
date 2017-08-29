@@ -144,6 +144,14 @@ public class MySQLQueryBuilderTests : XCTestCase {
     XCTAssertEqual(" WHERE id IN('abc', 123);", query, "Should have returned valid query")
   }
 
+  public func testWheresGeneratesValidQueryWithMixedParameters() {
+    let query = MySQLQueryBuilder()
+      .wheres(statement: "name=? AND id IN(?)", parameters: "nic", ["abc", 123]) 
+      .build()
+
+    XCTAssertEqual(" WHERE name='nic' AND id IN('abc', 123);", query, "Should have returned valid query")
+  }
+
   public func testSelectWithWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
       .select(statement: "SELECT * FROM TABLE")
@@ -229,6 +237,8 @@ extension MySQLQueryBuilderTests {
         ("testDeleteGeneratesValidQuery", testDeleteGeneratesValidQuery),
         ("testWheresGeneratesValidQuery", testWheresGeneratesValidQuery),
         ("testWheresGeneratesValidQueryWithFunctionParameters", testWheresGeneratesValidQueryWithFunctionParameters),
+        ("testWheresGeneratesValidQueryWithArrayParameters", testWheresGeneratesValidQueryWithArrayParameters),
+        ("testWheresGeneratesValidQueryWithMixedParameters", testWheresGeneratesValidQueryWithMixedParameters),
         ("testSelectWithWheresGeneratesValidQuery", testSelectWithWheresGeneratesValidQuery),
         ("testUpdateWithWheresGeneratesValidQuery", testUpdateWithWheresGeneratesValidQuery),
         ("testDeleteWithWheresGeneratesValidQuery", testDeleteWithWheresGeneratesValidQuery),
