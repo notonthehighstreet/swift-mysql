@@ -135,6 +135,14 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual(" WHERE param1='abc' and param2=LAST_INSERT_ID();", query, "Should have returned valid query")
   }
+  
+  public func testWheresGeneratesValidQueryWithArrayParameters() {
+    let query = MySQLQueryBuilder()
+      .wheres(statement: "id IN(?)", parameters: ["abc", 123]) 
+      .build()
+
+    XCTAssertEqual(" WHERE id IN('abc', 123);", query, "Should have returned valid query")
+  }
 
   public func testSelectWithWheresGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
