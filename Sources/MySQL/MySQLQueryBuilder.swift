@@ -195,22 +195,14 @@ public class MySQLQueryBuilder: Equatable {
         for char in tempStatement.characters {
             if char == "?" {
                 switch parameters[i] {
-                case is Int:
-                    fallthrough
-                case is Int32:
-                    fallthrough
-                case is Int64:
-                    fallthrough
-                case is UInt:
-                    fallthrough
-                case is UInt32:
-                    fallthrough
-                case is UInt64:
-                    w += "\(parameters[i])"
-                case MySQLFunction.LastInsertID:
-                    w += "LAST_INSERT_ID()"
+                case let paramArray as Array<Any>:
+                    for p in paramArray {
+                        w += escapeParameter(p) + ", "
+                    }
+                    w = w.trimChar(character: " ")
+                    w = w.trimChar(character: ",")
                 default:
-                    w += "'\(parameters[i])'"
+                    w += escapeParameter(parameters[i])
                 }
                 i += 1
             } else {
@@ -220,6 +212,27 @@ public class MySQLQueryBuilder: Equatable {
 
         whereStatement = " WHERE " + w
         return self
+  }
+
+  private func escapeParameter(_ parameter: Any) -> String {
+    switch parameter {
+    case is Int:
+       fallthrough
+    case is Int32:
+       fallthrough
+    case is Int64:
+       fallthrough
+    case is UInt:
+       fallthrough
+    case is UInt32:
+       fallthrough
+    case is UInt64:
+       return "\(parameter)"
+    case MySQLFunction.LastInsertID:
+       return "LAST_INSERT_ID()"
+    default:
+       return "'\(parameter)'"
+   }
   }
 
   /**
