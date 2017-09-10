@@ -46,6 +46,13 @@ public class MySQLQueryBuilderTests : XCTestCase {
     XCTAssertEqual(builder, ret, "Should have returned self")
   }
 
+  public func testOrderReturnsSelf() {
+    let builder = MySQLQueryBuilder()
+    let ret = builder.order(byExpression: "id", order: .Ascending)
+
+    XCTAssertEqual(builder, ret, "Should have returned self")
+  }
+
   public func testSelectReturnsValidQuery() {
     let builder = MySQLQueryBuilder()
     let statement = builder
@@ -63,7 +70,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("SELECT MyTABLE.Field1, MyTABLE.Field2 FROM MyTABLE;", statement, "Returned invalid select statement")
   }
-  
+
   public func testSelectWithArrayContainingFunctionReturnsValidQuery() {
     let builder = MySQLQueryBuilder()
     let statement = builder
@@ -96,7 +103,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("UPDATE MyTable SET abc='abc', bcd='bcd';", query, "Should have returned valid query")
   }
-  
+
   public func testUpsertGeneratesValidQuery() {
     var data = MySQLRow()
     data["abc"] = "abc"
@@ -105,8 +112,8 @@ public class MySQLQueryBuilderTests : XCTestCase {
     let query = MySQLQueryBuilder()
       .upsert(data: data, table: "MyTable")
       .build()
-    
-      XCTAssertEqual("INSERT INTO MyTable (abc, bcd) VALUES ('abc', 'bcd') ON DUPLICATE KEY UPDATE abc = 'abc', bcd = 'bcd';", 
+
+      XCTAssertEqual("INSERT INTO MyTable (abc, bcd) VALUES ('abc', 'bcd') ON DUPLICATE KEY UPDATE abc = 'abc', bcd = 'bcd';",
                    query,
                    "Should have returned valid query")
   }
@@ -127,7 +134,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual(" WHERE param1='abc' and param2=10;", query, "Should have returned valid query")
   }
-  
+
   public func testWheresGeneratesValidQueryWithFunctionParameters() {
     let query = MySQLQueryBuilder()
       .wheres(statement: "param1=? and param2=?", parameters: "abc", MySQLFunction.LastInsertID)
@@ -135,10 +142,10 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual(" WHERE param1='abc' and param2=LAST_INSERT_ID();", query, "Should have returned valid query")
   }
-  
+
   public func testWheresGeneratesValidQueryWithArrayParameters() {
     let query = MySQLQueryBuilder()
-      .wheres(statement: "id IN(?)", parameters: ["abc", 123]) 
+      .wheres(statement: "id IN(?)", parameters: ["abc", 123])
       .build()
 
     XCTAssertEqual(" WHERE id IN('abc', 123);", query, "Should have returned valid query")
@@ -146,10 +153,26 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
   public func testWheresGeneratesValidQueryWithMixedParameters() {
     let query = MySQLQueryBuilder()
-      .wheres(statement: "name=? AND id IN(?)", parameters: "nic", ["abc", 123]) 
+      .wheres(statement: "name=? AND id IN(?)", parameters: "nic", ["abc", 123])
       .build()
 
     XCTAssertEqual(" WHERE name='nic' AND id IN('abc', 123);", query, "Should have returned valid query")
+  }
+
+  public func testOrderGeneratesValidQuery() {
+    let query = MySQLQueryBuilder()
+      .order(byExpression: "id", order: .Ascending)
+      .build()
+
+    XCTAssertEqual(" ORDER BY id ASC;", query, "Should have returned valid query")
+  }
+
+  public func testOrderDescendingGeneratesValidQuery() {
+    let query = MySQLQueryBuilder()
+      .order(byExpression: "name", order: .Descending)
+      .build()
+
+    XCTAssertEqual(" ORDER BY name DESC;", query, "Should have returned valid query")
   }
 
   public func testSelectWithWheresGeneratesValidQuery() {
@@ -160,15 +183,15 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("SELECT * FROM TABLE WHERE param1='abc' and param2='bcd';", query, "Should have returned valid query")
   }
-  
+
   public func testSelectWithWheresAndFieldsGeneratesValidQuery() {
     let query = MySQLQueryBuilder()
       .select(fields: ["Field1", "Field2"], table: "MyTable")
       .wheres(statement: "Field1=? and Field2=?", parameters: "abc", "bcd")
       .build()
 
-    XCTAssertEqual("SELECT MyTable.Field1, MyTable.Field2 FROM MyTable WHERE MyTable.Field1='abc' and MyTable.Field2='bcd';", 
-                   query, 
+    XCTAssertEqual("SELECT MyTable.Field1, MyTable.Field2 FROM MyTable WHERE MyTable.Field1='abc' and MyTable.Field2='bcd';",
+                   query,
                    "Should have returned valid query")
   }
 
@@ -202,7 +225,7 @@ public class MySQLQueryBuilderTests : XCTestCase {
 
     XCTAssertEqual("SELECT MyTable1.Field1, MyTable1.Field2, MyTable2.Id FROM MyTable1 " +
                    "INNER JOIN MyTable2 ON MyTable1.Field1 = MyTable2.Id;",
-                   query, 
+                   query,
                    "Should have returned valid query")
   }
 
@@ -228,6 +251,7 @@ extension MySQLQueryBuilderTests {
         ("testSelectReturnsSelf", testSelectReturnsSelf),
         ("testSelectWithFieldsReturnsSelf", testSelectWithFieldsReturnsSelf),
         ("testWheresReturnsSelf", testWheresReturnsSelf),
+        ("testOrderReturnsSelf", testOrderReturnsSelf),
         ("testSelectReturnsValidQuery", testSelectReturnsValidQuery),
         ("testSelectWithArrayReturnsValidQuery", testSelectWithArrayReturnsValidQuery),
         ("testSelectWithArrayContainingFunctionReturnsValidQuery", testSelectWithArrayContainingFunctionReturnsValidQuery),
@@ -239,6 +263,8 @@ extension MySQLQueryBuilderTests {
         ("testWheresGeneratesValidQueryWithFunctionParameters", testWheresGeneratesValidQueryWithFunctionParameters),
         ("testWheresGeneratesValidQueryWithArrayParameters", testWheresGeneratesValidQueryWithArrayParameters),
         ("testWheresGeneratesValidQueryWithMixedParameters", testWheresGeneratesValidQueryWithMixedParameters),
+        ("testOrderGeneratesValidQuery", testOrderGeneratesValidQuery),
+        ("testOrderDescendingGeneratesValidQuery", testOrderDescendingGeneratesValidQuery),
         ("testSelectWithWheresGeneratesValidQuery", testSelectWithWheresGeneratesValidQuery),
         ("testUpdateWithWheresGeneratesValidQuery", testUpdateWithWheresGeneratesValidQuery),
         ("testDeleteWithWheresGeneratesValidQuery", testDeleteWithWheresGeneratesValidQuery),
