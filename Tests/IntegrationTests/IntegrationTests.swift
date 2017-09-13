@@ -17,7 +17,7 @@ public class IntegrationTests: XCTestCase {
   func createConnection(
     connectionString: MySQLConnectionString,
     block: ((MySQLConnectionProtocol) throws -> Void)) {
-    
+
         var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 1, defaultCharset: "utf8")
 
         do {
@@ -31,7 +31,7 @@ public class IntegrationTests: XCTestCase {
 
            try block(connection)
         } catch {
-            print(error) 
+            print(error)
             XCTFail("An exception has ocurred: \(error)")
         }
   }
@@ -84,7 +84,7 @@ public class IntegrationTests: XCTestCase {
           .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
 
         let result = try connection.execute(builder: queryBuilder)
-        
+
         if let r = result.nextResult() {
             XCTAssertEqual(1, r["Id"] as! Int)
             XCTAssertEqual("Audi", r["Name"] as! String)
@@ -112,7 +112,7 @@ public class IntegrationTests: XCTestCase {
             XCTFail("No results")
         }
 
-        while case let row? = result.nextResult() {
+        while case let row? = result.nextResult() {            
             XCTAssertNotNil(row)
             rowCount += 1
         }
@@ -120,7 +120,26 @@ public class IntegrationTests: XCTestCase {
 
     XCTAssertEqual(2, rowCount)
   }
-  
+
+  func testSelectWithOrderedResults() {
+    connectionString!.database = "testdb"
+    createConnection(connectionString: connectionString!) {
+      (connection: MySQLConnectionProtocol) in
+
+      let queryBuilder = MySQLQueryBuilder()
+        .select(fields: ["Id", "Name", "Price", "UpdatedAt"], table: "Cars")
+        .order(byExpression: "Name", order: .Descending)
+
+      let result = try connection.execute(builder: queryBuilder)
+
+      if let r = result.nextResult() {
+          XCTAssertEqual("Mercedes", r["Name"] as! String)
+      } else {
+          XCTFail("No results")
+      }
+    }
+  }
+
   func testUpdateWithNoRecordFails() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
@@ -133,7 +152,7 @@ public class IntegrationTests: XCTestCase {
           .wheres(statement: "id=?", parameters: "12")
 
         let result = try connection.execute(builder: queryBuilder)
-        
+
         XCTAssertEqual(0, result.affectedRows)
     }
   }
@@ -173,11 +192,11 @@ public class IntegrationTests: XCTestCase {
           .upsert(data: row, table: "Cars")
 
         let result = try connection.execute(builder: queryBuilder)
-        
+
         XCTAssertEqual(1, result.affectedRows)
     }
   }
-  
+
   func testUpsertWithRecordUpdates() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
@@ -194,7 +213,7 @@ public class IntegrationTests: XCTestCase {
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
-            .wheres(statement: "Id = ?", parameters: "7") 
+            .wheres(statement: "Id = ?", parameters: "7")
         let selectResult = try connection.execute(builder: selectBuilder)
 
         guard let data = selectResult.nextResult() else {
@@ -205,7 +224,7 @@ public class IntegrationTests: XCTestCase {
         XCTAssertEqual("Car B", data["Name"] as? String)
     }
   }
-  
+
   func testInsertAndRollbackDoesNotCreateRecord() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
@@ -226,16 +245,16 @@ public class IntegrationTests: XCTestCase {
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
-            .wheres(statement: "Id = ?", parameters: "10") 
+            .wheres(statement: "Id = ?", parameters: "10")
         let selectResult = try connection.execute(builder: selectBuilder)
 
-        if let _ = selectResult.nextResult() { 
+        if let _ = selectResult.nextResult() {
             XCTFail("Transaction should have been rolled back")
             return
         }
     }
   }
-  
+
   func testInsertAndCommitCreatesRecord() {
     connectionString!.database = "testdb"
     createConnection(connectionString: connectionString!) {
@@ -256,10 +275,10 @@ public class IntegrationTests: XCTestCase {
 
         let selectBuilder = MySQLQueryBuilder()
             .select(fields: ["Id", "Name"], table: "Cars")
-            .wheres(statement: "Id = ?", parameters: "11") 
+            .wheres(statement: "Id = ?", parameters: "11")
         let selectResult = try connection.execute(builder: selectBuilder)
 
-        guard let data = selectResult.nextResult() else { 
+        guard let data = selectResult.nextResult() else {
             XCTFail("No data")
             return
         }

@@ -5,13 +5,18 @@ public func ==(lhs: MySQLQueryBuilder, rhs: MySQLQueryBuilder) -> Bool {
 }
 
 public enum MySQLFunction {
-    case LastInsertID    
+    case LastInsertID
 }
 
 public enum Joins {
     case LeftJoin
     case RightJoin
     case InnerJoin
+}
+
+public enum Orders: String {
+    case Ascending = "ASC"
+    case Descending = "DESC"
 }
 
 internal struct MySQLJoin {
@@ -34,6 +39,7 @@ public class MySQLQueryBuilder: Equatable {
   var updateStatement: String?
   var deleteStatement: String?
   var whereStatement: String?
+  var orderStatement: String?
   var upsertStatement: String?
 
   var joinedStatements = [MySQLJoin]()
@@ -78,7 +84,7 @@ public class MySQLQueryBuilder: Equatable {
   public func select(fields: [Any], table: String) -> MySQLQueryBuilder {
     self.fields = fields
     self.tableName = table
-    
+
     return self
   }
 
@@ -120,7 +126,7 @@ public class MySQLQueryBuilder: Equatable {
 
     return self
   }
-    
+
   /**
     upsert updates a record if it exists and inserts a new one if it does not
     exist
@@ -214,6 +220,11 @@ public class MySQLQueryBuilder: Equatable {
         return self
   }
 
+  public func order(byExpression expression: String, order: Orders = .Ascending) -> MySQLQueryBuilder {
+      orderStatement = " ORDER BY \(expression) \(order.rawValue)"
+      return self
+  }
+
   private func escapeParameter(_ parameter: Any) -> String {
     switch parameter {
     case is Int:
@@ -284,7 +295,7 @@ public class MySQLQueryBuilder: Equatable {
     if let updateStatement = updateStatement {
       query += updateStatement
     }
-    
+
     if let upsertStatement = upsertStatement {
       query += upsertStatement
     }
@@ -295,6 +306,10 @@ public class MySQLQueryBuilder: Equatable {
 
     if let whereStatement = whereStatement {
       query += whereStatement
+    }
+
+    if let orderStatement = orderStatement {
+      query += orderStatement
     }
 
     return query + ";"
@@ -321,11 +336,11 @@ public class MySQLQueryBuilder: Equatable {
                 statement += "\(join.builder.tableName!).\(field), "
             }
         }
-        
+
         statement = statement.trimChar(character: " ")
         statement = statement.trimChar(character: ",")
         statement += " FROM \(table)"
-        
+
         for join in joins {
             switch join.type {
             case .LeftJoin:
@@ -338,7 +353,7 @@ public class MySQLQueryBuilder: Equatable {
 
             statement += "\(table).\(join.from) = \(join.builder.tableName!).\(join.to)"
         }
-        
+
         statement = statement.trimChar(character: " ")
         statement = statement.trimChar(character: ",")
 
@@ -369,7 +384,7 @@ public class MySQLQueryBuilder: Equatable {
 
   private func createUpsertStatement(data: MySQLRow, table: String) -> String {
     let update = createInsertStatement(data: data, table: table)
-    
+
     var statement = " ON DUPLICATE KEY UPDATE "
     for (key, value) in data {
       statement += "\(key) = '\(value)', "
@@ -394,7 +409,7 @@ public class MySQLQueryBuilder: Equatable {
   }
 
   private func createDeleteStatement(withTable table: String) -> String {
-    return "DELETE FROM \(table)"    
+    return "DELETE FROM \(table)"
   }
 }
 
