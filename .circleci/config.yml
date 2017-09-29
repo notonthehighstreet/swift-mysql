@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/swift-mysql
     docker:
-      - image: ibmcom/kitura-ubuntu:latest
+      - image: ibmcom/swift-ubuntu:4.0
     steps:
       - checkout
       - run: apt-get update && apt-get install -y libmysqlclient-dev
