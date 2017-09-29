@@ -7,13 +7,7 @@ build:
 test_unit: build
 	@echo --- Running tests
 
-	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLTransactionTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLConnectionPoolTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLFieldParserTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLQueryBuilderTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLResultTests
-	$(TEST_COMMAND) -s MySQLTests.MySQLRowParserTests
+	$(TEST_COMMAND) --filter MySQLTests
 
 test_one: build
 	swift test -Xlinker -L/usr/local/lib -s ${TEST}
@@ -28,7 +22,7 @@ test_integration: build
 
 	sleep 15
 
-	trap '$(TEST_COMMAND) -s IntegrationTests.IntegrationTests' EXIT
+	trap '$(TEST_COMMAND) --filter IntegrationTests' EXIT
 
 	docker stop mysqlswift
 	docker rm -v mysqlswift
