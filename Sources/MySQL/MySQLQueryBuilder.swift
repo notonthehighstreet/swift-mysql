@@ -362,8 +362,10 @@ public class MySQLQueryBuilder: Equatable {
 
   private func createInsertStatement(data: MySQLRow, table: String) -> String {
     var statement = "INSERT INTO \(table) ("
+    let sortedData = data.sorted(by: { $0.key < $1.key })
 
-    for (key, _) in data.sorted(by: { $0.key < $1.key }) {
+
+    for (key, _) in sortedData {
       statement += "\(key), "
     }
     statement = statement.trimChar(character: " ")
@@ -371,7 +373,7 @@ public class MySQLQueryBuilder: Equatable {
 
     statement += ") VALUES ("
 
-    for (_, value) in data {
+    for (_, value) in sortedData {
       statement += "'\(value)', "
     }
     statement = statement.trimChar(character: " ")
