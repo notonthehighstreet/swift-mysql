@@ -363,7 +363,7 @@ public class MySQLQueryBuilder: Equatable {
   private func createInsertStatement(data: MySQLRow, table: String) -> String {
     var statement = "INSERT INTO \(table) ("
 
-    for (key, _) in data {
+    for (key, _) in data.sorted(by: { $0.key < $1.key }) {
       statement += "\(key), "
     }
     statement = statement.trimChar(character: " ")
@@ -386,7 +386,7 @@ public class MySQLQueryBuilder: Equatable {
     let update = createInsertStatement(data: data, table: table)
 
     var statement = " ON DUPLICATE KEY UPDATE "
-    for (key, value) in data {
+    for (key, value) in data.sorted(by: { $0.key < $1.key }) {
       statement += "\(key) = '\(value)', "
     }
 
@@ -399,7 +399,7 @@ public class MySQLQueryBuilder: Equatable {
   private func createUpdateStatement(data: MySQLRow, table: String) -> String {
     var statement = "UPDATE \(table) SET "
 
-    for (key, value) in data {
+    for (key, value) in data.sorted(by: { $0.key < $1.key }) {
       statement += "\(key)='\(value)', "
     }
     statement = statement.trimChar(character: " ")

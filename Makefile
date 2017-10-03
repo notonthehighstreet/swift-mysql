@@ -10,7 +10,7 @@ test_unit: build
 	$(TEST_COMMAND) --filter MySQLTests
 
 test_one: build
-	swift test -Xlinker -L/usr/local/lib -s ${TEST}
+	swift test -Xlinker -L/usr/local/lib --filter ${TEST}
 
 test_integration: build
 	@echo --- Running integration tests
