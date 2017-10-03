@@ -1,138 +1,146 @@
 # swift-mysql
 
-[![Join the chat at https://gitter.im/notonthehighstreet/swift-mysql](https://badges.gitter.im/notonthehighstreet/swift-mysql.svg)](https://gitter.im/notonthehighstreet/swift-mysql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)  
-swift-mysql is a MySQL client implementation for Swift 3, it wraps the libmysql library and provides many convenience functions such as connection pooling and result sets as native types.
+![Swift 3.1](https://img.shields.io/badge/Swift-3.1-orange.svg)
+[![Swift Package Manager compatible](https://img.shields.io/badge/SwiftPM-compatible-orange.svg)](https://github.com/apple/swift-package-manager)
+[![Documentation](https://img.shields.io/badge/Docs-click%20here-orange.svg)](http://htmlpreview.github.io/?https://github.com/nicholasjackson/swift-mysql/blob/master/docs/index.html)
 
-## Build instructions for Mac
-### Install Swiftenv
-https://github.com/kylef/swiftenv
+A MySQL client for Swift. It wraps the `libmysql` C library and provides many convenience functions such as connection pooling and result sets as native types.
 
-### Install 3.0 Alpha
-```
-$ swiftenv install DEVELOPMENT-SNAPSHOT-2016-04-25-a
-$ swiftenv rehash
-```
+## Installation
 
-### Install C dependencies
-```
-$ brew install mysql // for the client, needed to build the mysql module
-```
+Add `swift-mysql` to your `Package.swift` file:
 
-### Build and run tests
-```
-$ make test
+```swift
+import PackageDescription
+
+let package = Package(
+    // ...
+    dependencies: [        
+        .Package(url: "https://github.com/nicholasjackson/swift-mysql.git", majorVersion: 1)
+    ]
+)
 ```
 
-## Build instructions using Docker
-### Run the docker container for building
+## Usage
+
+To interact with a database, you'll want a connection pool.
+
+```swift
+import MySQL
+
+// Create connection string to your database server
+var connectionString = MySQLConnectionString(host: "127.0.0.1")
+connectionString!.port = 3306
+connectionString!.user = "root"
+connectionString!.password = "my-secret-pw"
+connectionString!.database = ""
+
+// Create a connection pool to manage the database connections.
+var pool = MySQLConnectionPool(connectionString: connectionString, poolSize: 10)
 ```
-$ docker run -i -t -v $(pwd):/src --name swiftmysql -w /src ibmcom/kitura-ubuntu:latest /bin/bash  
+
+> **Note**: To easily run your own MySQL database server, we recommend using Docker. The following Docker command starts a container running a MySQL server: `docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest`. For more details, read the [documentation for the mysql Docker image](https://hub.docker.com/_/mysql/).
+
+A connection pool provides connections for querying the database. There are two ways to get a connection:
+
+```swift
+// 1. the closure way...
+do {
+    try pool.getConnection() { (connection: MySQLConnectionProtocol) in            
+        // make queries...
+    }
+} catch {
+    print(error.localizedDescription)
+}
+
+// 2. the imperative way...
+func executeQuery() throws -> MySQLResultProtocol {    
+    let connection = try pool.getConnection()
+
+    // manually release the connection when you're done (function exists)
+    defer { pool.releaseConnection(connection!) }
+
+    // make queries...
+}
+```
+
+With a connection, you can make queries manually (susceptible to SQL injection attacks):
+
+```swift
+// select
+let selectResults = try connection.execute(query: "SELECT * FROM Cars")
+while case let row? = selectResults.nextResult() {
+    // do something with results dictionary (ex. row["Id"])    
+}
+
+// insert
+let insertResults = try connection.execute(query: "INSERT INTO Cars (Id, Name, Price, UpdatedAt) VALUES ('1', 'Audi', '52642', '2017-07-24 20:43:51';")
+if insertResults.affectedRows > 0 {
+    // Car was inserted...
+}
+```
+
+Or, you can make safe queries using `MySQLQueryBuilder` to ensure that all query parameters are escaped, avoiding SQL injection attacks.
+
+```swift
+// select
+let select = MySQLQueryBuilder().select(["Id", "Name"], table: "Cars")
+let selectResults = try connection.execute(builder: select)
+
+// select (parametrized where clause)
+let selectWithID = MySQLQueryBuilder().select(["Id", "Name"], table: "MyTable")
+                                      .wheres(statement: "Id=?", parameters: 2)
+let selectWithIDResults = connection.execute(builder: selectWithID)
+
+// query builder also supports inserts, updates, deletes, and joins (see documentation)
+```
+
+## How to Build Your Project
+
+Before you build projects with this package, you must install the `libmysql` C library:
+
+**For Mac**
+
+```bash
+# install libmysql C dependencies
+$ brew install mysql
+```
+
+**For Linux (using Docker)**
+
+```bash
+# run a docker container for building Swift projects
+$ docker run -i -t -v $(pwd):/src --name swiftmysql -w /src ibmcom/kitura-ubuntu:latest /bin/bash
+
+# install libmysql C dependencies
 $ apt-get install libmysqlclient-dev
 ```
 
-### Build and run tests
+Then, link to the dependencies when compiling your Swift project. This should work on either Mac or Linux.
+
+```bash
+# "/usr/local/lib" is a standard location for libmysql C dependencies
+$ swift build -Xlinker -L/usr/local/lib
 ```
+
+## How to Contribute
+
+Make a PR. For any changes you make, write tests!
+
+```bash
+# build and run unit tests
+$ make test_unit
+
+# run integration tests
+$ MYSQL_SERVER=[DOCKER HOST IP] make test_integration
+
+# run all tests
 $ make test
 ```
 
-### Usage
-Set the connection provider for the connection pool, this closure should return a new instance as internally the connection pool manages the connections.
-```swift
-MySQLConnectionPool.setConnectionProvider() {
-  return MySQL.MySQLConnection()
-}
-```
+## Roadmap
 
-To get a connection from the pool call get connection with the parameters for your connection, at present pooling is on the todo list and this call will return a new connection and attempt to connect to the database with the given details.  When a connection fails a MySQLError will be thrown.
-```swift
-do {
-  connection = try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", database: "mydatabase")!
-
-  // always release the connection back to the pool once you have finished with it,  
-  // not releasing connections back to the pool will cause a deadlock when all connections are in use.
-  defer {
-    MySQLConnectionPool.releaseConnection(connection)
-  }
-} catch {
-  print("Unable to create connection")
-  exit(0)
-}
-```
-
-As an alternative approach to manually calling release connection you can use the getConnection method which takes a closure.  Once the code inside the closure has executed then the connection is automatically released back to the pool.
-```swift
-do {
-  try MySQLConnectionPool.getConnection("192.168.99.100", user: "root", password: "my-secret-pw", port: 3306, database: "test") {
-    (connection: MySQLConnectionProtocol) in
-      let client = MySQLClient(connection: connection)
-      let result = client.execute("SELECT * FROM MYTABLE")
-      ...
-  }
-} catch {
-  print("Unable to create connection")
-  exit(0)
-}
-```
-
-To create a new client pass the reference to the connection obtained from the pool, at present you need to call connection.close once done with the connection, this will be managed automatically in a later releases.
-```swift
-let client = MySQLClient(connection: connection)
-```
-
-To execute a query
-```swift
-var result = client.execute("SELECT * FROM Cars")
-
-// result.1 contains an error, when present the query has failed.
-if result.1 != nil {
-  print("Error executing query")
-} else {
-  // if MySQLResult is nil then no rows have been returned from the query.
-  if let result = ret.0 {
-    var r = result.nextResult() // get the first result from the set
-    if r != nil {
-      repeat {
-        for value in r! {
-          print(value) // print the returned dictionary ("Name", "Audi"), ("Price", "52642"), ("Id", "1")
-        }
-        r = result.nextResult() // get the next result in the set, returns nil when no more records are available.
-      } while(r != nil)
-    } else {
-      print("No results")
-    }
-  }
-}
-```
-
-## QueryBuilder
-When executing queries you can use the MySQLQueryBuilder class to generate a safe query for you.  This will ensure that all parameters are escaped to avoid SQL injection attacks.
-
-### Simple select
-```swift
-var queryBuilder = MySQLQueryBuilder()
-  .select(["Id", "Name"], table: "MyTable")
-
-var result = client.execute(queryBuilder)
-```
-
-### Parametrised where clause
-```swift
-var queryBuilder = MySQLQueryBuilder()
-  .select(["Id", "Name"], table: "MyTable")
-  .wheres("WHERE Id=?", 2)
-
-var result = client.execute(queryBuilder)
-```
-
-## Example
-Please see the example program in /Sources/Example for further usage.
-
-
-## Run MySQL in docker
-docker run --rm -e MYSQL_ROOT_PASSWORD=my-secret-pw -p 3306:3306 mysql:latest
-
-## Roadmap:
 - ~~Complete implementation of the connection pool.~~
 - ~~Complete implementation for the MySQLField to give parity to C library.~~
-- Implement type casting for MySQLRow to match field type. - Complete for numbers and strings, 
+- Implement type casting for MySQLRow to match field type. - Complete for numbers and strings,
 - Implement binary streaming for blob types.

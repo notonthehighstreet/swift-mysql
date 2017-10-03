@@ -1,0 +1,712 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnection.swift",
+      "line": 29,
+      "symbol": "MySQLConnection.equals(otherObject:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolMessage.swift",
+      "line": 1,
+      "symbol": "MySQLConnectionPoolMessage",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolMessage.swift",
+      "line": 2,
+      "symbol": "MySQLConnectionPoolMessage.CreatedNewConnection",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolMessage.swift",
+      "line": 3,
+      "symbol": "MySQLConnectionPoolMessage.FailedToCreateConnection",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolMessage.swift",
+      "line": 4,
+      "symbol": "MySQLConnectionPoolMessage.ConnectionDisconnected",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolMessage.swift",
+      "line": 5,
+      "symbol": "MySQLConnectionPoolMessage.RetrievedConnectionFromPool",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolProtocol.swift",
+      "line": 3,
+      "symbol": "MySQLConnectionPoolProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionPoolProtocol.swift",
+      "line": 5,
+      "symbol": "MySQLConnectionPoolProtocol.init(connectionString:poolSize:defaultCharset:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 4,
+      "symbol": "MySQLConnectionProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 5,
+      "symbol": "MySQLConnectionProtocol.info()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 6,
+      "symbol": "MySQLConnectionProtocol.version()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 7,
+      "symbol": "MySQLConnectionProtocol.isConnected()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 8,
+      "symbol": "MySQLConnectionProtocol.execute(query:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 9,
+      "symbol": "MySQLConnectionProtocol.execute(builder:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 10,
+      "symbol": "MySQLConnectionProtocol.nextResultSet()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionProtocol.swift",
+      "line": 11,
+      "symbol": "MySQLConnectionProtocol.equals(otherObject:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 8,
+      "symbol": "MySQLConnectionString.host",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 9,
+      "symbol": "MySQLConnectionString.port",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 10,
+      "symbol": "MySQLConnectionString.user",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 11,
+      "symbol": "MySQLConnectionString.password",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 12,
+      "symbol": "MySQLConnectionString.database",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 14,
+      "symbol": "MySQLConnectionString.init(host:port:user:password:database:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLConnectionString.swift",
+      "line": 22,
+      "symbol": "MySQLConnectionString.key()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLError.swift",
+      "line": 1,
+      "symbol": "MySQLError",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLError.swift",
+      "line": 2,
+      "symbol": "MySQLError.UnableToCreateConnection",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLError.swift",
+      "line": 3,
+      "symbol": "MySQLError.UnableToExecuteQuery",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLError.swift",
+      "line": 4,
+      "symbol": "MySQLError.ConnectionPoolTimeout",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLError.swift",
+      "line": 5,
+      "symbol": "MySQLError.NoMoreResults",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLField.swift",
+      "line": 3,
+      "symbol": "MySQLField",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 1,
+      "symbol": "MySQLFieldType",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 2,
+      "symbol": "MySQLFieldType.Tiny",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 3,
+      "symbol": "MySQLFieldType.Short",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 4,
+      "symbol": "MySQLFieldType.Long",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 5,
+      "symbol": "MySQLFieldType.Int24",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 6,
+      "symbol": "MySQLFieldType.LongLong",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 7,
+      "symbol": "MySQLFieldType.Decimal",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 8,
+      "symbol": "MySQLFieldType.NewDecimal",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 9,
+      "symbol": "MySQLFieldType.Float",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 10,
+      "symbol": "MySQLFieldType.Double",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 11,
+      "symbol": "MySQLFieldType.Bit",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 12,
+      "symbol": "MySQLFieldType.Timestamp",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 13,
+      "symbol": "MySQLFieldType.Date",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 14,
+      "symbol": "MySQLFieldType.Time",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 15,
+      "symbol": "MySQLFieldType.DateTime",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 16,
+      "symbol": "MySQLFieldType.Year",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 17,
+      "symbol": "MySQLFieldType.String",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 18,
+      "symbol": "MySQLFieldType.VarString",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 19,
+      "symbol": "MySQLFieldType.Blob",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 20,
+      "symbol": "MySQLFieldType.Set",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 21,
+      "symbol": "MySQLFieldType.Enum",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 22,
+      "symbol": "MySQLFieldType.Geometry",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLFieldType.swift",
+      "line": 23,
+      "symbol": "MySQLFieldType.Null",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 3,
+      "symbol": "==(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.free",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 7,
+      "symbol": "Joins",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 8,
+      "symbol": "Joins.LeftJoin",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 9,
+      "symbol": "Joins.RightJoin",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 10,
+      "symbol": "Joins.InnerJoin",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 27,
+      "symbol": "MySQLQueryBuilder",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 40,
+      "symbol": "MySQLQueryBuilder.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLQueryBuilder.swift",
+      "line": 361,
+      "symbol": "String.trimChar(character:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResult.swift",
+      "line": 5,
+      "symbol": "MySQLResult",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResultProtocol.swift",
+      "line": 3,
+      "symbol": "MySQLResultProtocol",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResultProtocol.swift",
+      "line": 4,
+      "symbol": "MySQLResultProtocol.fields",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResultProtocol.swift",
+      "line": 5,
+      "symbol": "MySQLResultProtocol.affectedRows",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResultProtocol.swift",
+      "line": 6,
+      "symbol": "MySQLResultProtocol.nextResult()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/MySQLResultProtocol.swift",
+      "line": 7,
+      "symbol": "MySQLResultProtocol.seek(offset:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 5,
+      "symbol": "MockMySQLConnection",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 6,
+      "symbol": "MockMySQLConnection.executeQueryCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 7,
+      "symbol": "MockMySQLConnection.executeQueryParams",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 9,
+      "symbol": "MockMySQLConnection.executeBuilderCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 10,
+      "symbol": "MockMySQLConnection.executeBuilderParams",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 11,
+      "symbol": "MockMySQLConnection.executeMySQLResultReturn",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 12,
+      "symbol": "MockMySQLConnection.executeMySQLErrorReturn",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 14,
+      "symbol": "MockMySQLConnection.nextResultSetCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 15,
+      "symbol": "MockMySQLConnection.nextResultSetReturn",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 16,
+      "symbol": "MockMySQLConnection.nextResultSetErrorReturn",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 18,
+      "symbol": "MockMySQLConnection.info()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 19,
+      "symbol": "MockMySQLConnection.version()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 20,
+      "symbol": "MockMySQLConnection.isConnected()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 22,
+      "symbol": "MockMySQLConnection.execute(query:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 33,
+      "symbol": "MockMySQLConnection.execute(builder:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 50,
+      "symbol": "MockMySQLConnection.nextResultSet()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLConnection.swift",
+      "line": 66,
+      "symbol": "MockMySQLConnection.equals(otherObject:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 4,
+      "symbol": "MockMySQLResult",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 5,
+      "symbol": "MockMySQLResult.nextCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 7,
+      "symbol": "MockMySQLResult.results",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 8,
+      "symbol": "MockMySQLResult.affectedRows",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 9,
+      "symbol": "MockMySQLResult.fields",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 11,
+      "symbol": "MockMySQLResult.seekCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 15,
+      "symbol": "MockMySQLResult.nextResult()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MockMySQLResult.swift",
+      "line": 27,
+      "symbol": "MockMySQLResult.seek(offset:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 4,
+      "symbol": "MockMySQLConnectionPool",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 5,
+      "symbol": "MockMySQLConnectionPool.setPoolSizeCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 6,
+      "symbol": "MockMySQLConnectionPool.setConnectionProviderCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 7,
+      "symbol": "MockMySQLConnectionPool.releaseConnectionCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 9,
+      "symbol": "MockMySQLConnectionPool.getConnectionCalled",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 10,
+      "symbol": "MockMySQLConnectionPool.getConnectionReturn",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 17,
+      "symbol": "MockMySQLConnectionPool.init(connectionString:poolSize:defaultCharset:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 26,
+      "symbol": "MockMySQLConnectionPool.connectionProvider",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 30,
+      "symbol": "MockMySQLConnectionPool.logger",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/nicj/Developer/swift/swift-mysql/Sources/MySQL/mocks/MocksMySQLConnectionPool.swift",
+      "line": 38,
+      "symbol": "MockMySQLConnectionPool.setConnectionProvider(provider:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/nicj/Developer/swift/swift-mysql"
+}

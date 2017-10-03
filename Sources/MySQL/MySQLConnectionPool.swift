@@ -1,250 +1,261 @@
 import Foundation
 
-// Singleton instance which maintains a number of mysql connections
-//TODO: Check how scope works in kitura
-//TODO: Complete implementation of pool
+/**
+    MySQLConnectionPool manages connections to a MySQL database.
+
+    ```
+    let connectionString = MySQLConnectionString(host: "127.0.0.1")
+    let pool = MySQLConnectionPool(connectionString: connectionString,
+                                   poolSize: 10,
+                                   defaultCharset: "utf8")
+
+    pool.getConnection() {
+        (connection: MySQLConnectionProtocol) in
+        // use connection
+    }
+
+    // connection is returned to the pool
+    ```
+ */
 public class MySQLConnectionPool: MySQLConnectionPoolProtocol {
 
-  static var activeConnections = [String: [MySQLConnectionProtocol]]()
-  static var inactiveConnections = [String: [MySQLConnectionProtocol]]()
-  static var poolSize:Int = 20
-  static var poolTimeout:Double = 20.0 // 20s
+    var connectionString: MySQLConnectionString
+    var activeConnections = [String: [MySQLConnectionProtocol]]()
+    var inactiveConnections = [String: [MySQLConnectionProtocol]]()
+    var poolSize: Int = 20
+    var poolTimeout: Double = 20.0 // 20s
+    var defaultCharset: String = "utf8"
+    var lock = NSLock()
 
-  static var lock = NSLock()
-
-  static var connectionProvider:() -> MySQLConnectionProtocol? = { () -> MySQLConnectionProtocol? in
-    return nil
-  }
-
-  static var logger:(message: MySQLConnectionPoolMessage) -> Void = {
-    (message: MySQLConnectionPoolMessage) -> Void in
-  }
-
-  /**
-    setPoolSize sets the size for the connection pool, default is 20
-
-    - Parameters:
-      - size: new size of the pool
-  */
-  public static func setPoolSize(size: Int) {
-    poolSize = size
-  }
-
-  public static func setLogger(logger: (message: MySQLConnectionPoolMessage) -> Void) {
-    self.logger = logger
-  }
-
-  /**
-    setConnectionProvider sets a reference to a closure which returns an object implementing MySQLConnectionProtocol.  Everytime the connection pool requires a new connection this closure will be executed.
-
-    - Parameters:
-      - provider: Closure which returns an object implementing MySQLConnectionProtocol.
-  */
-  public static func setConnectionProvider(provider: () -> MySQLConnectionProtocol?) {
-    self.connectionProvider = provider
-  }
-
-  /**
-  getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-  if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
-
-    - Parameters:
-      - host: The host name or ip address of the database.
-      - user: The username to use for the connection.
-      - password: The password to use for the connection.
-
-    - Returns: An object conforming to the MySQLConnectionProtocol.
-  */
-  public static func getConnection(host: String, user: String, password: String) throws -> MySQLConnectionProtocol? {
-    return try getConnection(host: host, user: user, password: password, port: 3306, database: "")
-  }
-
-  /**
-    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-    if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
-
-    - Parameters:
-      - host: The host name or ip address of the database
-      - user: The username to use for the connection
-      - password: The password to use for the connection
-      - port: The the port to connect to
-      - database: The database to connect to
-
-    - Returns: An object conforming to the MySQLConnectionProtocol.
-  */
-  public static func getConnection(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
-    // check pool has space
-    var startTime = NSDate()
-
-    while(countActive()  >= poolSize) {
-      if (NSDate().timeIntervalSince1970 - startTime.timeIntervalSince1970) > poolTimeout {
-        throw MySQLError.ConnectionPoolTimeout
-      }
+    var connectionProvider:() -> MySQLInternalConnectionProtocol? = { 
+        () -> MySQLInternalConnectionProtocol? in
+            return nil
     }
 
-    lock.lock()
-    defer {
-      lock.unlock()
+    var logger:(_: MySQLConnectionPoolMessage) -> Void = {
+        (message: MySQLConnectionPoolMessage) -> Void in
     }
 
-    // check if there is something available in the pool if so return it
-    let key = computeKey(host: host, user: user, password: password, database: database)
+    /**
+        Create a new connection pool
 
-    if let connection = getInactive(key: key) {
-      addActive(key: key, connection: connection)
-      logger(message: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
-      return connection
-    } else {
-      return try createAndAddActive(host: host, user: user, password: password, port: port, database: database)
+        - Parameters: 
+            - connectionString:
+            - poolSize: maximum number of open connections in the pool
+            - defaultCharset: default character set to use when connecting
+                to the database
+    */    
+    public required init(connectionString: MySQLConnectionString,
+                         poolSize: Int,
+                         defaultCharset: String) {
+
+        self.connectionString = connectionString
+        self.poolSize = poolSize
+        self.defaultCharset = defaultCharset
+    
+        self.connectionProvider = {
+            return MySQLInternalConnection()
+        }
     }
-  }
-
-  /**
-    getConnection returns a connection from the pool, if a connection is unsuccessful then getConnection throws a MySQLError,
-    if the pool has no available connections getConnection will block util either a connection is free or a timeout occurs.
-
-    By passing the optional closure once the code has executed within the block the connection is automatically released
-    back to the pool saving the requirement to manually call releaseConnection.
-
-    - Parameters:
-      - host: The host name or ip address of the database
-      - user: The username to use for the connection
-      - password: The password to use for the connection
-      - port: The the port to connect to
-      - database: The database to connect to
-      - closure: Code that will be executed before connection is released back to the pool
-
-    - Returns: An object implementing the MySQLConnectionProtocol.
-
-    ```
-      MySQLConnectionPoolProtocol.getConnection(host: "127.0.0.1",
-                                                user: "root",
-                                                password: "mypassword",
-                                                port: 3306,
-                                                database: "mydatabase") {
-        (connection: MySQLConnectionProtocol) in
-          let result = connection.execute("SELECT * FROM TABLE")
-          ...
-      }
-    ```
-  */
-  public static func getConnection(host: String,
-                                   user: String,
-                                   password: String,
-                                   port: Int,
-                                   database: String,
-                                   closure: ((connection: MySQLConnectionProtocol) -> Void)) throws {
-    do {
-      let connection = try getConnection(host: host, user: user, password: password, port: port, database: database)
-      defer {
-        self.releaseConnection(connection: connection!)
-      }
-
-      closure(connection: connection!)
-    } catch {
-      logger(message: MySQLConnectionPoolMessage.FailedToCreateConnection)
-      throw error
-    }
-  }
-
-  /**
-    releaseConnection returns a connection to the pool.
-
-    - Parameters:
-      - connection: Connection to be returned to the pool
-  */
-  public static func releaseConnection(connection: MySQLConnectionProtocol) {
-    lock.lock()
-    defer {
-      lock.unlock()
+  
+    func setConnectionProvider(provider: @escaping () -> MySQLInternalConnectionProtocol?) {
+        self.connectionProvider = provider
     }
 
-    let (connectionKey, index) = findActiveConnection(connection: connection)
+    func createAndAddActive() throws -> MySQLConnectionProtocol? {
+        let internalConnection = connectionProvider()
 
-    if(connectionKey != nil) {
-      activeConnections[connectionKey!]!.remove(at: index)
-      addInactive(key: connectionKey!, connection: connection)
-    }
-  }
+        do {
+            try internalConnection!.connect(host: self.connectionString.host,
+                                    user: self.connectionString.user,
+                                    password: self.connectionString.password,
+                                    port: self.connectionString.port,
+                                    database: self.connectionString.database,
+                                    charset: self.defaultCharset)
+        } catch {
+            logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
+            throw error
+        }
 
-  private static func createAndAddActive(host: String, user: String, password: String, port: Int, database: String) throws -> MySQLConnectionProtocol? {
-    let connection = connectionProvider()
+        let connection = MySQLConnection(connection: internalConnection!)
 
-    do {
-      try connection!.connect(host: host, user: user, password: password, port: port, database: database)
-    } catch {
-      logger(message: MySQLConnectionPoolMessage.FailedToCreateConnection)
-      throw error
-    }
+        let key = self.connectionString.key()
+        addActive(key: key, connection: connection)
+        logger(_: MySQLConnectionPoolMessage.CreatedNewConnection)
 
-    let key = computeKey(host: host, user: user, password: password, database: database)
-    addActive(key: key, connection: connection!)
-    logger(message: MySQLConnectionPoolMessage.CreatedNewConnection)
-
-    return connection
-  }
-
-  private static func findActiveConnection(connection: MySQLConnectionProtocol) -> (key: String?, index: Int) {
-    var connectionKey:String? = nil
-    var connectionIndex = -1
-
-    for (key, value)  in activeConnections {
-      if let index = value.index(where:{$0.equals(otherObject: connection)}) {
-        connectionIndex = index
-        connectionKey = key
-      }
-    }
-
-    return (connectionKey, connectionIndex)
-  }
-
-  private static func addActive(key: String, connection: MySQLConnectionProtocol) {
-    if activeConnections[key] == nil {
-      activeConnections[key] = [MySQLConnectionProtocol]()
-    }
-
-    activeConnections[key]!.append(connection)
-  }
-
-  private static func addInactive(key: String, connection: MySQLConnectionProtocol) {
-    if inactiveConnections[key] == nil {
-      inactiveConnections[key] = [MySQLConnectionProtocol]()
-    }
-
-    inactiveConnections[key]!.append(connection)
-  }
-
-  private static func getInactive(key: String) -> MySQLConnectionProtocol? {
-    if inactiveConnections[key] != nil && inactiveConnections[key]!.count > 0 {
-      // pop a connection off the stack
-      let connection = inactiveConnections[key]![0]
-      inactiveConnections[key]!.remove(at: 0)
-
-      if connection.isConnected() {
         return connection
-      } else {
-        logger(message: MySQLConnectionPoolMessage.ConnectionDisconnected)
+    }
+
+    func findActiveConnection(connection: MySQLConnectionProtocol) -> (key: String?, index: Int?) {
+        var connectionKey: String? = nil
+        var connectionIndex: Int? = nil
+
+        for (key, value)  in activeConnections {
+            if let index = value.index(where:{$0.equals(otherObject: connection)}) {
+                connectionIndex = index
+                connectionKey = key
+            }
+        }
+
+        return (connectionKey, connectionIndex)
+    }
+
+    func addActive(key: String, connection: MySQLConnectionProtocol) {
+        if activeConnections[key] == nil {
+            activeConnections[key] = [MySQLConnectionProtocol]()
+        }
+
+        activeConnections[key]!.append(connection)
+    }
+
+    func addInactive(key: String, connection: MySQLConnectionProtocol) {
+        if inactiveConnections[key] == nil {
+            inactiveConnections[key] = [MySQLConnectionProtocol]()
+        }
+
+        inactiveConnections[key]!.append(connection)
+    }
+
+    func getInactive(key: String) -> MySQLConnectionProtocol? {
+        if inactiveConnections[key] != nil && inactiveConnections[key]!.count > 0 {
+            // pop a connection off the stack
+            let connection = inactiveConnections[key]![0]
+            inactiveConnections[key]!.remove(at: 0)
+
+            if connection.isConnected() {
+                logger(_: MySQLConnectionPoolMessage.RetrievedConnectionFromPool)
+                return connection
+            } else {
+                logger(_: MySQLConnectionPoolMessage.ConnectionDisconnected)
+                return nil
+            }
+        }
+
         return nil
-      }
     }
 
-    return nil
-  }
+    func countActive() -> Int {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
 
-  private static func countActive() -> Int {
-    lock.lock()
-    defer {
-      lock.unlock()
+        var c = 0
+        for (_, value) in activeConnections {
+            c += value.count
+        }
+        return c
+    }
+}  
+
+extension MySQLConnectionPool {
+    /**
+        setLogger allows a call back function to be set, the pool will call
+        this function after completing an operation such as creating a new
+        connection.  It can be used to send metrics to StatsD or log to StdOut.
+     */
+    public func setLogger(logger: @escaping (_: MySQLConnectionPoolMessage) -> Void) {
+        self.logger = logger
     }
 
-    var c = 0
-    for (_, value) in activeConnections {
-      c += value.count
-    }
-    return c
-  }
 
-  private static func computeKey(host: String, user: String, password: String, database: String) -> String {
-    return "\(host)_\(user)_\(password)_\(database)"
-  }
+    /**
+        getConnection returns a connection from the pool, if a connection is 
+        unsuccessful then getConnection throws a MySQLError, if the pool has no 
+        available connections getConnection will block util either a connection is 
+        free or a timeout occurs.
+
+        - Returns: An object conforming to the MySQLClientProtocol which can be 
+            used to make requests to the database.
+
+        ```
+        do {
+            let connection = try pool.getConnection()
+            defer { pool.releaseConnection(connection: connection) }
+
+            // do some work
+        } catch {
+            // unable to get connection
+        }
+    */
+    public func getConnection() throws -> MySQLConnectionProtocol? {
+        var startTime = NSDate()
+
+        while(countActive() >= poolSize) {
+            if (NSDate().timeIntervalSince1970 - startTime.timeIntervalSince1970) > poolTimeout {
+                throw MySQLError.ConnectionPoolTimeout
+            }
+        }
+
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+
+        // check if there is something available in the pool if so return it
+        let key = connectionString.key()
+
+        if let connection = getInactive(key: key) {
+            addActive(key: key, connection: connection)      
+            return connection
+        } 
+    
+        return try createAndAddActive()
+    }
+
+    /**
+        getConnection returns a connection from the pool, if a connection is 
+        unsuccessful then getConnection throws a MySQLError, if the pool has no 
+        available connections getConnection will block util either a connection is 
+        free or a timeout occurs.
+
+        By passing the optional closure once the code has executed within the block 
+        the connection is automatically released back to the pool saving the 
+        requirement to manually call releaseConnection.
+
+        - Parameters:
+          - closure: Code that will be executed before connection is released back to the pool
+
+        - Returns: An object implementing the MySQLConnectionProtocol.
+
+        ```
+        try pool.getConnection() {
+            (connection: MySQLConnectionProtocol) in
+                let result = connection.execute("SELECT * FROM TABLE")
+                ...
+        }
+        ```
+     */
+    public func getConnection(closure: ((_: MySQLConnectionProtocol) throws -> Void)) throws {
+        do {
+            if let connection = try getConnection() {
+                defer { self.releaseConnection(connection) }
+
+                try closure(_: connection)
+            }
+        } catch {
+            logger(_: MySQLConnectionPoolMessage.FailedToCreateConnection)
+            throw error
+        }
+    }
+
+    /**
+        releaseConnection returns a connection to the pool.
+
+        - Parameters:
+            - connection: Connection to be returned to the pool
+    */
+    public func releaseConnection(_ connection: MySQLConnectionProtocol) {
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+
+        let connectionIndex = findActiveConnection(connection: connection)
+
+        if let key = connectionIndex.0, let index = connectionIndex.1 {
+            activeConnections[key]!.remove(at: index)
+            addInactive(key: key, connection: connection)
+        }
+    }
 }

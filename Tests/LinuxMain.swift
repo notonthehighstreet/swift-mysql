@@ -1,12 +1,12 @@
 import XCTest
 
-@testable import MySQLTestSuite
+@testable import MySQLTests
 
 XCTMain([
-  testCase(MySQLClientTests.allTests),
   testCase(MySQLConnectionPoolTests.allTests),
+  testCase(MySQLConnectionTests.allTests),
   testCase(MySQLFieldParserTests.allTests),
-  testCase(MySQLRowParserTests.allTests),
-  testCase(MySQLResultTests.allTests),
-  testCase(MySQLQueryBuilderTests.allTests)
+  testCase(MySQLQueryBuilderTests.allTests),
+//  testCase(MySQLResultTests.allTests),
+  testCase(MySQLRowParserTests.allTests)
 ])
